@@ -3,7 +3,6 @@ import './App.css';
 import {TaskType, ToDoList} from "./ToDoList";
 import {v1} from "uuid";
 import InputAdd from "./InputAdd";
-import {Grid} from "@mui/material";
 
 export type FilterType = 'all' | 'completed' | 'active';
 type ToDoListType = {
@@ -82,6 +81,7 @@ function App() {
     function addEditedTask (value:string, toDoListId:string, taskId: string) {
 
     }
+    function addEditedList(value:string, toDoListId:string) {}
 
     
 
@@ -97,7 +97,7 @@ function App() {
         <div className="App">
             <div>New List</div>
             <InputAdd clickToAddTask={addList}/>
-            <Grid margin={3} container spacing={2}>
+            {/*<Grid margin={3} container spacing={2}>*/}
             {
                 toDoLists.map((tl) => { //мапим массив со всеми тудулистами
 
@@ -112,7 +112,7 @@ function App() {
 
 
                     return (
-                        <Grid item spacing={5}>
+                        // <Grid item spacing={5}>
                             <ToDoList                    //на основе свойст каждого обьекта в массиве(пока там только фильтры, заголовки, id разные) создается один компонент тудулиста
                                 key={tl.id}                     // все остальное общее для каждого тудулиста
                                 tasks={tasksForProps}
@@ -124,12 +124,13 @@ function App() {
                                 filter={tl.filter}
                                 toDoListId={tl.id}
                                 removeList={removeList}
+                                addEditedTask={addEditedTask}
                             />
-                        </Grid>
+                        // </Grid>
                     )
                 })
             }
-            </Grid>
+            {/*</Grid>*/}
 
         </div>
     );

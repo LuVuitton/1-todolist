@@ -2,6 +2,7 @@ import React, {ChangeEvent, useState} from "react";
 
 type EditableSpanType = {
     value: string
+    callback:(value:string, taskId:string)=>void
 }
 
 function EditableSpan(props: EditableSpanType) {
@@ -16,7 +17,7 @@ function EditableSpan(props: EditableSpanType) {
         setNewValue(e.currentTarget.value)
     }
     const onBlurHandler = ()=>{
-        console.log('blur')
+        props.
     }
 
 

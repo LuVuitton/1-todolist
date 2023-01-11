@@ -10,6 +10,7 @@ export type TaskType = {
     id: string,
 
 }
+
 type propsType = {
     title: string,
     tasks: Array<TaskType>,
@@ -20,6 +21,7 @@ type propsType = {
     filter:FilterType
     toDoListId:string
     removeList:(toDoListId: string)=>void
+    addEditedTask:(toDoListId:string, value:string, taskId:string)=>void
 
 }
 
@@ -34,7 +36,7 @@ export function ToDoList(props: propsType) {
 
             <input type={e.type} checked={e.checked} onChange={onChangeHandler} key={e.id}/>
 
-            <EditableSpan value={e.taskValue} />
+            <EditableSpan value={e.taskValue} callback={coverAddEditedTask}/>
 
             <button onClick={() => {props.removeTask(e.id, props.toDoListId)}}> x </button>
         </div>
@@ -56,6 +58,9 @@ export function ToDoList(props: propsType) {
 
     const coverAddTask = (inputValue:string) => {
         props.addItem(inputValue, props.toDoListId)
+    }
+    const coverAddEditedTask = (value:string, taskId:string) =>{
+        props.addEditedTask(value, props.toDoListId, taskId)
     }
 
 
