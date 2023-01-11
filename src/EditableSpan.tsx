@@ -17,7 +17,6 @@ function EditableSpan(props: EditableSpanType) {
         setNewValue(e.currentTarget.value)
     }
     const onBlurHandler = ()=>{
-        props.
     }
 
 
