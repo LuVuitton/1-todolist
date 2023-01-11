@@ -3,6 +3,7 @@ import './App.css';
 import {TaskType, ToDoList} from "./ToDoList";
 import {v1} from "uuid";
 import InputAdd from "./InputAdd";
+import {Grid} from "@mui/material";
 
 export type FilterType = 'all' | 'completed' | 'active';
 type ToDoListType = {
@@ -10,10 +11,10 @@ type ToDoListType = {
     title: string
     filter: FilterType
 }
-type TasksArrType = {
-    [key:string]:Array<TaskType> //ключ это айди туду листа
-}
 
+type TasksArrType = {
+    [key: string]: Array<TaskType> //ключ это айди туду листа
+}
 
 
 function App() {
@@ -22,8 +23,8 @@ function App() {
     const idToDoList2 = v1();
 
     const [toDoLists, setToDoLists] = useState<Array<ToDoListType>>([
-        {id: idToDoList1, title: 'What to learn', filter: 'all'}, //тут без [] потому как переменная стоит не в ключе а в значении
-        {id: idToDoList2, title: 'What to buy', filter: 'all'},
+        {id: idToDoList1, title: 'what to learn', filter: 'all'}, //тут без [] потому как переменная стоит не в ключе а в значении
+        {id: idToDoList2, title: 'numbers', filter: 'all'},
     ])
     const [tasks, setTasks] = useState<TasksArrType>({
         [idToDoList1]: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
@@ -34,14 +35,35 @@ function App() {
             {id: v1(), type: "checkbox", checked: false, taskValue: 'React'},
         ],
         [idToDoList2]: [
-            {id: v1(), type: "checkbox", checked: true, taskValue: '1',},
-            {id: v1(), type: "checkbox", checked: false, taskValue: '2'},
-            {id: v1(), type: "checkbox", checked: true, taskValue: '3'},
-            {id: v1(), type: "checkbox", checked: false, taskValue: '4'},
-            {id: v1(), type: "checkbox", checked: false, taskValue: '5'},
+            {id: v1(), type: "checkbox", checked: true, taskValue: 'slovo odin',},
+            {id: v1(), type: "checkbox", checked: false, taskValue: 'slovo dva'},
+            {id: v1(), type: "checkbox", checked: true, taskValue: 'slovo tri'},
+            {id: v1(), type: "checkbox", checked: false, taskValue: 'slovo chetire'},
+            {id: v1(), type: "checkbox", checked: false, taskValue: 'slovo piat'},
         ]
     })
 
+    function addList(inputValue: string) {
+        const newToDoList: ToDoListType = {id: v1(), title: inputValue, filter: 'all'}
+        setToDoLists([newToDoList, ...toDoLists])
+        setTasks({...tasks, [newToDoList.id]: []})
+    }
+    function removeList(toDoListId: string) {
+        const filteredToDoLists = toDoLists.filter(e => e.id !== toDoListId)
+        setToDoLists(filteredToDoLists)
+        delete tasks[toDoListId]
+        setTasks({...tasks}) //это необязательно
+    }
+    function addTask(inputValue: string, toDoListId: string) {
+        const newTask = {id: v1(), type: "checkbox", checked: false, taskValue: inputValue}
+        tasks[toDoListId].unshift(newTask)
+        setTasks({...tasks})
+    }
+    function removeTask(taskID: string, toDoListId: string) {
+        const specificToDOList = tasks[toDoListId] //находим тудулист
+        tasks[toDoListId] = specificToDOList.filter((e) => e.id !== taskID) //меняем в нужном тудулисте масив таксок на отфильтрованый
+        setTasks({...tasks})
+    }
     function switchCheckbox(taskId: string, checked: boolean, toDoListId: string) {
 
         const taskForChange = tasks[toDoListId].find(e => e.id === taskId)
@@ -50,25 +72,6 @@ function App() {
         }
         setTasks({...tasks})
     }
-
-    function removeTask(taskID: string, toDoListId: string) {
-        const specificToDOList = tasks[toDoListId] //находим тудулист
-        tasks[toDoListId] = specificToDOList.filter((e) => e.id !== taskID) //меняем в нужном тудулисте масив таксок на отфильтрованый
-        setTasks({...tasks})
-    }
-
-    function addTask(inputValue: string, toDoListId: string) {
-        const newTask = {id: v1(), type: "checkbox", checked: false, taskValue: inputValue}
-        tasks[toDoListId].unshift(newTask)
-        setTasks({...tasks})
-    }
-
-    function addToDoList(inputValue: string) {
-        const newToDoList: ToDoListType = {id: v1(), title: inputValue, filter: 'all'}
-        setToDoLists([newToDoList, ...toDoLists])
-        setTasks({...tasks, [newToDoList.id]: []})
-    }
-
     function changeFilter(value: FilterType, toDoListId: string) {
         const specificToDOList = toDoLists.find(e => e.id === toDoListId) //находим нужный тудулист
         if (specificToDOList) {                                           // проверяем как просит тс и меняем значение!! т.к это обьект(ссылочный тип данных), значение меняется везде не тольео в переменной для find()
@@ -76,13 +79,11 @@ function App() {
             setToDoLists([...toDoLists])                            // сетать можем тот же самый обьект
         }
     }
+    function addEditedTask (value:string, toDoListId:string, taskId: string) {
 
-    function removeList(toDoListId: string) {
-        const filteredToDoLists = toDoLists.filter(e => e.id !== toDoListId)
-        setToDoLists(filteredToDoLists)
-        delete tasks[toDoListId]
-        setTasks({...tasks}) //это необязательно
     }
+
+    
 
 
 // по поводу реюзабельного инпута для тасок и новых тудулистов
@@ -94,7 +95,9 @@ function App() {
 // а в случае с АддТаск кнопка передает значение сначала обертке, внутри которой срабатывает АддТаск из Апп, и по дороге добавляет нужный АЙДИтудулиста
     return (
         <div className="App">
-            <InputAdd clickToAddTask={addToDoList}/>
+            <div>New List</div>
+            <InputAdd clickToAddTask={addList}/>
+            <Grid margin={3} container spacing={2}>
             {
                 toDoLists.map((tl) => { //мапим массив со всеми тудулистами
 
@@ -108,22 +111,25 @@ function App() {
                     }
 
 
-                    return <ToDoList                    //на основе свойст каждого обьекта в массиве(пока там только фильтры, заголовки, id разные) создается один компонент тудулиста
-                        key={tl.id}                     // все остальное общее для каждого тудулиста
-                        tasks={tasksForProps}
-                        title={tl.title}
-                        removeTask={removeTask}
-                        changeFilter={changeFilter}
-                        addItem={addTask}
-                        switchCheckbox={switchCheckbox}
-                        filter={tl.filter}
-                        toDoListId={tl.id}
-                        removeList={removeList}
-
-                    />
+                    return (
+                        <Grid item spacing={5}>
+                            <ToDoList                    //на основе свойст каждого обьекта в массиве(пока там только фильтры, заголовки, id разные) создается один компонент тудулиста
+                                key={tl.id}                     // все остальное общее для каждого тудулиста
+                                tasks={tasksForProps}
+                                title={tl.title}
+                                removeTask={removeTask}
+                                changeFilter={changeFilter}
+                                addItem={addTask}
+                                switchCheckbox={switchCheckbox}
+                                filter={tl.filter}
+                                toDoListId={tl.id}
+                                removeList={removeList}
+                            />
+                        </Grid>
+                    )
                 })
             }
-
+            </Grid>
 
         </div>
     );
