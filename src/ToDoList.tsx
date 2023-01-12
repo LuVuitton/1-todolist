@@ -7,68 +7,71 @@ export type TaskType = {
     type: string,
     checked: boolean,
     taskValue: string,
-    id: string,
+    taskID: string,
 
 }
 
 type propsType = {
-    title: string,
+    titleList: string,
     tasks: Array<TaskType>,
     removeTask: (id: string, toDoListId: string) => void,
     changeFilter: (value: FilterType, toDoListId:string) => void,
     addItem: (value: string, toDoListId: string) => void,
     switchCheckbox: (taskId: string, checked: boolean, toDoListId: string)=>void,
     filter:FilterType
-    toDoListId:string
+    toDoListID:string
     removeList:(toDoListId: string)=>void
     addEditedTask:(toDoListId:string, value:string, taskId:string)=>void
+    addEditedListTitle:(value:string, toDoListID:string)=>void
 
 }
 
 
 export function ToDoList(props: propsType) {
 
+
+    const clickToRemoveList =()=> {
+            props.removeList(props.toDoListID)
+    }
+    function filterAll() {
+        props.changeFilter('all', props.toDoListID)
+    }
+    function filterActive() {
+        props.changeFilter('active', props.toDoListID)
+    }
+    function filterCompleted() {
+        props.changeFilter('completed', props.toDoListID)
+    }
+    const coverAddTask = (inputValue:string) => {
+        props.addItem(inputValue, props.toDoListID)
+    }
+    const coverAddEditedTask = (value:string, taskId:string) =>{
+        props.addEditedTask(value, props.toDoListID, taskId)
+    }
+    const coverAddEditedListTitle = (value:string) =>{
+        props.addEditedListTitle(value, props.toDoListID)
+    }
+
 ////////////
     const tasksList = props.tasks.map((e: any) => {
-        const onChangeHandler=()=>{props.switchCheckbox(e.id, e.checked, props.toDoListId)}
+        const onChangeHandler=()=>{props.switchCheckbox(e.taskID, e.checked, props.toDoListID)}
         return (
-        <div className={e.checked === true?'isDone':''}>
-
-            <input type={e.type} checked={e.checked} onChange={onChangeHandler} key={e.id}/>
-
-            <EditableSpan value={e.taskValue} callback={coverAddEditedTask}/>
-
-            <button onClick={() => {props.removeTask(e.id, props.toDoListId)}}> x </button>
-        </div>
+            <div className={e.checked === true?'isDone':''}>
+                <input type={e.type} checked={e.checked} onChange={onChangeHandler} key={e.taskID}/>
+                <EditableSpan value={e.taskValue} callback={coverAddEditedTask} itemID={e.taskID}/>  {/*//передаем туда такс айди что бы он мог его вернуть назад*/}
+                <button onClick={() => {props.removeTask(e.taskID, props.toDoListID)}}> x </button>
+            </div>
         )
     })
 /////////////
-    const clickToRemoveList =()=> {
-            props.removeList(props.toDoListId)
-    }
-    function filterAll() {
-        props.changeFilter('all', props.toDoListId)
-    }
-    function filterActive() {
-        props.changeFilter('active', props.toDoListId)
-    }
-    function filterCompleted() {
-        props.changeFilter('completed', props.toDoListId)
-    }
-
-    const coverAddTask = (inputValue:string) => {
-        props.addItem(inputValue, props.toDoListId)
-    }
-    const coverAddEditedTask = (value:string, taskId:string) =>{
-        props.addEditedTask(value, props.toDoListId, taskId)
-    }
-
-
     return (
         <div className="App">
             <div>
 
-                <h3>{props.title} <button onClick={clickToRemoveList}>x</button> </h3>
+                <h3>
+                    <EditableSpan value={props.titleList} callback={coverAddEditedListTitle} itemID={props.toDoListID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
+                    <button onClick={clickToRemoveList}>x</button>
+                </h3>
 
                     <InputAdd clickToAddTask={coverAddTask}/>
 

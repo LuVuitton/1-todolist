@@ -3,6 +3,7 @@ import React, {ChangeEvent, useState} from "react";
 type EditableSpanType = {
     value: string
     callback:(value:string, taskId:string)=>void
+    itemID: string
 }
 
 function EditableSpan(props: EditableSpanType) {
@@ -17,14 +18,18 @@ function EditableSpan(props: EditableSpanType) {
         setNewValue(e.currentTarget.value)
     }
     const onBlurHandler = ()=>{
+        props.callback(newValue, props.itemID)
+        setSpanState(!spanState)
     }
+
+
 
 
     return (
         <>
         {spanState                                                                      //условие в жсх
             ? <span onDoubleClick={switchDoubleClick}>{props.value}</span>
-            : <input value={newValue} onChange={onChangeHandler} onBlur={onBlurHandler}/>
+            : <input value={newValue} onChange={onChangeHandler} onBlur={onBlurHandler} autoFocus/>
         }
         </>
             )
