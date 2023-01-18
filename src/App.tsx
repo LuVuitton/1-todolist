@@ -1,30 +1,32 @@
-import React, {useState} from 'react';
+import React, {useReducer} from 'react';
 import './App.css';
 import {TaskType, ToDoList} from "./ToDoList";
 import {v1} from "uuid";
 import InputAdd from "./InputAdd";
+import {addEditedTaskAC, addTaskAC, removeTaskAC, switchCheckboxAC, taskReducer} from "./reducers/taskReduser";
+import {addEditedListTitleAC, addListAC, listReducer, removeListAC} from "./reducers/listReducers";
 
 export type FilterType = 'all' | 'completed' | 'active';
-type ToDoListType = {
+export type ToDoListType = {
     toDoListID: string
     titleList: string
     filter: FilterType
 }
-type TasksArrType = {
+export type TasksArrType = {
     [key: string]: Array<TaskType> //ключ это айди туду листа
 }
 
 
 function App() {
 
-    const idToDoList1 = v1();
-    const idToDoList2 = v1();
+    const idToDoList1 = v1(); //значение свойства toDoListID с айди в тудулисте и ключ листа в массиве тасок
+    const idToDoList2 = v1(); //это не одна и таже строка, она просто совпадает по знаечению (НО ЭТО НЕ ТОЧНО)
 
-    const [toDoLists, setToDoLists] = useState<Array<ToDoListType>>([
+    let [toDoLists, dispatchLists] = useReducer(listReducer,[
         {toDoListID: idToDoList1, titleList: 'what to learn', filter: 'all'}, //тут без [] потому как переменная стоит не в ключе а в значении
         {toDoListID: idToDoList2, titleList: 'numbers', filter: 'all'},
     ])
-    const [tasks, setTasks] = useState<TasksArrType>({
+    let [tasks, dispatchTasks] = useReducer(taskReducer, {          // юзРедьюсер принимает нужный редьюсер и начальное значение
         [idToDoList1]: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
             {taskID: v1(), type: "checkbox", checked: true, taskValue: 'HTML&CSS',},
             {taskID: v1(), type: "checkbox", checked: false, taskValue: 'Redux'},
@@ -40,60 +42,41 @@ function App() {
             {taskID: v1(), type: "checkbox", checked: false, taskValue: 'slovo piat'},
         ]
     })
+    function changeFilter(value: FilterType, toDoListId: string) {
+        // const specificToDOList = toDoLists.find(e => e.toDoListID === toDoListId) //находим нужный тудулист
+        // if (specificToDOList) {                                           // проверяем как просит тс и меняем значение!! т.к это обьект(ссылочный тип данных), значение меняется везде не тольео в переменной для find()
+        //     specificToDOList.filter = value                               // ПОЭТОМУ
+        //     setToDoLists([...toDoLists])                            // сетать можем тот же самый обьект
+        // }
+    }
+
 
     function addList(inputValue: string) {
-        const newToDoList: ToDoListType = {toDoListID: v1(), titleList: inputValue, filter: 'all'}
-        setToDoLists([newToDoList, ...toDoLists])
-        setTasks({...tasks, [newToDoList.toDoListID]: []})
+        //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
+        dispatchLists(addListAC(inputValue, dispatchTasks))
     }
     function removeList(toDoListId: string) {
-        const filteredToDoLists = toDoLists.filter(e => e.toDoListID !== toDoListId)
-        setToDoLists(filteredToDoLists)
         delete tasks[toDoListId]
-        setTasks({...tasks}) //это необязательно
-    }
-    function addTask(inputValue: string, toDoListId: string) {
-        const newTask = {taskID: v1(), type: "checkbox", checked: false, taskValue: inputValue}
-        const toDoListTasks = tasks[toDoListId]
-        tasks[toDoListId] = [newTask, ...toDoListTasks]         // весь эд такс списал с домашки
-        setTasks({...tasks})
-    }
-    function removeTask(taskID: string, toDoListId: string) {
-        const specificToDOList = tasks[toDoListId] //находим тудулист
-        tasks[toDoListId] = specificToDOList.filter((e) => e.taskID !== taskID) //меняем в нужном тудулисте масив таксок на отфильтрованый
-        setTasks({...tasks})
-    }
-    function switchCheckbox(taskId: string, checked: boolean, toDoListId: string) {
-
-        const taskForChange = tasks[toDoListId].find(e => e.taskID === taskId)
-        if (taskForChange) {
-            taskForChange.checked = !checked
-        }
-        setTasks({...tasks})
-    }
-    function changeFilter(value: FilterType, toDoListId: string) {
-        const specificToDOList = toDoLists.find(e => e.toDoListID === toDoListId) //находим нужный тудулист
-        if (specificToDOList) {                                           // проверяем как просит тс и меняем значение!! т.к это обьект(ссылочный тип данных), значение меняется везде не тольео в переменной для find()
-            specificToDOList.filter = value                               // ПОЭТОМУ
-            setToDoLists([...toDoLists])                            // сетать можем тот же самый обьект
-        }
-    }
-    function addEditedTask (value:string, toDoListId:string, taskId: string) {
-        tasks[toDoListId].map((e)=>{
-           if (e.taskID === taskId){
-               e.taskValue = value
-               setTasks({...tasks})
-           }
-        })
+        dispatchLists(removeListAC(toDoListId))
     }
     function addEditedListTitle (value: string, toDoListID:string) {
-        toDoLists.map((e)=> {
-            if(e.toDoListID === toDoListID){
-                e.titleList = value
-                setToDoLists([...toDoLists])
-            }
-        })
+        dispatchLists(addEditedListTitleAC(value, toDoListID))
     }
+
+
+    function addTask(inputValue: string, toDoListId: string) {
+        dispatchTasks(addTaskAC(inputValue, toDoListId))
+    }
+    function removeTask(taskID: string, toDoListId: string) {
+        dispatchTasks(removeTaskAC(taskID, toDoListId))
+    }
+    function switchCheckbox(taskId: string, checked: boolean, toDoListId: string) {
+        dispatchTasks(switchCheckboxAC(taskId, checked, toDoListId))
+    }
+    function addEditedTask (value:string, toDoListId:string, taskId: string) {
+            dispatchTasks(addEditedTaskAC(value, toDoListId, taskId))
+    }
+
 
 
 
@@ -109,15 +92,15 @@ function App() {
             <div>New List</div>
             <InputAdd clickToAddTask={addList}/>
             {
-                toDoLists.map((tl) => { //мапим массив со всеми тудулистами
+                toDoLists.map((tl:any) => { //мапим массив со всеми тудулистами
 
                     let tasksForProps = tasks[tl.toDoListID];
 
                     if (tl.filter === 'active') {
-                        tasksForProps = tasks[tl.toDoListID].filter(e => e.checked !== true)
+                        tasksForProps = tasks[tl.toDoListID].filter((e:any) => e.checked !== true)
                     }
                     if (tl.filter === 'completed') {
-                        tasksForProps = tasks[tl.toDoListID].filter(e => e.checked !== false)
+                        tasksForProps = tasks[tl.toDoListID].filter((e:any) => e.checked !== false)
                     }
 
 
