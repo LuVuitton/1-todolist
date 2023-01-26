@@ -8,7 +8,7 @@ type removeListACType = ReturnType<typeof removeListAC>
 type addEditedListACTitleType = ReturnType<typeof addEditedListTitleAC>
 
 
-export const listReducer = (state: any, action: mainACListType) => {
+export const listReducer = (state: ToDoListType[], action: mainACListType) => {
     switch (action.type) {
         case 'ADD-LIST': {
             const newToDoList = {toDoListID: v1(), titleList: action.payload.inputValue, filter: 'all'}
@@ -27,7 +27,6 @@ export const listReducer = (state: any, action: mainACListType) => {
             return [...state]
 
         }
-
         default:
             throw new Error('taskReducer not worked')
     }

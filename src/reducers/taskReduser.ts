@@ -1,4 +1,4 @@
-import {TasksArrType} from "../App";
+import {TasksType} from "../App";
 import {v1} from "uuid";
 
 type mainACTaskType = addTaskACType | removeTaskACType | switchCheckboxACType | addEditedTaskACType | addArrTasksACType;
@@ -9,7 +9,7 @@ type addEditedTaskACType = ReturnType<typeof addEditedTaskAC>
 type addArrTasksACType = ReturnType<typeof addArrTasksAC>
 
 
-export const taskReducer = (state: TasksArrType, action: mainACTaskType) => {
+export const taskReducer = (state: TasksType, action: mainACTaskType) => {
 
     switch (action.type) {
         case 'ADD-TASK' : {

@@ -10,10 +10,10 @@ export type FilterType = 'all' | 'completed' | 'active';
 export type ToDoListType = {
     toDoListID: string
     titleList: string
-    filter: FilterType
+    filter: FilterType|string
 }
-export type TasksArrType = {
-    [key: string]: Array<TaskType> //ключ это айди туду листа
+export type TasksType = {
+    [adda: string]: Array<TaskType> //ключ это айди туду листа
 }
 
 
@@ -35,11 +35,11 @@ function App() {
             {taskID: v1(), type: "checkbox", checked: false, taskValue: 'React'},
         ],
         [idToDoList2]: [
-            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'slovo odin',},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'slovo dva'},
-            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'slovo tri'},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'slovo chetire'},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'slovo piat'},
+            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'pervoe',},
+            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'vtoroe'},
+            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'trete'},
+            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'chetvertoe'},
+            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'piatoe'},
         ]
     })
     function changeFilter(value: FilterType, toDoListId: string) {
