@@ -1,11 +1,7 @@
 import {v1} from "uuid";
 import {addArrTasksAC} from "./taskReduser";
-import {ToDoListType} from "../App";
+import {mainACListType, ToDoListType} from "../Types";
 
-type mainACListType = addListACType | removeListACType | addEditedListACTitleType
-type addListACType = ReturnType<typeof addListAC>
-type removeListACType = ReturnType<typeof removeListAC>
-type addEditedListACTitleType = ReturnType<typeof addEditedListTitleAC>
 
 
 export const listReducer = (state: ToDoListType[], action: mainACListType) => {

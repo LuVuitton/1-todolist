@@ -1,12 +1,5 @@
-import {TasksType} from "../App";
 import {v1} from "uuid";
-
-type mainACTaskType = addTaskACType | removeTaskACType | switchCheckboxACType | addEditedTaskACType | addArrTasksACType;
-type addTaskACType = ReturnType<typeof addTaskAC>
-type removeTaskACType = ReturnType<typeof removeTaskAC>
-type switchCheckboxACType = ReturnType<typeof switchCheckboxAC>
-type addEditedTaskACType = ReturnType<typeof addEditedTaskAC>
-type addArrTasksACType = ReturnType<typeof addArrTasksAC>
+import {mainACTaskType, TasksType} from "../Types";
 
 
 export const taskReducer = (state: TasksType, action: mainACTaskType) => {
@@ -90,7 +83,6 @@ export const addEditedTaskAC = (value: string, toDoListId: string, taskId: strin
         }
     } as const
 }
-
 export const addArrTasksAC = (newListId: string) => {
     return {
         type: 'ADD-ARR-TASKS',

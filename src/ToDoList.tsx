@@ -1,33 +1,10 @@
 import React from 'react';
-import {FilterType} from "./App";
 import InputAdd from "./InputAdd";
 import EditableSpan from "./EditableSpan";
-
-export type TaskType = {
-    type: string,
-    checked: boolean,
-    taskValue: string,
-    taskID: string,
-
-}
-
-type propsType = {
-    titleList: string,
-    tasks: Array<TaskType>,
-    removeTask: (id: string, toDoListId: string) => void,
-    changeFilter: (value: FilterType, toDoListId:string) => void,
-    addItem: (value: string, toDoListId: string) => void,
-    switchCheckbox: (taskId: string, checked: boolean, toDoListId: string)=>void,
-    filter:FilterType
-    toDoListID:string
-    removeList:(toDoListId: string)=>void
-    addEditedTask:(toDoListId:string, value:string, taskId:string)=>void
-    addEditedListTitle:(value:string, toDoListID:string)=>void
-
-}
+import {ToDoListPropsType} from "./Types";
 
 
-export function ToDoList(props: propsType) {
+export function ToDoList(props: ToDoListPropsType) {
 
 
     const clickToRemoveList =()=> {
