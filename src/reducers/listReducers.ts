@@ -14,7 +14,7 @@ export const listReducer = (state: ToDoListType[], action: mainACListType): ToDo
             return state.filter((e) => e.toDoListID !== action.payload.toDoListId)
         }
         case 'ADD-EDITED-LIST-TITLE': {
-            return state.map(e => e.titleList === action.payload.toDoListID ? {
+            return state.map(e => e.toDoListID === action.payload.toDoListID ? {
                 ...e,
                 titleList: action.payload.value
             } : e)

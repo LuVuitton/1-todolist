@@ -33,6 +33,7 @@ export const taskReducer = (state: TasksType, action: mainACTaskType): TasksType
         case 'ADD-ARR-TASKS': {
 
             return {...state, [action.payload.newListId]: []}   // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
+
         }
         default:
             throw new Error('taskReducer not worked')
@@ -86,3 +87,4 @@ export const addArrTasksAC = (newListId: string) => {
         }
     } as const
 }
+
