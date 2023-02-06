@@ -4,7 +4,7 @@ import {ToDoList} from "./ToDoList";
 import {v1} from "uuid";
 import InputAdd from "./InputAdd";
 import {addEditedTaskAC, addTaskAC, removeTaskAC, switchCheckboxAC, taskReducer} from "./reducers/taskReduser";
-import {addEditedListTitleAC, addListAC, listReducer, removeListAC} from "./reducers/listReducers";
+import {addEditedListTitleAC, addListAC, changeFilterListAC, listReducer, removeListAC} from "./reducers/listReducers";
 import {FilterType} from "./Types";
 
 
@@ -34,7 +34,11 @@ function App() {
         ]
     })
 
+
+
     function changeFilter(value: FilterType, toDoListId: string) {
+       // const  filteredLists = toDoLists.map(e=>e.toDoListID===toDoListId?{...e, filter:value}:e)
+        dispatchLists(changeFilterListAC(value,toDoListId))
         // const specificToDOList = toDoLists.find(e => e.toDoListID === toDoListId) //находим нужный тудулист
         // if (specificToDOList) {                                           // проверяем как просит тс и меняем значение!! т.к это обьект(ссылочный тип данных), значение меняется везде не тольео в переменной для find()
         //     specificToDOList.filter = value                               // ПОЭТОМУ

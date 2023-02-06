@@ -1,6 +1,6 @@
 import {v1} from "uuid";
 import {addArrTasksAC} from "./taskReduser";
-import {addArrTasksACType, mainACListType, ToDoListType} from "../Types";
+import {addArrTasksACType, FilterType, mainACListType, ToDoListType} from "../Types";
 
 
 
@@ -16,6 +16,9 @@ export const listReducer = (state: ToDoListType[], action: mainACListType):ToDoL
         }
         case 'ADD-EDITED-LIST-TITLE': {
             return state.map(e=>e.titleList===action.payload.toDoListID?{...e,titleList:action.payload.value}:e)
+        }
+        case 'CHANGE-FILTER-LIST': {
+        return   state.map(e=>e.toDoListID===action.payload.toDoListId?{...e, filter:action.payload.value}:e)
         }
         default:
             throw new Error('taskReducer not worked')
@@ -46,6 +49,16 @@ export const addEditedListTitleAC = (value: string, toDoListID: string) => {
         payload: {
             value,
             toDoListID
+        }
+    } as const
+}
+
+export const changeFilterListAC = (value: FilterType, toDoListId: string) => {
+    return {
+        type: 'CHANGE-FILTER-LIST',
+        payload: {
+            value,
+            toDoListId
         }
     } as const
 }
