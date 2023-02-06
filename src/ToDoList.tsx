@@ -19,6 +19,7 @@ export function ToDoList(props: ToDoListPropsType) {
     function filterCompleted() {
         props.changeFilter('completed', props.toDoListID)
     }
+
     const coverAddTask = (inputValue:string) => {
         props.addItem(inputValue, props.toDoListID)
     }
@@ -29,18 +30,18 @@ export function ToDoList(props: ToDoListPropsType) {
         props.addEditedListTitle(value, props.toDoListID)
     }
 
-////////////
-    const tasksList = props.tasks.map((e: any) => {
+////////////map
+    const tasksList = props.tasks.map((e) => {
         const onChangeHandler=()=>{props.switchCheckbox(e.taskID, e.checked, props.toDoListID)}
         return (
-            <div className={e.checked === true?'isDone':''}>
+            <div className={e.checked?'isDone':''} key={e.taskID}>
                 <input type={e.type} checked={e.checked} onChange={onChangeHandler} key={e.taskID}/>
                 <EditableSpan value={e.taskValue} callback={coverAddEditedTask} itemID={e.taskID}/>  {/*//передаем туда такс айди что бы он мог его вернуть назад*/}
                 <button onClick={() => {props.removeTask(e.taskID, props.toDoListID)}}> x </button>
             </div>
         )
     })
-/////////////
+/////////////map done
     return (
         <div className="App">
             <div>
