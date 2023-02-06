@@ -1,19 +1,22 @@
 import {listStateForTest} from "../StateForTest";
-import {listReducer} from "../../reducers/listReducers";
-import {mainACListType, ToDoListType} from "../../Types";
+import {
+    addEditedListTitleAC,
+    addListAC,
+    changeFilterListAC,
+    listReducer,
+    removeListAC
+} from "../../reducers/listReducers";
+import {mainACListType} from "../../Types";
+import {addEditedTaskAC} from "../../reducers/taskReduser";
 
 const startState = listStateForTest
 
 test('should add new list to array of toDoLists', () => {
 
-    const action: mainACListType = {
-        type: 'ADD-LIST', payload: {
-            inputValue: 'new for new list', dispatchTasks: () => {
-            }
-        }
-    }
+    const action =  addListAC('new for new list',()=>{})
 
-    const endState:ToDoListType[] = listReducer(startState, action)
+
+    const endState = listReducer(startState, action)
 
     expect(endState.length > startState.length).toBe(true)
     expect(endState[0].titleList).toBe('new for new list')
@@ -22,9 +25,9 @@ test('should add new list to array of toDoLists', () => {
 
 test('should remove specific list by id', () => {
 
-    const action: mainACListType = {type: 'REMOVE-LIST', payload: {toDoListId: 'listID1'}}
+    const action = removeListAC('listID1')
 
-    const endState:ToDoListType[] = listReducer(startState, action)
+    const endState = listReducer(startState, action)
 
     expect(endState.length === startState.length).toBe(false)
     expect(endState.length).toBe(1)
@@ -33,12 +36,9 @@ test('should remove specific list by id', () => {
 
 test('should to set a new name for the existing list', () => {
 
-    const action: mainACListType = {
-        type: 'ADD-EDITED-LIST-TITLE',
-        payload: {value: 'new list name', toDoListID: 'listID1'}
-    }
+    const action = addEditedListTitleAC('new list name','listID1')
 
-    const endState:ToDoListType[] = listReducer(startState, action)
+    const endState = listReducer(startState, action)
 
     expect(endState.length===startState.length).toBe(true)
     expect(endState[0].titleList).toBe('new list name')
@@ -47,9 +47,9 @@ test('should to set a new name for the existing list', () => {
 
 test('should to change filter value in list',()=> {
 
-    const action:mainACListType = {type: 'CHANGE-FILTER-LIST', payload: {value: 'active', toDoListId: 'listID2'}}
+    const action = changeFilterListAC('active','listID2' )
 
-    const endState:ToDoListType[] = listReducer(startState, action)
+    const endState = listReducer(startState, action)
 
     expect(endState[1].filter).toBe('active')
     expect(endState[0].filter).toBe('all')
