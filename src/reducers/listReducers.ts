@@ -3,8 +3,7 @@ import {addArrTasksAC} from "./taskReduser";
 import {addArrTasksACType, FilterType, mainACListType, ToDoListType} from "../Types";
 
 
-
-export const listReducer = (state: ToDoListType[], action: mainACListType):ToDoListType[] => {
+export const listReducer = (state: ToDoListType[], action: mainACListType): ToDoListType[] => {
     switch (action.type) {
         case 'ADD-LIST': {
             const newToDoList = {toDoListID: v1(), titleList: action.payload.inputValue, filter: 'all'}
@@ -15,10 +14,13 @@ export const listReducer = (state: ToDoListType[], action: mainACListType):ToDoL
             return state.filter((e) => e.toDoListID !== action.payload.toDoListId)
         }
         case 'ADD-EDITED-LIST-TITLE': {
-            return state.map(e=>e.titleList===action.payload.toDoListID?{...e,titleList:action.payload.value}:e)
+            return state.map(e => e.titleList === action.payload.toDoListID ? {
+                ...e,
+                titleList: action.payload.value
+            } : e)
         }
         case 'CHANGE-FILTER-LIST': {
-        return   state.map(e=>e.toDoListID===action.payload.toDoListId?{...e, filter:action.payload.value}:e)
+            return state.map(e => e.toDoListID === action.payload.toDoListId ? {...e, filter: action.payload.value} : e)
         }
         default:
             throw new Error('taskReducer not worked')
@@ -26,7 +28,7 @@ export const listReducer = (state: ToDoListType[], action: mainACListType):ToDoL
 
 }
 
-export const addListAC = (inputValue: string, dispatchTasks: (addArrTasksAC:addArrTasksACType)=>void) => {
+export const addListAC = (inputValue: string, dispatchTasks: (addArrTasksAC: addArrTasksACType) => void) => {
     return {
         type: 'ADD-LIST',
         payload: {

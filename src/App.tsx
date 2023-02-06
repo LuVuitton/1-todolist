@@ -36,47 +36,23 @@ function App() {
 
 
 
-    function changeFilter(value: FilterType, toDoListId: string) {
-       // const  filteredLists = toDoLists.map(e=>e.toDoListID===toDoListId?{...e, filter:value}:e)
-        dispatchLists(changeFilterListAC(value,toDoListId))
-        // const specificToDOList = toDoLists.find(e => e.toDoListID === toDoListId) //находим нужный тудулист
-        // if (specificToDOList) {                                           // проверяем как просит тс и меняем значение!! т.к это обьект(ссылочный тип данных), значение меняется везде не тольео в переменной для find()
-        //     specificToDOList.filter = value                               // ПОЭТОМУ
-        //     setToDoLists([...toDoLists])                            // сетать можем тот же самый обьект
-        // }
-    }
+    const changeListFilter=(value: FilterType, toDoListId: string) => dispatchLists(changeFilterListAC(value,toDoListId))
+
+    const addList = (inputValue: string)=>  dispatchLists(addListAC(inputValue, dispatchTasks)) //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
+
+    const removeList = (toDoListId: string)=> dispatchLists(removeListAC(toDoListId)) // можно еще добавить delete
+
+    const addEditedListTitle = (value: string, toDoListID: string)=> dispatchLists(addEditedListTitleAC(value, toDoListID))
 
 
-    function addList(inputValue: string) {
-        //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
-        dispatchLists(addListAC(inputValue, dispatchTasks))
-    }
+    const addTask = (inputValue: string, toDoListId: string)=> dispatchTasks(addTaskAC(inputValue, toDoListId))
 
-    function removeList(toDoListId: string) {
-        delete tasks[toDoListId]
-        dispatchLists(removeListAC(toDoListId))
-    }
+    const removeTask = (taskID: string, toDoListId: string)=> dispatchTasks(removeTaskAC(taskID, toDoListId))
 
-    function addEditedListTitle(value: string, toDoListID: string) {
-        dispatchLists(addEditedListTitleAC(value, toDoListID))
-    }
+    const switchCheckbox = (taskId: string, checked: boolean, toDoListId: string)=> dispatchTasks(switchCheckboxAC(taskId, checked, toDoListId))
 
+    const addEditedTask = (value: string, toDoListId: string, taskId: string)=> dispatchTasks(addEditedTaskAC(value, toDoListId, taskId))
 
-    function addTask(inputValue: string, toDoListId: string) {
-        dispatchTasks(addTaskAC(inputValue, toDoListId))
-    }
-
-    function removeTask(taskID: string, toDoListId: string) {
-        dispatchTasks(removeTaskAC(taskID, toDoListId))
-    }
-
-    function switchCheckbox(taskId: string, checked: boolean, toDoListId: string) {
-        dispatchTasks(switchCheckboxAC(taskId, checked, toDoListId))
-    }
-
-    function addEditedTask(value: string, toDoListId: string, taskId: string) {
-        dispatchTasks(addEditedTaskAC(value, toDoListId, taskId))
-    }
 
 
 // по поводу реюзабельного инпута для тасок и новых тудулистов
@@ -109,7 +85,7 @@ function App() {
                             tasks={tasksForProps}
                             titleList={tl.titleList}
                             removeTask={removeTask}
-                            changeFilter={changeFilter}
+                            changeFilter={changeListFilter}
                             addItem={addTask}
                             switchCheckbox={switchCheckbox}
                             filter={tl.filter}

@@ -36,13 +36,6 @@ export type ToDoListPropsType = {
 }
 
 //reducers type
-
-export type mainACListType = addListACType | removeListACType | addEditedListACTitleType | changeFilterListACType;
-export type addListACType = ReturnType<typeof addListAC>
-export type removeListACType = ReturnType<typeof removeListAC>
-export type addEditedListACTitleType = ReturnType<typeof addEditedListTitleAC>
-
-
 export type mainACTaskType =
     | addTaskACType
     | removeTaskACType
@@ -50,6 +43,15 @@ export type mainACTaskType =
     | addEditedTaskACType
     | addArrTasksACType
 
+export type mainACListType =
+    | addListACType
+    | removeListACType
+    | addEditedListACTitleType
+    | changeFilterListACType;
+
+export type addListACType = ReturnType<typeof addListAC>
+export type removeListACType = ReturnType<typeof removeListAC>
+export type addEditedListACTitleType = ReturnType<typeof addEditedListTitleAC>
 export type addTaskACType = ReturnType<typeof addTaskAC>
 export type removeTaskACType = ReturnType<typeof removeTaskAC>
 export type switchCheckboxACType = ReturnType<typeof switchCheckboxAC>
