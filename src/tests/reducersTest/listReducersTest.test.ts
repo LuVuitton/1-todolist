@@ -3,11 +3,10 @@ import {
     addEditedListTitleAC,
     addListAC,
     changeFilterListAC,
-    listReducer,
     removeListAC
-} from "../../reducers/listReducers";
-import {mainACListType} from "../../Types";
-import {addEditedTaskAC} from "../../reducers/taskReduser";
+} from "../../ActionCreators/ActionCreators";
+import {listReducer} from "../../reducers/listReducers";
+
 
 const startState = listStateForTest
 
@@ -15,12 +14,11 @@ test('should add new list to array of toDoLists', () => {
 
     const action =  addListAC('new for new list',()=>{})
 
-
     const endState = listReducer(startState, action)
 
-    expect(endState.length > startState.length).toBe(true)
+    expect(endState.length > startState.length).toBeTruthy()
     expect(endState[0].titleList).toBe('new for new list')
-
+    expect(endState[2]).toBeDefined()
 })
 
 test('should remove specific list by id', () => {
@@ -29,9 +27,11 @@ test('should remove specific list by id', () => {
 
     const endState = listReducer(startState, action)
 
-    expect(endState.length === startState.length).toBe(false)
+    expect(endState.length).not.toEqual(startState.length)
     expect(endState.length).toBe(1)
     expect(endState[0].toDoListID).toBe('listID2')
+    expect(endState.every(e=>e.toDoListID != 'listID1' )).toBeTruthy()
+    expect(endState[2]).toBeUndefined()
 })
 
 test('should to set a new name for the existing list', () => {
@@ -40,7 +40,7 @@ test('should to set a new name for the existing list', () => {
 
     const endState = listReducer(startState, action)
 
-    expect(endState.length===startState.length).toBe(true)
+    expect(endState.length).toEqual(startState.length)
     expect(endState[0].titleList).toBe('new list name')
     expect(endState[1].titleList).toBe('numbers')
 })

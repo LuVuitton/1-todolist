@@ -1,11 +1,19 @@
-import {addEditedListTitleAC, addListAC, changeFilterListAC, removeListAC} from "./reducers/listReducers";
-import {addArrTasksAC, addEditedTaskAC, addTaskAC, removeTaskAC, switchCheckboxAC} from "./reducers/taskReduser";
+import {
+    addArrTasksAC,
+    addEditedListTitleAC, addEditedTaskAC,
+    addListAC,
+    addTaskAC, changeFilterListAC,
+    removeListAC,
+    removeTaskAC,
+    switchCheckboxAC
+} from "./ActionCreators/ActionCreators";
+
 
 export type FilterType = 'all' | 'completed' | 'active';
 export type ToDoListType = {
     toDoListID: string
     titleList: string
-    filter: any                         //пофиксить эни
+    filter: FilterType
 }
 export type TasksType = {
     [key: string]: Array<TaskType> //ключ это айди туду листа

@@ -3,9 +3,17 @@ import './App.css';
 import {ToDoList} from "./ToDoList";
 import {v1} from "uuid";
 import InputAdd from "./InputAdd";
-import {addEditedTaskAC, addTaskAC, removeTaskAC, switchCheckboxAC, taskReducer} from "./reducers/taskReduser";
-import {addEditedListTitleAC, addListAC, changeFilterListAC, listReducer, removeListAC} from "./reducers/listReducers";
 import {FilterType} from "./Types";
+import {listReducer} from "./reducers/listReducers";
+import {taskReducer} from "./reducers/taskReduser";
+import {
+    addEditedListTitleAC,
+    addEditedTaskAC,
+    addListAC, addTaskAC,
+    changeFilterListAC, removeListAC,
+    removeTaskAC,
+    switchCheckboxAC
+} from "./ActionCreators/ActionCreators";
 
 
 function App() {

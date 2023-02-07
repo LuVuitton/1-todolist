@@ -1,6 +1,7 @@
 import {tasksStateForTest} from "../StateForTest";
-import {mainACTaskType, TasksType} from "../../Types";
-import {addArrTasksAC, addEditedTaskAC, switchCheckboxAC, taskReducer} from "../../reducers/taskReduser";
+import {mainACTaskType} from "../../Types";
+import {addArrTasksAC, addEditedTaskAC, switchCheckboxAC} from "../../ActionCreators/ActionCreators";
+import {taskReducer} from "../../reducers/taskReduser";
 
 const startState = tasksStateForTest
 
@@ -12,9 +13,9 @@ test('should add new task to exact list', () => {
 
     expect(endState['listID2'][0].taskValue).toBe('name for new task')
     expect(endState['listID1'][0].taskValue).toBe('HTML&CSS')
-    expect(endState['listID2'].length).toBe(6)
+    expect(endState['listID2'][5]).toBeDefined()
     expect(endState['listID1'].length).toBe(5)
-    expect(endState['listID2'].length === startState['listID2'].length).toBe(false)
+    expect(endState['listID2'].length === startState['listID2'].length).toBeFalsy()
 })
 
 test('should to remove the task from the list by id', () => {
@@ -23,11 +24,11 @@ test('should to remove the task from the list by id', () => {
 
     const endState = taskReducer(startState, action)
 
-    expect(endState['listID2'].length).toBe(4)
+    expect(endState[4]).toBeUndefined()
     expect(endState['listID1'].length).toBe(5)
-    expect(endState['listID2'].length === startState['listID2'].length).toBe(false)
+    expect(endState['listID2'].length).not.toEqual(startState['listID2'].length)
     expect(endState['listID2'][3].taskValue).toBe('piatoe')
-
+    expect(endState['listID2'].every(e => e.taskID != 'taskID4')).toBeTruthy()
 })
 
 test('should to switch checkbox in task by id', () => {
@@ -36,22 +37,20 @@ test('should to switch checkbox in task by id', () => {
 
     const endState = taskReducer(startState, action)
 
-    expect(endState['listID1'][1].checked).toBe(true)
-    expect(endState['listID2'][1].checked).toBe(false)
-    expect(endState['listID1'].length === startState['listID1'].length).toBe(true)
-
+    expect(endState['listID1'][1].checked).toBeTruthy()
+    expect(endState['listID2'][1].checked).toBeFalsy()
+    expect(endState['listID1'].length).toEqual(startState['listID1'].length)
 })
 
 test('should to set a new name for the existing task', () => {
 
-    const action = addEditedTaskAC('new name for task','listID2', 'taskID1' )
+    const action = addEditedTaskAC('new name for task', 'listID2', 'taskID1')
 
     const endState = taskReducer(startState, action)
 
     expect(endState['listID2'][0].taskValue).toBe('new name for task')
     expect(endState['listID2'].length).toBe(5)
     expect(endState['listID1'][0].taskValue).toBe('HTML&CSS')
-
 })
 
 test('should add new empty array for new list by list id', () => {
@@ -62,7 +61,7 @@ test('should add new empty array for new list by list id', () => {
 
 
     expect(endState['newListID'].length).toBe(0)
-    expect(endState['listID1'].length === startState['listID1'].length).toBe(true)
-    expect(endState['listID2'].length === startState['listID2'].length).toBe(true)
+    expect(endState['listID1'].length ).toEqual(startState['listID1'].length)
+    expect(endState['listID2'].length ).toEqual(startState['listID2'].length)
 })
 

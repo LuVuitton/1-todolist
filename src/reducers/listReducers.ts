@@ -1,12 +1,12 @@
 import {v1} from "uuid";
-import {addArrTasksAC} from "./taskReduser";
-import {addArrTasksACType, FilterType, mainACListType, ToDoListType} from "../Types";
+import {mainACListType, ToDoListType} from "../Types";
+import {addArrTasksAC} from "../ActionCreators/ActionCreators";
 
 
 export const listReducer = (state: ToDoListType[], action: mainACListType): ToDoListType[] => {
     switch (action.type) {
         case 'ADD-LIST': {
-            const newToDoList = {toDoListID: v1(), titleList: action.payload.inputValue, filter: 'all'}
+            const newToDoList:ToDoListType = {toDoListID: v1(), titleList: action.payload.inputValue, filter: 'all'}
             action.payload.dispatchTasks(addArrTasksAC(newToDoList.toDoListID))
             return [newToDoList, ...state]
         }
@@ -28,39 +28,3 @@ export const listReducer = (state: ToDoListType[], action: mainACListType): ToDo
 
 }
 
-export const addListAC = (inputValue: string, dispatchTasks: (addArrTasksAC: addArrTasksACType) => void) => {
-    return {
-        type: 'ADD-LIST',
-        payload: {
-            inputValue,     //inputValue:inputValue
-            dispatchTasks
-        }
-    } as const
-}
-export const removeListAC = (toDoListId: string) => {
-    return {
-        type: 'REMOVE-LIST',
-        payload: {
-            toDoListId
-        }
-    } as const
-}
-export const addEditedListTitleAC = (value: string, toDoListID: string) => {
-    return {
-        type: 'ADD-EDITED-LIST-TITLE',
-        payload: {
-            value,
-            toDoListID
-        }
-    } as const
-}
-
-export const changeFilterListAC = (value: FilterType, toDoListId: string) => {
-    return {
-        type: 'CHANGE-FILTER-LIST',
-        payload: {
-            value,
-            toDoListId
-        }
-    } as const
-}
