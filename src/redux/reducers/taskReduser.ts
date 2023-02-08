@@ -2,7 +2,7 @@ import {v1} from "uuid";
 import {mainACTaskType, TasksType} from "../../Types";
 
 
-const initState: TasksType = {          // юзРедьюсер принимает нужный редьюсер и начальное значение
+const initState: TasksType = {          // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
     // [idToDoList1]: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
     //     {taskID: v1(), type: "checkbox", checked: true, taskValue: 'HTML&CSS',},
     //     {taskID: v1(), type: "checkbox", checked: false, taskValue: 'Redux'},

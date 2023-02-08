@@ -1,43 +1,36 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import InputAdd from "./InputAdd";
-import EditableSpan from "./EditableSpan";
+import {EditableSpan} from "./EditableSpan";
 import {ToDoListPropsType} from "../Types";
 
 
-export function ToDoList(props: ToDoListPropsType) {
+export const ToDoList = React.memo((props: ToDoListPropsType) => {
     console.log('ToDoList')
 
-    const clickToRemoveList = () => {
-        props.removeList(props.toDoListID)
-    }
+    const filterAll = () => props.changeFilter('all', props.toDoListID)
+    const filterActive = () => props.changeFilter('active', props.toDoListID)
+    const filterCompleted = () => props.changeFilter('completed', props.toDoListID)
 
-    function filterAll() {
-        props.changeFilter('all', props.toDoListID)
-    }
+    const clickToRemoveList = () => props.removeList(props.toDoListID)
 
-    function filterActive() {
-        props.changeFilter('active', props.toDoListID)
-    }
 
-    function filterCompleted() {
-        props.changeFilter('completed', props.toDoListID)
-    }
-
-    const coverAddTask = (inputValue: string) => {
+    const coverAddTask = useCallback((inputValue: string) => {
         props.addItem(inputValue, props.toDoListID)
-    }
-    const coverAddEditedTask = (value: string, taskId: string) => {
+    }, [])
+
+    const coverAddEditedTask = useCallback((value: string, taskId: string) => {
         props.addEditedTask(value, props.toDoListID, taskId)
-    }
-    const coverAddEditedListTitle = (value: string) => {
+    }, [])
+
+    const coverAddEditedListTitle = useCallback((value: string) => {
         props.addEditedListTitle(value, props.toDoListID)
-    }
+    }, [])
 
 ////////////map
     const tasksList = props.tasks.map((e) => {
-        const onChangeHandler = () => {
-            props.switchCheckbox(e.taskID, e.checked, props.toDoListID)
-        }
+
+        const onChangeHandler = () => props.switchCheckbox(e.taskID, e.checked, props.toDoListID)
+
         return (
             <div className={e.checked ? 'isDone' : ''} key={e.taskID}>
                 <input type={e.type} checked={e.checked} onChange={onChangeHandler} key={e.taskID}/>
@@ -67,9 +60,11 @@ export function ToDoList(props: ToDoListPropsType) {
                     {tasksList}
                 </ul>
                 <div>
-                    <button onClick={filterAll} className={props.filter === 'all' ? 'filterButton' : ''}>All
+                    <button onClick={filterAll}
+                            className={props.filter === 'all' ? 'filterButton' : ''}>All
                     </button>
-                    <button onClick={filterActive} className={props.filter === 'active' ? 'filterButton' : ''}>Active
+                    <button onClick={filterActive}
+                            className={props.filter === 'active' ? 'filterButton' : ''}>Active
                     </button>
                     <button onClick={filterCompleted}
                             className={props.filter === 'completed' ? 'filterButton' : ''}>Completed
@@ -78,5 +73,5 @@ export function ToDoList(props: ToDoListPropsType) {
             </div>
         </div>
     );
-}
+})
 

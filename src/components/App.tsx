@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import '../styles/App.css';
 import {ToDoList} from "./ToDoList";
 import InputAdd from "./InputAdd";
@@ -25,26 +25,28 @@ function App() {
     let tasks = useSelector<rootStateType, TasksType>(state => state.tasks)
 
 
-    const changeListFilter = (value: FilterType, toDoListId: string) => dispatch(changeFilterListAC(value, toDoListId))
 
-    const addList = (inputValue: string) => {
+
+    const changeListFilter = useCallback((value: FilterType, toDoListId: string) => dispatch(changeFilterListAC(value, toDoListId)),[])
+
+    const addList = useCallback((inputValue: string) => {
         const newListID = v1()
         dispatch(addListAC(inputValue, newListID))
         dispatch(addArrTasksAC(newListID))
-    } //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
+    },[]) //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
 
-    const removeList = (toDoListId: string) => dispatch(removeListAC(toDoListId)) // можно еще добавить delete
+    const removeList = useCallback((toDoListId: string) => dispatch(removeListAC(toDoListId)) ,[])// можно еще добавить delete
 
-    const addEditedListTitle = (value: string, toDoListID: string) => dispatch(addEditedListTitleAC(value, toDoListID))
+    const addEditedListTitle = useCallback((value: string, toDoListID: string) => dispatch(addEditedListTitleAC(value, toDoListID)),[])
 
 
-    const addTask = (inputValue: string, toDoListId: string) => dispatch(addTaskAC(inputValue, toDoListId))
+    const addTask = useCallback((inputValue: string, toDoListId: string) => dispatch(addTaskAC(inputValue, toDoListId)),[])
 
-    const removeTask = (taskID: string, toDoListId: string) => dispatch(removeTaskAC(taskID, toDoListId))
+    const removeTask = useCallback((taskID: string, toDoListId: string) => dispatch(removeTaskAC(taskID, toDoListId)),[])
 
-    const switchCheckbox = (taskId: string, checked: boolean, toDoListId: string) => dispatch(switchCheckboxAC(taskId, checked, toDoListId))
+    const switchCheckbox = useCallback((taskId: string, checked: boolean, toDoListId: string) => dispatch(switchCheckboxAC(taskId, checked, toDoListId)),[])
 
-    const addEditedTask = (value: string, toDoListId: string, taskId: string) => dispatch(addEditedTaskAC(value, toDoListId, taskId))
+    const addEditedTask = useCallback((value: string, toDoListId: string, taskId: string) => dispatch(addEditedTaskAC(value, toDoListId, taskId)),[])
 
 
 // по поводу реюзабельного инпута для тасок и новых тудулистов

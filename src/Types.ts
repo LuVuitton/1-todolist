@@ -8,6 +8,9 @@ import {
     switchCheckboxAC
 } from "./actionCreators/ActionCreators";
 
+export type InputAddPropsType = {
+    clickToAddTask: (inputValue: string) => void
+}
 
 export type FilterType = 'all' | 'completed' | 'active';
 export type ToDoListType = {

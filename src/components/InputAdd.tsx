@@ -1,11 +1,10 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
-
-type PropsType = {
-    clickToAddTask: (inputValue: string) => void
-}
+import {InputAddPropsType} from "../Types";
 
 
-const InputAdd: React.FC<PropsType> = (props: PropsType) => {
+
+
+const InputAdd = React.memo( (props:InputAddPropsType) => {
     console.log('inputAdd')
 
     const [inputValue, setInputValue] = useState('')
@@ -16,7 +15,7 @@ const InputAdd: React.FC<PropsType> = (props: PropsType) => {
         setError(false)
     }
 
-    function clickOnButton() {
+    const clickOnButton=() =>{
         if (inputValue.trim() === '') {  //обрезаем пробелы и проверяем на наличие символов
             setInputValue('')
             setError(true)
@@ -26,7 +25,7 @@ const InputAdd: React.FC<PropsType> = (props: PropsType) => {
         setInputValue('')
     }
 
-    function pressEnterToAddTask(e: KeyboardEvent<HTMLInputElement>) {
+    const pressEnterToAddTask = (e: KeyboardEvent<HTMLInputElement>)=> {
         if (e.charCode === 13 && inputValue.trim() !== '') {
             props.clickToAddTask(inputValue)
             setInputValue('')
@@ -52,6 +51,6 @@ const InputAdd: React.FC<PropsType> = (props: PropsType) => {
             </button>
         </div>
     );
-}
+})
 
 export default InputAdd;
