@@ -1,7 +1,7 @@
 import {tasksStateForTest} from "../StateForTest";
 import {mainACTaskType} from "../../Types";
-import {addArrTasksAC, addEditedTaskAC, switchCheckboxAC} from "../../ActionCreators/ActionCreators";
-import {taskReducer} from "../../reducers/taskReduser";
+import {addArrTasksAC, addEditedTaskAC, switchCheckboxAC} from "../../actionCreators/ActionCreators";
+import {taskReducer} from "../../redux/reducers/taskReduser";
 
 const startState = tasksStateForTest
 

@@ -6,7 +6,7 @@ import {
     removeListAC,
     removeTaskAC,
     switchCheckboxAC
-} from "./ActionCreators/ActionCreators";
+} from "./actionCreators/ActionCreators";
 
 
 export type FilterType = 'all' | 'completed' | 'active';

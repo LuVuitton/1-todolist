@@ -1,66 +1,50 @@
-import React, {useReducer} from 'react';
-import './App.css';
+import React from 'react';
+import '../styles/App.css';
 import {ToDoList} from "./ToDoList";
-import {v1} from "uuid";
 import InputAdd from "./InputAdd";
-import {FilterType} from "./Types";
-import {listReducer} from "./reducers/listReducers";
-import {taskReducer} from "./reducers/taskReduser";
+import {FilterType, TasksType, ToDoListType} from "../Types";
 import {
+    addArrTasksAC,
     addEditedListTitleAC,
     addEditedTaskAC,
     addListAC, addTaskAC,
     changeFilterListAC, removeListAC,
     removeTaskAC,
     switchCheckboxAC
-} from "./ActionCreators/ActionCreators";
+} from "../actionCreators/ActionCreators";
+import {useDispatch, useSelector} from "react-redux";
+import {rootStateType} from "../redux/store";
+import {v1} from "uuid";
 
 
 function App() {
+    console.log('app')
 
-    const idToDoList1 = v1(); //значение свойства toDoListID с айди в тудулисте и ключ листа в массиве тасок
-    const idToDoList2 = v1(); //это не одна и таже строка, она просто совпадает по знаечению (НО ЭТО НЕ ТОЧНО)
-
-    let [toDoLists, dispatchLists] = useReducer(listReducer, [
-        {toDoListID: idToDoList1, titleList: 'what to learn', filter: 'all'}, //тут без [] потому как переменная стоит не в ключе а в значении
-        {toDoListID: idToDoList2, titleList: 'numbers', filter: 'all'}
-    ])
-    let [tasks, dispatchTasks] = useReducer(taskReducer, {          // юзРедьюсер принимает нужный редьюсер и начальное значение
-        [idToDoList1]: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
-            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'HTML&CSS',},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'Redux'},
-            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'JS'},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'MongoDB'},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'React'},
-        ],
-        [idToDoList2]: [
-            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'pervoe',},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'vtoroe'},
-            {taskID: v1(), type: "checkbox", checked: true, taskValue: 'trete'},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'chetvertoe'},
-            {taskID: v1(), type: "checkbox", checked: false, taskValue: 'piatoe'},
-        ]
-    })
+    const dispatch = useDispatch()
+    let toDoLists = useSelector<rootStateType, ToDoListType[]>(state => state.lists)
+    let tasks = useSelector<rootStateType, TasksType>(state => state.tasks)
 
 
+    const changeListFilter = (value: FilterType, toDoListId: string) => dispatch(changeFilterListAC(value, toDoListId))
 
-    const changeListFilter=(value: FilterType, toDoListId: string) => dispatchLists(changeFilterListAC(value,toDoListId))
+    const addList = (inputValue: string) => {
+        const newListID = v1()
+        dispatch(addListAC(inputValue, newListID))
+        dispatch(addArrTasksAC(newListID))
+    } //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
 
-    const addList = (inputValue: string)=>  dispatchLists(addListAC(inputValue, dispatchTasks)) //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
+    const removeList = (toDoListId: string) => dispatch(removeListAC(toDoListId)) // можно еще добавить delete
 
-    const removeList = (toDoListId: string)=> dispatchLists(removeListAC(toDoListId)) // можно еще добавить delete
-
-    const addEditedListTitle = (value: string, toDoListID: string)=> dispatchLists(addEditedListTitleAC(value, toDoListID))
+    const addEditedListTitle = (value: string, toDoListID: string) => dispatch(addEditedListTitleAC(value, toDoListID))
 
 
-    const addTask = (inputValue: string, toDoListId: string)=> dispatchTasks(addTaskAC(inputValue, toDoListId))
+    const addTask = (inputValue: string, toDoListId: string) => dispatch(addTaskAC(inputValue, toDoListId))
 
-    const removeTask = (taskID: string, toDoListId: string)=> dispatchTasks(removeTaskAC(taskID, toDoListId))
+    const removeTask = (taskID: string, toDoListId: string) => dispatch(removeTaskAC(taskID, toDoListId))
 
-    const switchCheckbox = (taskId: string, checked: boolean, toDoListId: string)=> dispatchTasks(switchCheckboxAC(taskId, checked, toDoListId))
+    const switchCheckbox = (taskId: string, checked: boolean, toDoListId: string) => dispatch(switchCheckboxAC(taskId, checked, toDoListId))
 
-    const addEditedTask = (value: string, toDoListId: string, taskId: string)=> dispatchTasks(addEditedTaskAC(value, toDoListId, taskId))
-
+    const addEditedTask = (value: string, toDoListId: string, taskId: string) => dispatch(addEditedTaskAC(value, toDoListId, taskId))
 
 
 // по поводу реюзабельного инпута для тасок и новых тудулистов

@@ -1,11 +1,11 @@
-import {addArrTasksACType, FilterType} from "../Types";
+import {FilterType} from "../Types";
 
-export const addListAC = (inputValue: string, dispatchTasks: (addArrTasksAC: addArrTasksACType) => void) => {
+export const addListAC = (inputValue: string, newListID:string) => {
     return {
         type: 'ADD-LIST',
         payload: {
             inputValue,     //inputValue:inputValue
-            dispatchTasks
+            newListID
         }
     } as const
 }
@@ -75,11 +75,11 @@ export const addEditedTaskAC = (value: string, toDoListId: string, taskId: strin
         }
     } as const
 }
-export const addArrTasksAC = (newListId: string) => {
+export const addArrTasksAC = (newListID: string) => {
     return {
         type: 'ADD-ARR-TASKS',
         payload: {
-            newListId
+            newListID
         }
     } as const
 }

@@ -4,15 +4,15 @@ import {
     addListAC,
     changeFilterListAC,
     removeListAC
-} from "../../ActionCreators/ActionCreators";
-import {listReducer} from "../../reducers/listReducers";
+} from "../../actionCreators/ActionCreators";
+import {listReducer} from "../../redux/reducers/listReducers";
 
 
 const startState = listStateForTest
 
 test('should add new list to array of toDoLists', () => {
 
-    const action =  addListAC('new for new list',()=>{})
+    const action =  addListAC('new for new list', 'newListID')
 
     const endState = listReducer(startState, action)
 
