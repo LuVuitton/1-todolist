@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react';
 import '../styles/App.css';
 import {ToDoList} from "./ToDoList";
-import InputAdd from "./InputAdd";
-import {FilterType, TasksType, ToDoListType} from "../Types";
+import {InputAdd} from "./InputAdd";
+import {FilterButtonDataType, FilterType, TasksType, ToDoListType} from "../Types";
 import {
     addArrTasksAC,
     addEditedListTitleAC,
@@ -18,11 +18,16 @@ import {v1} from "uuid";
 
 
 function App() {
-    console.log('app')
 
     const dispatch = useDispatch()
     let toDoLists = useSelector<rootStateType, ToDoListType[]>(state => state.lists)
     let tasks = useSelector<rootStateType, TasksType>(state => state.tasks)
+
+    const filterButtonsData: FilterButtonDataType[] = [
+        {id: v1(), title: 'all'},
+        {id: v1(), title: 'active'},
+        {id: v1(), title: 'completed'},
+    ]
 
 
 
@@ -49,14 +54,7 @@ function App() {
     const addEditedTask = useCallback((value: string, toDoListId: string, taskId: string) => dispatch(addEditedTaskAC(value, toDoListId, taskId)),[])
 
 
-// по поводу реюзабельного инпута для тасок и новых тудулистов
-// мы создали две разные функции в апп(добавить такси(принимает вэлью и айдиЛиста) и добавить тудулисты(принимает тольео вэдью))
-// в добавить туду листы отправили нужную и забрали оттуда вэлью с инпута, всё
-// в добавить таски, конечная кнопка лежит во вложеной компоненте апп->тудулист->кнопка
-// мы прокинули добавитьТаску только в тудулист, обернули ее функцией которая принимает только инвутВэлью и прокинули в компоненту уже обертку
-// в итоге! при нажатии на кнопку, инпут передает только значение внутри себя(как и в добавитьТудулист) НО в случает с АддТудуЛист, он передает значение напрямую в АПП, птому как кроме значение инпута ему ничего не нужно
-// а в случае с АддТаск кнопка передает значение сначала обертке, внутри которой срабатывает АддТаск из Апп, и по дороге добавляет нужный АЙДИтудулиста
-    return (
+return (
         <div className="App">
             <div>New List</div>
             <InputAdd clickToAddTask={addList}/>
@@ -66,16 +64,16 @@ function App() {
                     let tasksForProps = tasks[tl.toDoListID];
 
                     if (tl.filter === 'active') {
-                        tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked !== true)
+                        tasksForProps = tasks[tl.toDoListID].filter((e) => !e.checked)
                     }
                     if (tl.filter === 'completed') {
-                        tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked !== false)
+                        tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked)
                     }
 
 
                     return (
-                        <ToDoList                    //на основе свойст каждого обьекта в массиве(пока там только фильтры, заголовки, id разные) создается один компонент тудулиста
-                            key={tl.toDoListID}                     // все остальное общее для каждого тудулиста
+                        <ToDoList
+                            key={tl.toDoListID}
                             tasks={tasksForProps}
                             titleList={tl.titleList}
                             removeTask={removeTask}
@@ -87,6 +85,7 @@ function App() {
                             removeList={removeList}
                             addEditedTask={addEditedTask}
                             addEditedListTitle={addEditedListTitle}
+                            filterButtonsData={filterButtonsData}
                         />
                     )
                 })

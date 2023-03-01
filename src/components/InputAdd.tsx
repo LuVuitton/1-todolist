@@ -4,8 +4,7 @@ import {InputAddPropsType} from "../Types";
 
 
 
-const InputAdd = React.memo( (props:InputAddPropsType) => {
-    console.log('inputAdd')
+export const InputAdd = React.memo( (props:InputAddPropsType) => {
 
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState<boolean>(false)
@@ -53,4 +52,3 @@ const InputAdd = React.memo( (props:InputAddPropsType) => {
     );
 })
 
-export default InputAdd;

@@ -1,11 +1,12 @@
 import React, {useCallback} from 'react';
-import InputAdd from "./InputAdd";
+import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
 import {ToDoListPropsType} from "../Types";
+import {FilterButton} from "./FilterButton";
+import {Task} from "./Task";
 
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
-    console.log('ToDoList')
 
     const filterAll = () => props.changeFilter('all', props.toDoListID)
     const filterActive = () => props.changeFilter('active', props.toDoListID)
@@ -26,24 +27,37 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
         props.addEditedListTitle(value, props.toDoListID)
     }, [])
 
-////////////map
+////////////tasksMAP
     const tasksList = props.tasks.map((e) => {
-
         const onChangeHandler = () => props.switchCheckbox(e.taskID, e.checked, props.toDoListID)
+        const removeTaskHandler = (taskID: string) => props.removeTask(taskID, props.toDoListID)
 
         return (
-            <div className={e.checked ? 'isDone' : ''} key={e.taskID}>
-                <input type={e.type} checked={e.checked} onChange={onChangeHandler} key={e.taskID}/>
-                <EditableSpan value={e.taskValue} callback={coverAddEditedTask}
-                              itemID={e.taskID}/> {/*//передаем туда такс айди что бы он мог его вернуть назад*/}
-                <button onClick={() => {
-                    props.removeTask(e.taskID, props.toDoListID)
-                }}> x
-                </button>
-            </div>
-        )
+            <Task
+                key={e.taskID}
+                type={e.type}
+                checked={e.checked}
+                taskValue={e.taskValue}
+                taskID={e.taskID}
+                onChangeHandler={onChangeHandler}
+                coverAddEditedTask={coverAddEditedTask}
+                removeTaskHandler={removeTaskHandler}
+            />)
     })
-/////////////map done
+/////////////tasksMAP done
+
+/////////////tasksButtonsMAP
+    const filterButtons = props.filterButtonsData.map((e) => {
+        return <FilterButton
+            key={e.id}
+            filter={props.filter}
+            title={e.title}
+            callback={e.title === 'all' ? filterAll : e.title === 'active' ? filterActive : filterCompleted}
+            cssClass={props.filter === e.title ? 'filterButton' : ''}
+        />
+    })
+/////////////tasksButtonsMAP done
+
     return (
         <div className="App">
             <div>
@@ -59,19 +73,11 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                 <ul>
                     {tasksList}
                 </ul>
+
                 <div>
-                    <button onClick={filterAll}
-                            className={props.filter === 'all' ? 'filterButton' : ''}>All
-                    </button>
-                    <button onClick={filterActive}
-                            className={props.filter === 'active' ? 'filterButton' : ''}>Active
-                    </button>
-                    <button onClick={filterCompleted}
-                            className={props.filter === 'completed' ? 'filterButton' : ''}>Completed
-                    </button>
+                    {filterButtons}
                 </div>
             </div>
         </div>
     );
 })
-
