@@ -3,10 +3,7 @@ import {EditableSpan} from "./EditableSpan";
 import {TaskPropsType} from "../Types";
 
 
-
-
-export const Task = (props: TaskPropsType) => {
-
+export const Task = React.memo((props: TaskPropsType) => {
 
     return <div className={props.checked ? 'isDone' : ''} key={props.taskID}>
         <input type={props.type} checked={props.checked} onChange={props.onChangeHandler} key={props.taskID}/>
@@ -17,4 +14,4 @@ export const Task = (props: TaskPropsType) => {
         }}> x
         </button>
     </div>
-}
+})

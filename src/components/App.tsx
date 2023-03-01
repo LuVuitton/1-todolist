@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import '../styles/App.css';
 import {ToDoList} from "./ToDoList";
 import {InputAdd} from "./InputAdd";
@@ -18,7 +18,7 @@ import {v1} from "uuid";
 
 
 function App() {
-
+    console.log('App')
     const dispatch = useDispatch()
     let toDoLists = useSelector<rootStateType, ToDoListType[]>(state => state.lists)
     let tasks = useSelector<rootStateType, TasksType>(state => state.tasks)
@@ -53,44 +53,42 @@ function App() {
 
     const addEditedTask = useCallback((value: string, toDoListId: string, taskId: string) => dispatch(addEditedTaskAC(value, toDoListId, taskId)),[])
 
+    const mappedLists = toDoLists.map((tl) => { //мапим массив со всеми тудулистами
+
+                let tasksForProps = tasks[tl.toDoListID];
+
+                if (tl.filter === 'active') {
+                    tasksForProps = tasks[tl.toDoListID].filter((e) => !e.checked)
+                }
+                if (tl.filter === 'completed') {
+                    tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked)
+                }
+
+                return (
+                    <ToDoList
+                        key={tl.toDoListID}
+                        tasks={tasksForProps}
+                        titleList={tl.titleList}
+                        removeTask={removeTask}
+                        changeFilter={changeListFilter}
+                        addItem={addTask}
+                        switchCheckbox={switchCheckbox}
+                        filter={tl.filter}
+                        toDoListID={tl.toDoListID}
+                        removeList={removeList}
+                        addEditedTask={addEditedTask}
+                        addEditedListTitle={addEditedListTitle}
+                        filterButtonsData={filterButtonsData}
+                    />
+                )
+            })
+
 
 return (
         <div className="App">
             <div>New List</div>
             <InputAdd clickToAddTask={addList}/>
-            {
-                toDoLists.map((tl) => { //мапим массив со всеми тудулистами
-
-                    let tasksForProps = tasks[tl.toDoListID];
-
-                    if (tl.filter === 'active') {
-                        tasksForProps = tasks[tl.toDoListID].filter((e) => !e.checked)
-                    }
-                    if (tl.filter === 'completed') {
-                        tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked)
-                    }
-
-
-                    return (
-                        <ToDoList
-                            key={tl.toDoListID}
-                            tasks={tasksForProps}
-                            titleList={tl.titleList}
-                            removeTask={removeTask}
-                            changeFilter={changeListFilter}
-                            addItem={addTask}
-                            switchCheckbox={switchCheckbox}
-                            filter={tl.filter}
-                            toDoListID={tl.toDoListID}
-                            removeList={removeList}
-                            addEditedTask={addEditedTask}
-                            addEditedListTitle={addEditedListTitle}
-                            filterButtonsData={filterButtonsData}
-                        />
-                    )
-                })
-            }
-
+            {mappedLists}
         </div>
     );
 }

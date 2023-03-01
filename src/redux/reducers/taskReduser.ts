@@ -1,22 +1,23 @@
 import {v1} from "uuid";
 import {mainACTaskType, TasksType} from "../../Types";
+import {idToDoList1, idToDoList2} from "./listReducers";
 
 
 const initState: TasksType = {          // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
-    // [idToDoList1]: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
-    //     {taskID: v1(), type: "checkbox", checked: true, taskValue: 'HTML&CSS',},
-    //     {taskID: v1(), type: "checkbox", checked: false, taskValue: 'Redux'},
-    //     {taskID: v1(), type: "checkbox", checked: true, taskValue: 'JS'},
-    //     {taskID: v1(), type: "checkbox", checked: false, taskValue: 'MongoDB'},
-    //     {taskID: v1(), type: "checkbox", checked: false, taskValue: 'React'},
-    // ],
-    // [idToDoList2]: [
-    //     {taskID: v1(), type: "checkbox", checked: true, taskValue: 'pervoe',},
-    //     {taskID: v1(), type: "checkbox", checked: false, taskValue: 'vtoroe'},
-    //     {taskID: v1(), type: "checkbox", checked: true, taskValue: 'trete'},
-    //     {taskID: v1(), type: "checkbox", checked: false, taskValue: 'chetvertoe'},
-    //     {taskID: v1(), type: "checkbox", checked: false, taskValue: 'piatoe'},
-    // ]
+    [idToDoList1]: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
+        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'HTML&CSS',},
+        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'Redux'},
+        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'JS'},
+        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'MongoDB'},
+        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'React'},
+    ],
+    [idToDoList2]: [
+        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'pervoe',},
+        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'vtoroe'},
+        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'trete'},
+        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'chetvertoe'},
+        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'piatoe'},
+    ]
 }
 
 

@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
 import {ToDoListPropsType} from "../Types";
@@ -7,6 +7,7 @@ import {Task} from "./Task";
 
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
+    console.log('ToDoList')
 
     const filterAll = () => props.changeFilter('all', props.toDoListID)
     const filterActive = () => props.changeFilter('active', props.toDoListID)
@@ -28,34 +29,47 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     }, [])
 
 ////////////tasksMAP
-    const tasksList = props.tasks.map((e) => {
-        const onChangeHandler = () => props.switchCheckbox(e.taskID, e.checked, props.toDoListID)
-        const removeTaskHandler = (taskID: string) => props.removeTask(taskID, props.toDoListID)
-
-        return (
-            <Task
-                key={e.taskID}
-                type={e.type}
-                checked={e.checked}
-                taskValue={e.taskValue}
-                taskID={e.taskID}
-                onChangeHandler={onChangeHandler}
-                coverAddEditedTask={coverAddEditedTask}
-                removeTaskHandler={removeTaskHandler}
-            />)
-    })
+    // юзМемо, т.к. у нас 2 компоненты с тудулистом, каждый отрисовывает свои таски(2 разных мапа в двух разных тудулистах)
+    // пропсы в каждый тудулист приходят со своими тасками
+    // мы меняем стейт только для одного списка тасок из двух, например чек бокс
+    // после Апп опять прокидывает списки тасок по тудулистам и т.к. изменения проихошли только в одном списке, второй не мапится
+    // т.к. в редьюсере мы возвращаем поверхностную копию всех тасок,
+    // вложеные массивы не копируются и при сравнении юзМемо видит тот же массив(массив который не меняли), а на место старого мы вернули копию через метод
+    const tasksList = useMemo(()=>{
+        return props.tasks.map((e) => {
+            const onChangeHandler = () => props.switchCheckbox(e.taskID, e.checked, props.toDoListID)
+            const removeTaskHandler = (taskID: string) => props.removeTask(taskID, props.toDoListID)
+            console.log('task was mapped')
+            return (
+                <Task
+                    key={e.taskID}
+                    type={e.type}
+                    checked={e.checked}
+                    taskValue={e.taskValue}
+                    taskID={e.taskID}
+                    onChangeHandler={onChangeHandler}
+                    coverAddEditedTask={coverAddEditedTask}
+                    removeTaskHandler={removeTaskHandler}
+                />)
+        })
+    }, [props.tasks])
 /////////////tasksMAP done
 
 /////////////tasksButtonsMAP
-    const filterButtons = props.filterButtonsData.map((e) => {
-        return <FilterButton
-            key={e.id}
-            filter={props.filter}
-            title={e.title}
-            callback={e.title === 'all' ? filterAll : e.title === 'active' ? filterActive : filterCompleted}
-            cssClass={props.filter === e.title ? 'filterButton' : ''}
-        />
-    })
+    //обернул в юзМемо, теперь этот МАР выполнится первый раз при первом ререндере ToDoList
+    // а следующий раз\ы только при изменении значения в зависимости(втором аргументе хука([props.filter]))
+    // если значение в зависимости не будет изменяться, то юзМемо вернут то что запомнил в первый раз
+    const filterButtons = useMemo(()=> {
+        return props.filterButtonsData.map((e) => {
+            return <FilterButton
+                key={e.id}
+                filter={props.filter}
+                title={e.title}
+                callback={e.title === 'all' ? filterAll : e.title === 'active' ? filterActive : filterCompleted}
+                cssClass={props.filter === e.title ? 'filterButton' : ''}
+            />
+        })
+    }, [props.filter])
 /////////////tasksButtonsMAP done
 
     return (

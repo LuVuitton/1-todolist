@@ -5,7 +5,7 @@ import {InputAddPropsType} from "../Types";
 
 
 export const InputAdd = React.memo( (props:InputAddPropsType) => {
-
+    console.log('InputAdd')
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState<boolean>(false)
 
