@@ -17,7 +17,7 @@ import {rootStateType} from "../redux/store";
 import {v1} from "uuid";
 
 
-function App() {
+const App = ()=>{
     console.log('App')
     const dispatch = useDispatch()
     let toDoLists = useSelector<rootStateType, ToDoListType[]>(state => state.lists)
@@ -31,11 +31,11 @@ function App() {
 
 
 
-
     const changeListFilter = useCallback((value: FilterType, toDoListId: string) => dispatch(changeFilterListAC(value, toDoListId)),[])
 
     const addList = useCallback((inputValue: string) => {
         const newListID = v1()
+        console.log(inputValue)
         dispatch(addListAC(inputValue, newListID))
         dispatch(addArrTasksAC(newListID))
     },[]) //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
@@ -53,35 +53,66 @@ function App() {
 
     const addEditedTask = useCallback((value: string, toDoListId: string, taskId: string) => dispatch(addEditedTaskAC(value, toDoListId, taskId)),[])
 
+    // const mappedLists = useMemo(()=> toDoLists.map((tl) => { //мапим массив со всеми тудулистами
+    //
+    //     let tasksForProps = tasks[tl.toDoListID];
+    //
+    //     if (tl.filter === 'active') {
+    //         tasksForProps = tasks[tl.toDoListID].filter((e) => !e.checked)
+    //     }
+    //     if (tl.filter === 'completed') {
+    //         tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked)
+    //     }
+    //
+    //     return (
+    //         <ToDoList
+    //             key={tl.toDoListID}
+    //             tasks={tasksForProps}
+    //             titleList={tl.titleList}
+    //             removeTask={removeTask}
+    //             changeFilter={changeListFilter}
+    //             addItem={addTask}
+    //             switchCheckbox={switchCheckbox}
+    //             filter={tl.filter}
+    //             toDoListID={tl.toDoListID}
+    //             removeList={removeList}
+    //             addEditedTask={addEditedTask}
+    //             addEditedListTitle={addEditedListTitle}
+    //             filterButtonsData={filterButtonsData}
+    //         />
+    //     )
+    // }), [toDoLists,tasks])
+
+    /////////////////////////// шо делать с этим мапом
     const mappedLists = toDoLists.map((tl) => { //мапим массив со всеми тудулистами
 
-                let tasksForProps = tasks[tl.toDoListID];
+        let tasksForProps = tasks[tl.toDoListID];
 
-                if (tl.filter === 'active') {
-                    tasksForProps = tasks[tl.toDoListID].filter((e) => !e.checked)
-                }
-                if (tl.filter === 'completed') {
-                    tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked)
-                }
+        if (tl.filter === 'active') {
+            tasksForProps = tasks[tl.toDoListID].filter((e) => !e.checked)
+        }
+        if (tl.filter === 'completed') {
+            tasksForProps = tasks[tl.toDoListID].filter((e) => e.checked)
+        }
 
-                return (
-                    <ToDoList
-                        key={tl.toDoListID}
-                        tasks={tasksForProps}
-                        titleList={tl.titleList}
-                        removeTask={removeTask}
-                        changeFilter={changeListFilter}
-                        addItem={addTask}
-                        switchCheckbox={switchCheckbox}
-                        filter={tl.filter}
-                        toDoListID={tl.toDoListID}
-                        removeList={removeList}
-                        addEditedTask={addEditedTask}
-                        addEditedListTitle={addEditedListTitle}
-                        filterButtonsData={filterButtonsData}
-                    />
-                )
-            })
+        return (
+            <ToDoList
+                key={tl.toDoListID}
+                tasks={tasksForProps}
+                titleList={tl.titleList}
+                removeTask={removeTask}
+                changeFilter={changeListFilter}
+                addItem={addTask}
+                switchCheckbox={switchCheckbox}
+                filter={tl.filter}
+                toDoListID={tl.toDoListID}
+                removeList={removeList}
+                addEditedTask={addEditedTask}
+                addEditedListTitle={addEditedListTitle}
+                filterButtonsData={filterButtonsData}
+            />
+        )
+    }) // как правильно обернуть в юзМемо что бы отрисовывал только один лист
 
 
 return (

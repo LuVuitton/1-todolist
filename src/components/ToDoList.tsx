@@ -9,11 +9,11 @@ import {Task} from "./Task";
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
     console.log('ToDoList')
 
-    const filterAll = () => props.changeFilter('all', props.toDoListID)
-    const filterActive = () => props.changeFilter('active', props.toDoListID)
-    const filterCompleted = () => props.changeFilter('completed', props.toDoListID)
+    const filterAll = useCallback(() => props.changeFilter('all', props.toDoListID),[])
+    const filterActive = useCallback(() => props.changeFilter('active', props.toDoListID),[])
+    const filterCompleted = useCallback(() => props.changeFilter('completed', props.toDoListID),[])
 
-    const clickToRemoveList = () => props.removeList(props.toDoListID)
+    const clickToRemoveList = useCallback (() => props.removeList(props.toDoListID),[])
 
 
     const coverAddTask = useCallback((inputValue: string) => {
