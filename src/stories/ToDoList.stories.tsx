@@ -4,7 +4,7 @@ import {ComponentStory, ComponentMeta} from '@storybook/react';
 
 import {ToDoList} from '../components/ToDoList';
 import {action} from "@storybook/addon-actions";
-import {FilterButtonDataType, FilterType, TasksType} from "../Types";
+import {FilterButtonDataType, FilterType} from "../Types";
 
 export default {
     title: 'ToDoList',
@@ -30,24 +30,13 @@ const dataForList: dataForListType = {
     }]
 }
 
-const removeTask = action('removeTask')
-const changeFilter = action('changeFilter')
-const addItem = action('addItem')
-const switchCheckbox = action('switchCheckbox')
-const removeList = action('removeList')
-const addEditedTask = action('addEditedTask')
-const addEditedListTitle = action('addEditedListTitle')
 
+const removeList = action('removeList')
 
 export const ResponseToActionToDoList: ComponentStory<typeof ToDoList> = () => <ToDoList
     {...dataForList}
-    removeTask={removeTask}
-    changeFilter={changeFilter}
-    addItem={addItem}
-    switchCheckbox={switchCheckbox}
+
     removeList={removeList}
-    addEditedTask={addEditedTask}
-    addEditedListTitle={addEditedListTitle}
-    filterButtonsData={dataForList.filterButtonData}
+
 
 ></ToDoList>;

@@ -2,13 +2,15 @@ import {listStateForTest} from "../StateForTest";
 import {
     addEditedListTitleAC,
     addListAC,
-    changeFilterListAC,
     removeListAC
 } from "../../actionCreators/ActionCreators";
 import {listReducer} from "../../redux/reducers/listReducers";
 
 
+//beforeEach(()=>{}) сработает перед началом каждого теста
+
 const startState = listStateForTest
+
 
 test('should add new list to array of toDoLists', () => {
 
@@ -43,16 +45,6 @@ test('should to set a new name for the existing list', () => {
     expect(endState.length).toEqual(startState.length)
     expect(endState[0].titleList).toBe('new list name')
     expect(endState[1].titleList).toBe('numbers')
-})
-
-test('should to change filter value in list',()=> {
-
-    const action = changeFilterListAC('active','listID2' )
-
-    const endState = listReducer(startState, action)
-
-    expect(endState[1].filter).toBe('active')
-    expect(endState[0].filter).toBe('all')
 })
 
 

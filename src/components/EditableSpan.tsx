@@ -7,7 +7,7 @@ type EditableSpanPropsType = {
 }
 
 export const EditableSpan = React.memo((props:EditableSpanPropsType) =>{
-    console.log('EditableSpan')
+    // console.log('EditableSpan')
     const [spanState, setSpanState] = useState(true)
     const [newValue, setNewValue] = useState(props.value)
 

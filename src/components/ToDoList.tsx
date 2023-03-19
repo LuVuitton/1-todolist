@@ -1,32 +1,59 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
-import {ToDoListPropsType} from "../Types";
+import {FilterButtonDataType, FilterType, TaskType, ToDoListPropsType} from "../Types";
 import {FilterButton} from "./FilterButton";
 import {Task} from "./Task";
+import {useDispatch, useSelector} from "react-redux";
+import {rootStateType} from "../redux/store";
+import {v1} from "uuid";
+import {
+    addEditedListTitleAC,
+    addEditedTaskAC,
+    addTaskAC,
+    removeTaskAC,
+    switchCheckboxAC
+} from "../actionCreators/ActionCreators";
 
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
-    console.log('ToDoList')
+    const [filter, setFilter] = useState<FilterType>('all')
+    const dispatch = useDispatch()
 
-    const filterAll = useCallback(() => props.changeFilter('all', props.toDoListID),[])
-    const filterActive = useCallback(() => props.changeFilter('active', props.toDoListID),[])
-    const filterCompleted = useCallback(() => props.changeFilter('completed', props.toDoListID),[])
+    const filterButtonsData: FilterButtonDataType[] = [
+        {id: v1(), title: 'all'},
+        {id: v1(), title: 'active'},
+        {id: v1(), title: 'completed'},
+    ]
+
+
+
+
+    let tasks = useSelector<rootStateType, TaskType[]>(state=>state.tasks[props.toDoListID])
+    let filteredTasks: TaskType[] = tasks;
+
+    if (filter === 'active') {
+        filteredTasks = tasks.filter(e => !e.checked)
+    }
+    if (filter === 'completed') {
+        filteredTasks = tasks.filter(e => e.checked)
+    }
+
+    const filterAll = useCallback(() => setFilter('all'),[])
+    const filterActive = useCallback(() => setFilter('active'),[])
+    const filterCompleted = useCallback(() => setFilter('completed'),[])
+
 
     const clickToRemoveList = useCallback (() => props.removeList(props.toDoListID),[])
+    const addEditedListTitle = useCallback((value: string) => {dispatch(addEditedListTitleAC(value, props.toDoListID))}, [])
 
 
-    const coverAddTask = useCallback((inputValue: string) => {
-        props.addItem(inputValue, props.toDoListID)
-    }, [])
+    const addTask = useCallback((inputValue: string) => {dispatch(addTaskAC(inputValue, props.toDoListID))}, [])
+    const addEditedTask = useCallback((value: string, taskId: string) => {dispatch(addEditedTaskAC(value, props.toDoListID, taskId))}, [])
 
-    const coverAddEditedTask = useCallback((value: string, taskId: string) => {
-        props.addEditedTask(value, props.toDoListID, taskId)
-    }, [])
 
-    const coverAddEditedListTitle = useCallback((value: string) => {
-        props.addEditedListTitle(value, props.toDoListID)
-    }, [])
+
+
 
 ////////////tasksMAP
     // юзМемо, т.к. у нас 2 компоненты с тудулистом, каждый отрисовывает свои таски(2 разных мапа в двух разных тудулистах)
@@ -36,10 +63,12 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     // т.к. в редьюсере мы возвращаем поверхностную копию всех тасок,
     // вложеные массивы не копируются и при сравнении юзМемо видит тот же массив(массив который не меняли), а на место старого мы вернули копию через метод
     const tasksList = useMemo(()=>{
-        return props.tasks.map((e) => {
-            const onChangeHandler = () => props.switchCheckbox(e.taskID, e.checked, props.toDoListID)
-            const removeTaskHandler = (taskID: string) => props.removeTask(taskID, props.toDoListID)
+        return filteredTasks.map((e) => {
+
+            const onChangeHandler = () => dispatch(switchCheckboxAC(e.taskID, e.checked, props.toDoListID))
+            const removeTaskHandler = (taskID: string) => dispatch(removeTaskAC(taskID, props.toDoListID))
             console.log('task was mapped')
+
             return (
                 <Task
                     key={e.taskID}
@@ -48,11 +77,11 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                     taskValue={e.taskValue}
                     taskID={e.taskID}
                     onChangeHandler={onChangeHandler}
-                    coverAddEditedTask={coverAddEditedTask}
+                    coverAddEditedTask={addEditedTask}
                     removeTaskHandler={removeTaskHandler}
                 />)
         })
-    }, [props.tasks])
+    }, [filteredTasks])
 /////////////tasksMAP done
 
 /////////////tasksButtonsMAP
@@ -60,16 +89,15 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     // а следующий раз\ы только при изменении значения в зависимости(втором аргументе хука([props.filter]))
     // если значение в зависимости не будет изменяться, то юзМемо вернут то что запомнил в первый раз
     const filterButtons = useMemo(()=> {
-        return props.filterButtonsData.map((e) => {
+        return filterButtonsData.map((e,i) => {
             return <FilterButton
-                key={e.id}
-                filter={props.filter}
+                key={i}
                 title={e.title}
                 callback={e.title === 'all' ? filterAll : e.title === 'active' ? filterActive : filterCompleted}
-                cssClass={props.filter === e.title ? 'filterButton' : ''}
+                cssClass={filter === e.title ? 'filterButton' : ''}
             />
         })
-    }, [props.filter])
+    }, [filter])
 /////////////tasksButtonsMAP done
 
     return (
@@ -77,12 +105,12 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
             <div>
 
                 <h3>
-                    <EditableSpan value={props.titleList} callback={coverAddEditedListTitle}
+                    <EditableSpan value={props.titleList} callback={addEditedListTitle}
                                   itemID={props.toDoListID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
                     <button onClick={clickToRemoveList}>x</button>
                 </h3>
 
-                <InputAdd clickToAddTask={coverAddTask}/>
+                <InputAdd clickToAddTask={addTask}/>
 
                 <ul>
                     {tasksList}

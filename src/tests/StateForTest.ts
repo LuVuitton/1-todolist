@@ -22,3 +22,4 @@ export const tasksStateForTest:TasksType = {                      // юзРед�
         {taskID: 'taskID5', type: "checkbox", checked: false, taskValue: 'piatoe'},
     ]
 }
+

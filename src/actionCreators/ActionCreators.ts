@@ -1,4 +1,3 @@
-import {FilterType} from "../Types";
 
 export const addListAC = (inputValue: string, newListID:string) => {
     return {
@@ -27,15 +26,15 @@ export const addEditedListTitleAC = (value: string, toDoListID: string) => {
     } as const
 }
 
-export const changeFilterListAC = (value: FilterType, toDoListId: string) => {
-    return {
-        type: 'CHANGE-FILTER-LIST',
-        payload: {
-            value,
-            toDoListId
-        }
-    } as const
-}
+// export const changeFilterListAC = (value: FilterType, toDoListId: string) => {
+//     return {
+//         type: 'CHANGE-FILTER-LIST',
+//         payload: {
+//             value,
+//             toDoListId
+//         }
+//     } as const
+// }
 
 export const addTaskAC = (inputValue: string, toDoListId: string) => {
     return {

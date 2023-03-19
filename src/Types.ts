@@ -2,7 +2,7 @@ import {
     addArrTasksAC,
     addEditedListTitleAC, addEditedTaskAC,
     addListAC,
-    addTaskAC, changeFilterListAC,
+    addTaskAC,
     removeListAC,
     removeTaskAC,
     switchCheckboxAC
@@ -33,22 +33,22 @@ export type TaskType = {
 
 export type ToDoListPropsType = {
     titleList: string,
-    tasks: Array<TaskType>,
-    removeTask: (id: string, toDoListId: string) => void,
-    changeFilter: (value: FilterType, toDoListId: string) => void,
-    addItem: (value: string, toDoListId: string) => void,
-    switchCheckbox: (taskId: string, checked: boolean, toDoListId: string) => void,
+    // tasks: Array<TaskType>,
+    // removeTask: (id: string, toDoListId: string) => void,
+    // changeFilter: (value: FilterType, toDoListId: string) => void,
+    // addItem: (value: string, toDoListId: string) => void,
+    // switchCheckbox: (taskId: string, checked: boolean, toDoListId: string) => void,
     filter: FilterType // fix to FilterType
     toDoListID: string
     removeList: (toDoListId: string) => void
-    addEditedTask: (toDoListId: string, value: string, taskId: string) => void
-    addEditedListTitle: (value: string, toDoListID: string) => void
-    filterButtonsData: FilterButtonDataType[]
+    // addEditedTask: (toDoListId: string, value: string, taskId: string) => void
+    // addEditedListTitle: (value: string, toDoListID: string) => void
+    // filterButtonsData: FilterButtonDataType[]
 
 }
 
 export type FilterButtonPropsType ={
-    filter:FilterType
+    // filter:FilterType
     title:string
     callback: ()=> void
     cssClass: string
@@ -82,7 +82,6 @@ export type mainACListType =
     | addListACType
     | removeListACType
     | addEditedListACTitleType
-    | changeFilterListACType;
 
 export type addListACType = ReturnType<typeof addListAC>
 export type removeListACType = ReturnType<typeof removeListAC>
@@ -92,5 +91,4 @@ export type removeTaskACType = ReturnType<typeof removeTaskAC>
 export type switchCheckboxACType = ReturnType<typeof switchCheckboxAC>
 export type addEditedTaskACType = ReturnType<typeof addEditedTaskAC>
 export type addArrTasksACType = ReturnType<typeof addArrTasksAC>
-export type changeFilterListACType = ReturnType<typeof changeFilterListAC>
 

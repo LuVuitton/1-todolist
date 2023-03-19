@@ -24,9 +24,9 @@ export const listReducer = (state: ToDoListType[] = initState, action: mainACLis
                 titleList: action.payload.value
             } : e)
         }
-        case 'CHANGE-FILTER-LIST': {
-            return state.map(e => e.toDoListID === action.payload.toDoListId ? {...e, filter: action.payload.value} : e)
-        }
+        // case 'CHANGE-FILTER-LIST': {
+        //     return state.map(e => e.toDoListID === action.payload.toDoListId ? {...e, filter: action.payload.value} : e)
+        // }
         default:
             return state
     }
