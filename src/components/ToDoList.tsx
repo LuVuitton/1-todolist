@@ -18,6 +18,9 @@ import {
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
     const [filter, setFilter] = useState<FilterType>('all')
+
+
+
     const dispatch = useDispatch()
 
     const filterButtonsData: FilterButtonDataType[] = [
@@ -67,7 +70,6 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
             const onChangeHandler = () => dispatch(switchCheckboxAC(e.taskID, e.checked, props.toDoListID))
             const removeTaskHandler = (taskID: string) => dispatch(removeTaskAC(taskID, props.toDoListID))
-            console.log('task was mapped')
 
             return (
                 <Task

@@ -33,22 +33,14 @@ export type TaskType = {
 
 export type ToDoListPropsType = {
     titleList: string,
-    // tasks: Array<TaskType>,
-    // removeTask: (id: string, toDoListId: string) => void,
-    // changeFilter: (value: FilterType, toDoListId: string) => void,
-    // addItem: (value: string, toDoListId: string) => void,
-    // switchCheckbox: (taskId: string, checked: boolean, toDoListId: string) => void,
-    filter: FilterType // fix to FilterType
+    filter: FilterType
     toDoListID: string
     removeList: (toDoListId: string) => void
-    // addEditedTask: (toDoListId: string, value: string, taskId: string) => void
-    // addEditedListTitle: (value: string, toDoListID: string) => void
-    // filterButtonsData: FilterButtonDataType[]
+
 
 }
 
 export type FilterButtonPropsType ={
-    // filter:FilterType
     title:string
     callback: ()=> void
     cssClass: string

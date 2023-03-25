@@ -11,6 +11,7 @@ import {
 import {useDispatch, useSelector} from "react-redux";
 import {rootStateType} from "../redux/store";
 import {v1} from "uuid";
+import {TestComp} from "./TestComp";
 
 
 //убрать юз колбэки \ реакт мемо \ юз мемо там где они не нужны
@@ -18,10 +19,9 @@ import {v1} from "uuid";
 
 const App = () => {
 
-    console.log('App')
-    const dispatch = useDispatch()
 
-    let toDoLists = useSelector<rootStateType, ToDoListType[]>(state => state.lists)
+    const dispatch = useDispatch()
+    const toDoLists = useSelector<rootStateType, ToDoListType[]>(state => state.lists)
 
 
     const addList = useCallback((inputValue: string) => {
@@ -50,6 +50,7 @@ const App = () => {
             <div>New List</div>
             <InputAdd clickToAddTask={addList}/>
             {mappedLists}
+            <TestComp/>
         </div>
     );
 }
