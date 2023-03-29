@@ -1,5 +1,5 @@
 import {instance} from "./ToDoListsAPI";
-
+//new types
 export type OneTaskType = {
     id: string
     title: string
