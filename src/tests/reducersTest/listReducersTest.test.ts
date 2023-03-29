@@ -19,7 +19,7 @@ test('should add new list to array of toDoLists', () => {
     const endState = listReducer(startState, action)
 
     expect(endState.length > startState.length).toBeTruthy()
-    expect(endState[0].titleList).toBe('new for new list')
+    expect(endState[0].title).toBe('new for new list')
     expect(endState[2]).toBeDefined()
 })
 
@@ -31,8 +31,8 @@ test('should remove specific list by id', () => {
 
     expect(endState.length).not.toEqual(startState.length)
     expect(endState.length).toBe(1)
-    expect(endState[0].toDoListID).toBe('listID2')
-    expect(endState.every(e=>e.toDoListID != 'listID1' )).toBeTruthy()
+    expect(endState[0].id).toBe('listID2')
+    expect(endState.every(e=>e.id != 'listID1' )).toBeTruthy()
     expect(endState[2]).toBeUndefined()
 })
 
@@ -43,8 +43,8 @@ test('should to set a new name for the existing list', () => {
     const endState = listReducer(startState, action)
 
     expect(endState.length).toEqual(startState.length)
-    expect(endState[0].titleList).toBe('new list name')
-    expect(endState[1].titleList).toBe('numbers')
+    expect(endState[0].title).toBe('new list name')
+    expect(endState[1].title).toBe('numbers')
 })
 
 

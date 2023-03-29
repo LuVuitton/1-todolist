@@ -1,34 +1,128 @@
 import {v1} from "uuid";
-import {mainACTaskType, TasksType} from "../../Types";
+import {AllTasksType, mainACTaskType, StatusesForTask} from "../../Types";
 import {idToDoList1, idToDoList2} from "./listReducers";
 
 
-const initState: TasksType = {          // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
-    [idToDoList1]: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
-        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'HTML&CSS',},
-        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'Redux'},
-        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'JS'},
-        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'MongoDB'},
-        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'React'},
+const initState: AllTasksType = {          // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
+    [idToDoList1]: [                             //походу если не обернуть в [] он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
+        {
+            id: v1(),
+            title: 'HtML&CSS',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: v1(),
+            title: 'MongoDB',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.New,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: v1(),
+            title: 'Redux',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: v1(),
+            title: 'JS',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        },
     ],
     [idToDoList2]: [
-        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'pervoe',},
-        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'vtoroe'},
-        {taskID: v1(), type: "checkbox", checked: true, taskValue: 'trete'},
-        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'chetvertoe'},
-        {taskID: v1(), type: "checkbox", checked: false, taskValue: 'piatoe'},
+        {
+            id: v1(),
+            title: 'Prototypes',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.New,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: v1(),
+            title: 'Context this',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.New,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: v1(),
+            title: 'Event Loop',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: v1(),
+            title: 'Promises',
+            description: 'to learn',
+            todoListId: idToDoList1,
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        },
     ]
 }
 
 
-export const taskReducer = (state: TasksType = initState, action: mainACTaskType): TasksType => {
+export const taskReducer = (state: AllTasksType = initState, action: mainACTaskType): AllTasksType => {
 
 
     switch (action.type) {
         case 'ADD-TASK' : {
             //посмотреть еще раз
-            const newTask = {taskID: v1(), type: "checkbox", checked: false, taskValue: action.payload.inputValue}      //создаем новую таску
-            const listFromTasksArr = state[action.payload.toDoListId]        //в массиве тасок находим [нужный тудулист] по ключу, выносим в переменную (массив тасок это [IDтудулистаВстроке]: [массив обьектов{тасок}]
+            // const newTask = {taskID: v1(), type: "checkbox", checked: false, taskValue: action.payload.inputValue}      //создаем новую таску
+            const newTask = {
+                id: v1(),
+                title: action.payload.inputValue,
+                description: 'to learn',
+                todoListId: action.payload.toDoListId,
+                order: 1,
+                status: StatusesForTask.New,
+                priority: 1,
+                startDate: '',
+                deadline: '',
+                addedDate: ''
+            }
+
+            //в массиве тасок находим [нужный тудулист] по ключу, выносим в переменную (массив тасок это [IDтудулистаВстроке]: [массив обьектов{тасок}]
+            const listFromTasksArr = state[action.payload.toDoListId]
 
             return {...state, [action.payload.toDoListId]: [newTask, ...listFromTasksArr]} //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
         }
@@ -36,22 +130,23 @@ export const taskReducer = (state: TasksType = initState, action: mainACTaskType
             const specificToDOList = state[action.payload.toDoListId] //находим тудулист
             return {
                 ...state,
-                [action.payload.toDoListId]: specificToDOList.filter((e) => e.taskID !== action.payload.taskID)
+                [action.payload.toDoListId]: specificToDOList.filter((e) => e.id !== action.payload.taskID)
             }   //меняем в нужном тудулисте масив таксок на отфильтрованый(новый массив без удаленной таски)
         }
         case 'SWITCH-TASKS-CHECKBOX' : {
+            // debugger
             return {
                 ...state,
                 [action.payload.toDoListId]:
-                    state[action.payload.toDoListId].map(e => e.taskID === action.payload.taskId ? {
+                    state[action.payload.toDoListId].map(e => e.id === action.payload.taskId ? {
                         ...e,
-                        checked: !action.payload.checked
+                        status: action.payload.checked
                     } : e)
             }
         }
         case 'ADD-EDITED-TASK': {
             const editedTask = state[action.payload.toDoListId].map((e) => {
-                return e.taskID === action.payload.taskId ? {...e, taskValue: action.payload.value} : e
+                return e.id === action.payload.taskId ? {...e, title: action.payload.value} : e
             })
             return {
                 ...state, [action.payload.toDoListId]: editedTask

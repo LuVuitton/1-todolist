@@ -1,3 +1,4 @@
+import {StatusesForTask} from "../Types";
 
 export const addListAC = (inputValue: string, newListID:string) => {
     return {
@@ -44,7 +45,7 @@ export const removeTaskAC = (taskID: string, toDoListId: string) => {
         }
     } as const
 }
-export const switchCheckboxAC = (taskId: string, checked: boolean, toDoListId: string) => {
+export const switchCheckboxAC = (taskId: string, checked: StatusesForTask, toDoListId: string) => {
     return {
         type: 'SWITCH-TASKS-CHECKBOX',
         payload: {

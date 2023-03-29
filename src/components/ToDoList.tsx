@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
-import {FilterButtonDataType, FilterType, TaskType, ToDoListPropsType} from "../Types";
+import {FilterButtonDataType, FilterType, OneTaskType, StatusesForTask, ToDoListPropsType} from "../Types";
 import {FilterButton} from "./FilterButton";
 import {Task} from "./Task";
 import {useDispatch, useSelector} from "react-redux";
@@ -20,7 +20,6 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     const [filter, setFilter] = useState<FilterType>('all')
 
 
-
     const dispatch = useDispatch()
 
     const filterButtonsData: FilterButtonDataType[] = [
@@ -30,32 +29,33 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     ]
 
 
-
-
-    let tasks = useSelector<rootStateType, TaskType[]>(state=>state.tasks[props.toDoListID])
-    let filteredTasks: TaskType[] = tasks;
+    let tasks = useSelector<rootStateType, OneTaskType[]>(state => state.tasks[props.toDoListID])
+    let filteredTasks: OneTaskType[] = tasks;
 
     if (filter === 'active') {
-        filteredTasks = tasks.filter(e => !e.checked)
+        filteredTasks = tasks.filter(e => e.status === StatusesForTask.New)
     }
     if (filter === 'completed') {
-        filteredTasks = tasks.filter(e => e.checked)
+        filteredTasks = tasks.filter(e => e.status === StatusesForTask.Completed)
     }
 
-    const filterAll = useCallback(() => setFilter('all'),[])
-    const filterActive = useCallback(() => setFilter('active'),[])
-    const filterCompleted = useCallback(() => setFilter('completed'),[])
+    const filterAll = useCallback(() => setFilter('all'), [])
+    const filterActive = useCallback(() => setFilter('active'), [])
+    const filterCompleted = useCallback(() => setFilter('completed'), [])
 
 
-    const clickToRemoveList = useCallback (() => props.removeList(props.toDoListID),[])
-    const addEditedListTitle = useCallback((value: string) => {dispatch(addEditedListTitleAC(value, props.toDoListID))}, [])
+    const clickToRemoveList = useCallback(() => props.removeList(props.toDoListID), [])
+    const addEditedListTitle = useCallback((value: string) => {
+        dispatch(addEditedListTitleAC(value, props.toDoListID))
+    }, [])
 
 
-    const addTask = useCallback((inputValue: string) => {dispatch(addTaskAC(inputValue, props.toDoListID))}, [])
-    const addEditedTask = useCallback((value: string, taskId: string) => {dispatch(addEditedTaskAC(value, props.toDoListID, taskId))}, [])
-
-
-
+    const addTask = useCallback((inputValue: string) => {
+        dispatch(addTaskAC(inputValue, props.toDoListID))
+    }, [])
+    const addEditedTask = useCallback((value: string, taskId: string) => {
+        dispatch(addEditedTaskAC(value, props.toDoListID, taskId))
+    }, [])
 
 
 ////////////tasksMAP
@@ -65,19 +65,24 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     // после Апп опять прокидывает списки тасок по тудулистам и т.к. изменения проихошли только в одном списке, второй не мапится
     // т.к. в редьюсере мы возвращаем поверхностную копию всех тасок,
     // вложеные массивы не копируются и при сравнении юзМемо видит тот же массив(массив который не меняли), а на место старого мы вернули копию через метод
-    const tasksList = useMemo(()=>{
+    const tasksList = useMemo(() => {
         return filteredTasks.map((e) => {
 
-            const onChangeHandler = () => dispatch(switchCheckboxAC(e.taskID, e.checked, props.toDoListID))
+            const onChangeHandler = () => {
+                dispatch(switchCheckboxAC(
+                    e.id,
+                    e.status === StatusesForTask.Completed ? StatusesForTask.New : StatusesForTask.Completed, //пофиксить цей жах
+                    props.toDoListID))
+            }
             const removeTaskHandler = (taskID: string) => dispatch(removeTaskAC(taskID, props.toDoListID))
 
             return (
                 <Task
-                    key={e.taskID}
-                    type={e.type}
-                    checked={e.checked}
-                    taskValue={e.taskValue}
-                    taskID={e.taskID}
+                    key={e.id}
+                    type={'checkbox'}
+                    checked={e.status} // передаьб статус
+                    taskValue={e.title}
+                    taskID={e.id}
                     onChangeHandler={onChangeHandler}
                     coverAddEditedTask={addEditedTask}
                     removeTaskHandler={removeTaskHandler}
@@ -90,8 +95,8 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     //обернул в юзМемо, теперь этот МАР выполнится первый раз при первом ререндере ToDoList
     // а следующий раз\ы только при изменении значения в зависимости(втором аргументе хука([props.filter]))
     // если значение в зависимости не будет изменяться, то юзМемо вернут то что запомнил в первый раз
-    const filterButtons = useMemo(()=> {
-        return filterButtonsData.map((e,i) => {
+    const filterButtons = useMemo(() => {
+        return filterButtonsData.map((e, i) => {
             return <FilterButton
                 key={i}
                 title={e.title}

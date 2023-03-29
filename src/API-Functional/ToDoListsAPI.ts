@@ -12,14 +12,8 @@ export const instance = axios.create({ //позволяет создать ша�
     ...settings  //тоже поставится автоматом
 })
 
-export type OneListAPIType = {
-    addedDate: string
-    id: string
-    order: number
-    title: string
-}
 
-export type ResponseListAPIType<D={}> = {
+export type ToDoListsResponseType<D={}> = {
     resultCode: number
     messages: string[],
     fieldsErrors: []
@@ -30,16 +24,16 @@ export type ResponseListAPIType<D={}> = {
 export const toDoListsAPI = {
     //везде заменил на инстанс, как он работает описал выше
     getLists() {
-        return instance.get<OneListAPIType[]>(`/todo-lists`).then(r => r.data)
+        return instance.get<ToDoListsResponseType[]>(`/todo-lists`).then(r => r.data)
     },
     postList(title: string) {
-        return instance.post<ResponseListAPIType<{ item: OneListAPIType }>>(`/todo-lists`, {title: title})
+        return instance.post<ToDoListsResponseType<{ item: ToDoListsResponseType }>>(`/todo-lists`, {title: title})
     },
     deleteList(listID: string) {
-        return instance.delete<ResponseListAPIType>(`/todo-lists/${listID}`)
+        return instance.delete<ToDoListsResponseType>(`/todo-lists/${listID}`)
     },
     renameList(listID: string, newListTitle: string) {
-        return instance.put<ResponseListAPIType>(`/todo-lists/${listID}`, {title: newListTitle})
+        return instance.put<ToDoListsResponseType>(`/todo-lists/${listID}`, {title: newListTitle})
     },
 
 }

@@ -1,25 +1,118 @@
-import {TasksType, ToDoListType} from "../Types";
+import {AllTasksType, OneToDoListAPIType, StatusesForTask} from "../Types";
 
 
-export const listStateForTest:ToDoListType[] = [
-    {toDoListID: 'listID1', titleList: 'what to learn', filter: 'all'}, //тут без [] потому как переменная стоит не в ключе а в значении
-    {toDoListID: 'listID2', titleList: 'numbers', filter: 'all'}
+
+export const listStateForTest: OneToDoListAPIType[] = [
+    {
+        id: 'listID1',
+        title: 'what to learn',
+        filter: 'all',
+        addedDate: '',
+        order: 1},
+    {
+        id: 'listID2',
+        title: 'numbers',
+        filter: 'all',
+        addedDate: '',
+        order: 1}
 ]
 
-export const tasksStateForTest:TasksType = {                      // юзРедьюсер принимает нужный редьюсер и начальное значение
-    ['listID1']: [                             //походу если не обернуть он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
-        {taskID: 'taskID1', type: "checkbox", checked: true, taskValue: 'HTML&CSS',},
-        {taskID: 'taskID2', type: "checkbox", checked: false, taskValue: 'Redux'},
-        {taskID: 'taskID3', type: "checkbox", checked: true, taskValue: 'JS'},
-        {taskID: 'taskID4', type: "checkbox", checked: false, taskValue: 'MongoDB'},
-        {taskID: 'taskID5', type: "checkbox", checked: false, taskValue: 'React'},
+export const tasksStateForTest: AllTasksType = {
+    ['listID1']: [
+
+        {
+            id: 'taskID1',
+            title: 'HTML&CSS',
+            description: 'to learn',
+            todoListId: 'listID1',
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id:'taskID2',
+            title: 'MongoDB',
+            description: 'to learn',
+            todoListId: 'listID1',
+            order: 1,
+            status: StatusesForTask.New,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: 'taskID3',
+            title: 'Redux',
+            description: 'to learn',
+            todoListId: 'listID1',
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: 'taskID4',
+            title: 'JS',
+            description: 'to learn',
+            todoListId: 'listID1',
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        },
     ],
     ['listID2']: [
-        {taskID: 'taskID1', type: "checkbox", checked: true, taskValue: 'pervoe',},
-        {taskID: 'taskID2', type: "checkbox", checked: false, taskValue: 'vtoroe'},
-        {taskID: 'taskID3', type: "checkbox", checked: true, taskValue: 'trete'},
-        {taskID: 'taskID4', type: "checkbox", checked: false, taskValue: 'chetvertoe'},
-        {taskID: 'taskID5', type: "checkbox", checked: false, taskValue: 'piatoe'},
+        {
+            id: 'taskID1',
+            title: 'Prototypes',
+            description: 'to learn',
+            todoListId: 'listID2',
+            order: 1,
+            status: StatusesForTask.New,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: 'taskID2',
+            title: 'Context this',
+            description: 'to learn',
+            todoListId: 'listID2',
+            order: 1,
+            status: StatusesForTask.New,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: 'taskID3',
+            title: 'Event Loop',
+            description: 'to learn',
+            todoListId: 'listID2',
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        }, {
+            id: 'taskID4',
+            title: 'Promises',
+            description: 'to learn',
+            todoListId: 'listID2',
+            order: 1,
+            status: StatusesForTask.Completed,
+            priority: 1,
+            startDate: '',
+            deadline: '',
+            addedDate: ''
+        },
     ]
 }
+
 

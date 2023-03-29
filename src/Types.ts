@@ -13,23 +13,70 @@ export type InputAddPropsType = {
 }
 
 export type FilterType = 'all' | 'completed' | 'active';
-export type ToDoListType = {
-    toDoListID: string
-    titleList: string
+
+export type ToDoListOneType = {
+    addedDate: string
+    id: string
+    order: number
+    title: string
+}
+
+export type OneToDoListAPIType = ToDoListOneType & {
     filter: FilterType
 }
-export type TasksType = {
-    [key: string]: Array<TaskType> //ключ это айди туду листа
+
+export type OneTaskType = {
+    id: string
+    title: string
+    description: string
+    todoListId: string
+    order: number
+    status: StatusesForTask
+    priority: number
+    startDate: string
+    deadline: string
+    addedDate: string
 }
 
+export type AllTasksType = {
+    [key: string]: OneTaskType[] //ключ это айди туду листа
+}
 
-export type TaskType = {
-    type: string,
-    checked: boolean,
-    taskValue: string,
-    taskID: string,
+export type ResponseTasksType = {
+    items: OneTaskType[]
+    totalCount: number
+    error: null | string
+}
+
+//тип перечисления, задаем какой либо статус в цифрах(значения)
+// и описываем его именем свойства, что бы было понятно как с ним работать
+export enum StatusesForTask {
+    New,
+    InProgress,
+    Completed,
+    Draft //черновик
 
 }
+
+// export type ToDoListType = {
+//     toDoListID: string
+//     titleList: string
+//     filter: FilterType
+// }
+
+
+// export type TasksType = {
+//     [key: string]: Array<TaskType> //ключ это айди туду листа
+// }
+
+
+// export type TaskType = {
+//     type: string,
+//     checked: boolean,
+//     taskValue: string,
+//     taskID: string,
+//
+// }
 
 export type ToDoListPropsType = {
     titleList: string,
@@ -54,7 +101,7 @@ export type FilterButtonDataType = {
 
 export type TaskPropsType = {
     type: string
-    checked: boolean
+    checked: StatusesForTask
     taskValue: string
     taskID: string
     onChangeHandler: () => void

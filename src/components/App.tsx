@@ -2,7 +2,7 @@ import React, {useCallback} from 'react';
 import '../styles/App.css';
 import {ToDoList} from "./ToDoList";
 import {InputAdd} from "./InputAdd";
-import {ToDoListType} from "../Types";
+import {OneToDoListAPIType} from "../Types";
 import {
     addArrTasksAC,
     addListAC,
@@ -11,7 +11,6 @@ import {
 import {useDispatch, useSelector} from "react-redux";
 import {rootStateType} from "../redux/store";
 import {v1} from "uuid";
-import {TestComp} from "./TestComp";
 
 
 //убрать юз колбэки \ реакт мемо \ юз мемо там где они не нужны
@@ -21,7 +20,7 @@ const App = () => {
 
 
     const dispatch = useDispatch()
-    const toDoLists = useSelector<rootStateType, ToDoListType[]>(state => state.lists)
+    const toDoLists = useSelector<rootStateType, OneToDoListAPIType[]>(state => state.lists)
 
 
     const addList = useCallback((inputValue: string) => {
@@ -36,10 +35,10 @@ const App = () => {
     const mappedLists = toDoLists.map((tl) => { //мапим массив со всеми тудулистами
         return (
             <ToDoList
-                key={tl.toDoListID}
-                titleList={tl.titleList}
+                key={tl.id}
+                titleList={tl.title}
                 filter={tl.filter}
-                toDoListID={tl.toDoListID}
+                toDoListID={tl.id}
                 removeList={removeList}
             />
         )})
@@ -50,7 +49,7 @@ const App = () => {
             <div>New List</div>
             <InputAdd clickToAddTask={addList}/>
             {mappedLists}
-            <TestComp/>
+            {/*<TestComp/>*/}
         </div>
     );
 }

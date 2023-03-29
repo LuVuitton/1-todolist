@@ -1,6 +1,7 @@
 import {instance} from "./ToDoListsAPI";
+import {ResponseTasksType} from "../Types";
 //new types
-export type OneTaskType = {
+export type TaskType = {
     id: string
     title: string
     description: string
@@ -11,12 +12,6 @@ export type OneTaskType = {
     startDate: string
     deadline: string
     addedDate: string
-}
-
-export type ResponseTasksType = {
-    items: OneTaskType[]
-    totalCount: number
-    error: null | string
 }
 
 
