@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
-import {FilterButtonDataType, FilterType, OneTaskType, StatusesForTask, ToDoListPropsType} from "../Types";
+import {FilterButtonDataType, FilterType, StatusesForTask, ToDoListPropsType} from "../Types";
 import {FilterButton} from "./FilterButton";
 import {Task} from "./Task";
 import {useDispatch, useSelector} from "react-redux";
@@ -14,9 +14,11 @@ import {
     removeTaskAC,
     switchCheckboxAC
 } from "../actionCreators/ActionCreators";
+import {OneTaskType} from "../API-Functional/TasksAPI";
 
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
+
     const [filter, setFilter] = useState<FilterType>('all')
 
 
@@ -28,8 +30,12 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
         {id: v1(), title: 'completed'},
     ]
 
+    // ререндерит (компоненту/все подряд) при изменении (запрашиваемого куска стейта\стейта)
+    let tasks = useSelector<rootStateType, OneTaskType[]>(state => {
+       return  state.tasks[props.toDoListID]?state.tasks[props.toDoListID]:[]
+    })
 
-    let tasks = useSelector<rootStateType, OneTaskType[]>(state => state.tasks[props.toDoListID])
+
     let filteredTasks: OneTaskType[] = tasks;
 
     if (filter === 'active') {
@@ -65,13 +71,15 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     // после Апп опять прокидывает списки тасок по тудулистам и т.к. изменения проихошли только в одном списке, второй не мапится
     // т.к. в редьюсере мы возвращаем поверхностную копию всех тасок,
     // вложеные массивы не копируются и при сравнении юзМемо видит тот же массив(массив который не меняли), а на место старого мы вернули копию через метод
+
     const tasksList = useMemo(() => {
+
         return filteredTasks.map((e) => {
 
             const onChangeHandler = () => {
                 dispatch(switchCheckboxAC(
                     e.id,
-                    e.status === StatusesForTask.Completed ? StatusesForTask.New : StatusesForTask.Completed, //пофиксить цей жах
+                    e.status,
                     props.toDoListID))
             }
             const removeTaskHandler = (taskID: string) => dispatch(removeTaskAC(taskID, props.toDoListID))
@@ -119,13 +127,9 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
                 <InputAdd clickToAddTask={addTask}/>
 
-                <ul>
-                    {tasksList}
-                </ul>
+                <ul>{tasksList}</ul>
 
-                <div>
-                    {filterButtons}
-                </div>
+                <div>{filterButtons}</div>
             </div>
         </div>
     );

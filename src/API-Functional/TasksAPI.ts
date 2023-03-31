@@ -1,13 +1,20 @@
 import {instance} from "./ToDoListsAPI";
-import {ResponseTasksType} from "../Types";
-//new types
-export type TaskType = {
+import {StatusesForTask} from "../Types";
+
+export type ResponseTasksType = {
+    items: OneTaskType[]
+    totalCount: number
+    error: null | string
+}
+
+
+export type OneTaskType = {
     id: string
     title: string
     description: string
     todoListId: string
     order: number
-    status: number
+    status: StatusesForTask
     priority: number
     startDate: string
     deadline: string

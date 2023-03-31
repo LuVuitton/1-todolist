@@ -1,4 +1,5 @@
 import axios from "axios";
+import {incompleteListAPIType} from "../Types";
 
 export const settings = {
     withCredentials: true,
@@ -22,9 +23,9 @@ export type ToDoListsResponseType<D={}> = {
 
 
 export const toDoListsAPI = {
-    //везде заменил на инстанс, как он работает описал выше
+    //инстанс выше
     getLists() {
-        return instance.get<ToDoListsResponseType[]>(`/todo-lists`).then(r => r.data)
+        return instance.get<incompleteListAPIType[]>(`/todo-lists`).then((r) => r.data)
     },
     postList(title: string) {
         return instance.post<ToDoListsResponseType<{ item: ToDoListsResponseType }>>(`/todo-lists`, {title: title})

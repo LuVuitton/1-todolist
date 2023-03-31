@@ -1,9 +1,11 @@
 import {v1} from "uuid";
-import {AllTasksType, mainACTaskType, StatusesForTask} from "../../Types";
+import {AllTasksType, StatusesForTask} from "../../Types";
 import {idToDoList1, idToDoList2} from "./listReducers";
+import {OneTaskType} from "../../API-Functional/TasksAPI";
+import {mainACTaskType} from "../../actionCreators/ActionCreators";
 
-
-const initState: AllTasksType = {          // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
+// юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
+const initState: AllTasksType = {
     [idToDoList1]: [                             //походу если не обернуть в [] он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
         {
             id: v1(),
@@ -107,8 +109,7 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
     switch (action.type) {
         case 'ADD-TASK' : {
             //посмотреть еще раз
-            // const newTask = {taskID: v1(), type: "checkbox", checked: false, taskValue: action.payload.inputValue}      //создаем новую таску
-            const newTask = {
+            const newTask: OneTaskType = {
                 id: v1(),
                 title: action.payload.inputValue,
                 description: 'to learn',
@@ -140,7 +141,7 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
                 [action.payload.toDoListId]:
                     state[action.payload.toDoListId].map(e => e.id === action.payload.taskId ? {
                         ...e,
-                        status: action.payload.checked
+                        status: action.payload.checked === StatusesForTask.Completed ? StatusesForTask.New : StatusesForTask.Completed
                     } : e)
             }
         }
@@ -153,10 +154,17 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
             }
         }
         case 'ADD-ARR-TASKS': {
-
-            return {...state, [action.payload.newListID]: []}   // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
-
+            console.log(action.payload.newListIDArr)
+            let newObj:AllTasksType = {}
+            action.payload.newListIDArr.forEach((e:string)=>{
+                newObj[e] = [] // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
+            })
+            return {...state, ...newObj}
         }
+        case "SET-API-TASKS-AC": {
+            return {...state, [action.payload.listID]: action.payload.tasksArr}
+        }
+
         default:
             return state
     }

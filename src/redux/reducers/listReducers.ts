@@ -1,5 +1,9 @@
 import {v1} from "uuid";
-import {mainACListType, OneToDoListAPIType} from "../../Types";
+import {addArrTasksAC, mainACListType, setAPIListsAC, setAPITasksAC} from "../../actionCreators/ActionCreators";
+import {incompleteListAPIType, OneToDoListAPIType} from "../../Types";
+import {toDoListsAPI} from "../../API-Functional/ToDoListsAPI";
+import {Dispatch} from "redux";
+import {tasksAPI} from "../../API-Functional/TasksAPI";
 
 export const idToDoList1 = v1(); //значение свойства toDoListID с айди в тудулисте и ключ листа в массиве тасок
 export const idToDoList2 = v1(); //это не одна и таже строка, она просто совпадает по знаечению (НО ЭТО НЕ ТОЧНО)
@@ -10,6 +14,7 @@ const initState: OneToDoListAPIType[] = [
 ]
 
 export const listReducer = (state: OneToDoListAPIType[] = initState, action: mainACListType): OneToDoListAPIType[] => {
+
     switch (action.type) {
         case 'ADD-LIST': {
             const newToDoList: OneToDoListAPIType = {
@@ -17,11 +22,10 @@ export const listReducer = (state: OneToDoListAPIType[] = initState, action: mai
                 title: action.payload.inputValue,
                 filter: 'all',
                 addedDate: '',
-                order:1
+                order:1,
             }
             return [newToDoList, ...state]
         }
-
         case 'REMOVE-LIST': {
             return state.filter((e) => e.id !== action.payload.toDoListId)
         }
@@ -32,12 +36,30 @@ export const listReducer = (state: OneToDoListAPIType[] = initState, action: mai
             } : e)
 
         }
-
-        // case 'CHANGE-FILTER-LIST': {
-        //     return state.map(e => e.toDoListID === action.payload.toDoListId ? {...e, filter: action.payload.value} : e)
-        // }
+        case "SET-API-LISTS": {
+            return action.payload.lists.map((e )=>({...e, filter:'all'}))
+        }
         default:
             return state
     }
 }
 
+
+// export type getListTCType = ReturnType<typeof getListTC>
+
+
+export const getListTC = ()=> {
+    return (dispatch:Dispatch) => {
+
+        let listsID: string[] = []
+       toDoListsAPI.getLists()
+            .then((r: incompleteListAPIType[]) => {
+                listsID = r.map((e: incompleteListAPIType) => e.id)
+                dispatch(setAPIListsAC(r))
+                dispatch(addArrTasksAC(listsID))
+            })
+            .then(() => {
+                tasksAPI.getTasks(listsID[0]).then(r => dispatch(setAPITasksAC(r, listsID[0])))
+            })
+    }
+}

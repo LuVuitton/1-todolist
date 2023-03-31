@@ -1,6 +1,6 @@
 import {tasksStateForTest} from "../StateForTest";
-import {mainACTaskType, StatusesForTask} from "../../Types";
-import {addArrTasksAC, addEditedTaskAC, switchCheckboxAC} from "../../actionCreators/ActionCreators";
+import { StatusesForTask} from "../../Types";
+import {addArrTasksAC, addEditedTaskAC, mainACTaskType, switchCheckboxAC} from "../../actionCreators/ActionCreators";
 import {taskReducer} from "../../redux/reducers/taskReduser";
 
 const startState = tasksStateForTest
@@ -53,13 +53,13 @@ test('should to set a new name for the existing task', () => {
 
 test('should add new empty array for new list by list id', () => {
 
-    const action = addArrTasksAC('newListID')
+    const action = addArrTasksAC(['newListID','newListID2', 'newListID3'])
 
     const endState = taskReducer(startState, action)
 
-
     expect(endState['newListID'].length).toBe(0)
-    expect(endState['listID1'].length ).toEqual(startState['listID1'].length)
-    expect(endState['listID2'].length ).toEqual(startState['listID2'].length)
+    expect(endState['newListID3'].length).toBe(0)
+    // expect(endState['newListID3'].length).toStrictEqual([])
+    // expect(endState['newListID3'].length).toEqual(0)
 })
 

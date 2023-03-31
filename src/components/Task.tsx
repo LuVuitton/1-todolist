@@ -3,7 +3,6 @@ import {EditableSpan} from "./EditableSpan";
 import {StatusesForTask, TaskPropsType} from "../Types";
 
 
-//Поправить чекед в инпуте и в классе, что бы проверяд на статусы
 
 export const Task = React.memo((props: TaskPropsType) => {
 
