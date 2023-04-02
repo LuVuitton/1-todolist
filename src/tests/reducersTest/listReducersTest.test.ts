@@ -1,7 +1,7 @@
 import {listStateForTest} from "../StateForTest";
 import {
     addEditedListTitleAC,
-    addListAC,
+    addListCreateEmptyTasksAC,
     removeListAC
 } from "../../actionCreators/ActionCreators";
 import {listReducer} from "../../redux/reducers/listReducers";
@@ -14,7 +14,7 @@ const startState = listStateForTest
 
 test('should add new list to array of toDoLists', () => {
 
-    const action =  addListAC('new for new list', 'newListID')
+    const action =  addListCreateEmptyTasksAC('new for new list', 'newListID')
 
     const endState = listReducer(startState, action)
 

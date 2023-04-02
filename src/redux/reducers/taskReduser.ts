@@ -1,8 +1,15 @@
 import {v1} from "uuid";
 import {AllTasksType, StatusesForTask} from "../../Types";
 import {idToDoList1, idToDoList2} from "./listReducers";
-import {OneTaskType} from "../../API-Functional/TasksAPI";
-import {mainACTaskType} from "../../actionCreators/ActionCreators";
+import {OneTaskType, tasksAPI} from "../../API-Functional/TasksAPI";
+import {
+    addEditedTaskAC,
+    addTaskAC,
+    mainACTaskType,
+    removeTaskAC,
+    setAPITasksAC
+} from "../../actionCreators/ActionCreators";
+import {Dispatch} from "redux";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 const initState: AllTasksType = {
@@ -135,7 +142,6 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
             }   //меняем в нужном тудулисте масив таксок на отфильтрованый(новый массив без удаленной таски)
         }
         case 'SWITCH-TASKS-CHECKBOX' : {
-            // debugger
             return {
                 ...state,
                 [action.payload.toDoListId]:
@@ -153,16 +159,18 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
                 ...state, [action.payload.toDoListId]: editedTask
             }
         }
-        case 'ADD-ARR-TASKS': {
-            console.log(action.payload.newListIDArr)
-            let newObj:AllTasksType = {}
-            action.payload.newListIDArr.forEach((e:string)=>{
+        case "SET-API-LISTS-AND-ARR-TO-TASKS": { // сначала запрашиваем листы затем таски, между такси возвращают андефайнд
+            let newObj: AllTasksType = {}
+            action.payload.newListIDArr.forEach((e: string) => {
                 newObj[e] = [] // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
             })
             return {...state, ...newObj}
         }
         case "SET-API-TASKS-AC": {
             return {...state, [action.payload.listID]: action.payload.tasksArr}
+        }
+        case "ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR": {
+            return {...state, [action.payload.newListID]: []}
         }
 
         default:
@@ -171,3 +179,23 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
 }
 
 
+export const getTasksTC = (listID: string) => (dispatch: Dispatch) => {
+    tasksAPI.getTasks(listID)
+        .then(r => dispatch(setAPITasksAC(r, listID)))
+}
+
+
+export const deleteTaskTC = (listID: string, taskID: string) => (dispatch: Dispatch) => {
+    tasksAPI.deleteTask(listID, taskID)
+        .then(() => dispatch(removeTaskAC(taskID,listID)))
+}
+
+export const setAPITaskTC = (listID:string, taskValue:string) =>(dispatch:Dispatch)=> {
+    tasksAPI.postTask(listID, taskValue)
+        .then(()=>dispatch(addTaskAC(taskValue,listID)))
+}
+
+export const updateAPIEditableSpanTC = (listID:string, taskID:string,newValue: string) =>(dispatch:Dispatch)=> {
+tasksAPI.updateTask(listID,taskID, newValue)
+    .then(()=> dispatch(addEditedTaskAC(newValue,listID,taskID)))
+}

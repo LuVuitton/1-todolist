@@ -1,39 +1,37 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
 import {FilterButtonDataType, FilterType, StatusesForTask, ToDoListPropsType} from "../Types";
 import {FilterButton} from "./FilterButton";
 import {Task} from "./Task";
-import {useDispatch, useSelector} from "react-redux";
-import {rootStateType} from "../redux/store";
 import {v1} from "uuid";
 import {
-    addEditedListTitleAC,
     addEditedTaskAC,
-    addTaskAC,
-    removeTaskAC,
     switchCheckboxAC
 } from "../actionCreators/ActionCreators";
 import {OneTaskType} from "../API-Functional/TasksAPI";
+import {useCustomSelector} from "../customHooks/CustomHooks";
+import {useCustomThunkDispatch} from "../redux/store";
+import {deleteTaskTC, getTasksTC, setAPITaskTC, updateAPIEditableSpanTC} from "../redux/reducers/taskReduser";
 
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
+    const dispatch = useCustomThunkDispatch()
+    // ререндерит (компоненту/все подряд) при изменении (запрашиваемого куска стейта\стейта)
+    const tasks = useCustomSelector<OneTaskType[]>(state => state.tasks[props.toDoListID])
 
     const [filter, setFilter] = useState<FilterType>('all')
 
+    useEffect(() => {
+        dispatch(getTasksTC(props.toDoListID))
+    }, [])
 
-    const dispatch = useDispatch()
 
     const filterButtonsData: FilterButtonDataType[] = [
         {id: v1(), title: 'all'},
         {id: v1(), title: 'active'},
         {id: v1(), title: 'completed'},
     ]
-
-    // ререндерит (компоненту/все подряд) при изменении (запрашиваемого куска стейта\стейта)
-    let tasks = useSelector<rootStateType, OneTaskType[]>(state => {
-       return  state.tasks[props.toDoListID]?state.tasks[props.toDoListID]:[]
-    })
 
 
     let filteredTasks: OneTaskType[] = tasks;
@@ -51,14 +49,15 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
 
     const clickToRemoveList = useCallback(() => props.removeList(props.toDoListID), [])
-    const addEditedListTitle = useCallback((value: string) => {
-        dispatch(addEditedListTitleAC(value, props.toDoListID))
+    const addEditedListTitle = useCallback((value: string, taskID:string) => {
+        dispatch(updateAPIEditableSpanTC(props.toDoListID, taskID, value))
     }, [])
 
 
     const addTask = useCallback((inputValue: string) => {
-        dispatch(addTaskAC(inputValue, props.toDoListID))
+        dispatch(setAPITaskTC(props.toDoListID, inputValue))
     }, [])
+
     const addEditedTask = useCallback((value: string, taskId: string) => {
         dispatch(addEditedTaskAC(value, props.toDoListID, taskId))
     }, [])
@@ -82,7 +81,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                     e.status,
                     props.toDoListID))
             }
-            const removeTaskHandler = (taskID: string) => dispatch(removeTaskAC(taskID, props.toDoListID))
+            const removeTaskHandler = (taskID: string) => dispatch(deleteTaskTC(props.toDoListID,taskID))
 
             return (
                 <Task

@@ -1,28 +1,35 @@
 import {v1} from "uuid";
-import {addArrTasksAC, mainACListType, setAPIListsAC, setAPITasksAC} from "../../actionCreators/ActionCreators";
+import {
+    addListCreateEmptyTasksAC,
+    mainACListType, removeListAC,
+    setAPIListsAndArrToTasksAC,
+} from "../../actionCreators/ActionCreators";
 import {incompleteListAPIType, OneToDoListAPIType} from "../../Types";
 import {toDoListsAPI} from "../../API-Functional/ToDoListsAPI";
 import {Dispatch} from "redux";
-import {tasksAPI} from "../../API-Functional/TasksAPI";
+
 
 export const idToDoList1 = v1(); //значение свойства toDoListID с айди в тудулисте и ключ листа в массиве тасок
 export const idToDoList2 = v1(); //это не одна и таже строка, она просто совпадает по знаечению (НО ЭТО НЕ ТОЧНО)
 
 const initState: OneToDoListAPIType[] = [
-    {id: idToDoList1, title: 'what to learn', filter: 'all', addedDate:'', order:1}, //тут без [] потому как переменная стоит не в ключе а в значении
-    {id: idToDoList2, title: 'numbers', filter: 'all', addedDate:'', order:1}
+    // {id: idToDoList1, title: 'what to learn', filter: 'all', addedDate: '', order: 1}, //тут без [] потому как переменная стоит не в ключе а в значении
+    // {id: idToDoList2, title: 'numbers', filter: 'all', addedDate: '', order: 1}
 ]
 
+
+// субскрайбер в редаксе подписан на то что вернут редьюсеры, и поверхностно сравнивает обьекты старого и нового стейта
 export const listReducer = (state: OneToDoListAPIType[] = initState, action: mainACListType): OneToDoListAPIType[] => {
 
     switch (action.type) {
-        case 'ADD-LIST': {
+
+        case 'ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR': {
             const newToDoList: OneToDoListAPIType = {
                 id: action.payload.newListID,
                 title: action.payload.inputValue,
                 filter: 'all',
                 addedDate: '',
-                order:1,
+                order: 1,
             }
             return [newToDoList, ...state]
         }
@@ -36,8 +43,8 @@ export const listReducer = (state: OneToDoListAPIType[] = initState, action: mai
             } : e)
 
         }
-        case "SET-API-LISTS": {
-            return action.payload.lists.map((e )=>({...e, filter:'all'}))
+        case "SET-API-LISTS-AND-ARR-TO-TASKS": {
+            return action.payload.lists.map((e) => ({...e, filter: 'all'}))
         }
         default:
             return state
@@ -45,21 +52,23 @@ export const listReducer = (state: OneToDoListAPIType[] = initState, action: mai
 }
 
 
-// export type getListTCType = ReturnType<typeof getListTC>
+export const getListTC = () => (dispatch: Dispatch) => {
 
+    let listsID: string[] = []
 
-export const getListTC = ()=> {
-    return (dispatch:Dispatch) => {
+    toDoListsAPI.getLists()
+        .then((r: incompleteListAPIType[]) => {
+            listsID = r.map((e: incompleteListAPIType) => e.id)
+            // написал одинаковые типы в двух редьюсерах что бы раскинуть айди от только что полученых туду листов в таски
+            dispatch(setAPIListsAndArrToTasksAC(r, listsID))
+        })
+}
 
-        let listsID: string[] = []
-       toDoListsAPI.getLists()
-            .then((r: incompleteListAPIType[]) => {
-                listsID = r.map((e: incompleteListAPIType) => e.id)
-                dispatch(setAPIListsAC(r))
-                dispatch(addArrTasksAC(listsID))
-            })
-            .then(() => {
-                tasksAPI.getTasks(listsID[0]).then(r => dispatch(setAPITasksAC(r, listsID[0])))
-            })
-    }
+export const addAPIListTC = (listTitle:string) => (dispatch:Dispatch)=> {
+    toDoListsAPI.postList(listTitle)
+        .then(r=>dispatch(addListCreateEmptyTasksAC(listTitle, r.data.item.id)) )
+}
+
+export const deleteAPIListTC = (listID:string)=> (dispatch:Dispatch)=> {
+    toDoListsAPI.deleteList(listID).then(()=>dispatch(removeListAC(listID)))
 }

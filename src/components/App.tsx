@@ -2,18 +2,12 @@ import React, {useCallback, useEffect} from 'react';
 import '../styles/App.css';
 import {ToDoList} from "./ToDoList";
 import {InputAdd} from "./InputAdd";
-import {incompleteListAPIType, OneToDoListAPIType} from "../Types";
-import {
-    addArrTasksAC,
-    addListAC,
-    removeListAC, setAPIListsAC, setAPITasksAC,
-} from "../actionCreators/ActionCreators";
-import {useDispatch, useSelector} from "react-redux";
-import {rootStateType} from "../redux/store";
-import {v1} from "uuid";
-import {toDoListsAPI} from "../API-Functional/ToDoListsAPI";
+import {OneToDoListAPIType} from "../Types";
+
+import {useCustomThunkDispatch} from "../redux/store";
+import {addAPIListTC, deleteAPIListTC, getListTC} from "../redux/reducers/listReducers";
+import {useCustomSelector} from "../customHooks/CustomHooks";
 import {tasksAPI} from "../API-Functional/TasksAPI";
-import {getListTC} from "../redux/reducers/listReducers";
 
 
 //убрать юз колбэки \ реакт мемо \ юз мемо там где они не нужны
@@ -21,21 +15,25 @@ import {getListTC} from "../redux/reducers/listReducers";
 
 const App = () => {
 
-    const dispatch = useDispatch()
-    const toDoLists = useSelector<rootStateType, OneToDoListAPIType[]>(state => state.lists)
+
+    // описание кастомного диспатча в сторе
+    const dispatch = useCustomThunkDispatch()
+
+    // описание кастомного диспатча в кастомных хуках
+    const toDoLists = useCustomSelector<OneToDoListAPIType[]>(state => state.lists)
 
     useEffect(() => {
-        // @ts-ignore !!!!!!!!!!!!!!!!???
         dispatch(getListTC())
     }, [])
 
+
     const addList = useCallback((inputValue: string) => {
-        const newListID = v1()
-        dispatch(addListAC(inputValue, newListID))
-        dispatch(addArrTasksAC(['2323232', '22323323']))
+       dispatch( addAPIListTC(inputValue))
     }, []) //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
 
-    const removeList = useCallback((toDoListId: string) => dispatch(removeListAC(toDoListId)), [])// можно еще добавить delete
+    const removeList = useCallback((toDoListId: string) => {
+        dispatch(deleteAPIListTC(toDoListId))
+    }, [])// можно еще добавить delete
 
 
     const mappedLists = toDoLists.map((tl) => { //мапим массив со всеми тудулистами
@@ -50,33 +48,22 @@ const App = () => {
         )
     })
 
-    const callGetLists = () => {
-        let listsID: string[] = []
-        toDoListsAPI.getLists()
-            .then((r: incompleteListAPIType[]) => {
-                listsID = r.map((e: incompleteListAPIType) => e.id)
-
-                dispatch(setAPIListsAC(r))
-                // dispatch(addArrTasksAC(listsID))
-            })
-            .then(() => {
-                tasksAPI.getTasks(listsID[0]).then(r => dispatch(setAPITasksAC(r, listsID[0])))
-            })
-    }
-
-    const callPostList = () => {
-        toDoListsAPI.postList('tretiy list')
+    const testPUT = ()=> {
+       tasksAPI.updateTask('04eed9b9-1e7c-4b78-8430-48f22589a71b','a6520c9d-f4a9-4752-9aa1-fa0f7b40b8f1', 'NEWVALUE')
     }
 
     return (
-        <div className="App">
+        <>
             <div>New List</div>
             <InputAdd clickToAddTask={addList}/>
-            {mappedLists}
-            {/*<TestComp/>*/}
-            <button onClick={callGetLists}>SET LIST TASKS</button>
-            <button onClick={callPostList}>POST LIST</button>
-        </div>
+            <div className="App">
+
+                {mappedLists}
+                {/*<TestComp/>*/}
+
+            </div>
+            <button onClick={testPUT}>NEWVALUE</button>
+        </>
     );
 }
 

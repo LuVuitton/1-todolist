@@ -1,7 +1,12 @@
 
 import {OneTaskType} from "./API-Functional/TasksAPI";
 
-
+export type GeneralResponseType<D={}> = {
+    resultCode: number
+    messages: string[],
+    fieldsErrors: []
+    data: D
+}
 
 
 export type InputAddPropsType = {
@@ -68,27 +73,9 @@ export type TaskPropsType = {
     removeTaskHandler: (taskID: string) => void
 }
 
-//reducers type
-// export type mainACTaskType =
-//     | addTaskACType
-//     | removeTaskACType
-//     | switchCheckboxACType
-//     | addEditedTaskACType
-//     | addArrTasksACType
-//
-// export type mainACListType =
-//     | addListACType
-//     | removeListACType
-//     | addEditedListACTitleType
-//     | setListsAPIACType
-//
-// export type addListACType = ReturnType<typeof addListAC>
-// export type removeListACType = ReturnType<typeof removeListAC>
-// export type addEditedListACTitleType = ReturnType<typeof addEditedListTitleAC>
-// export type addTaskACType = ReturnType<typeof addTaskAC>
-// export type removeTaskACType = ReturnType<typeof removeTaskAC>
-// export type switchCheckboxACType = ReturnType<typeof switchCheckboxAC>
-// export type addEditedTaskACType = ReturnType<typeof addEditedTaskAC>
-// export type addArrTasksACType = ReturnType<typeof addArrTasksAC>
-// export type setListsAPIACType = ReturnType<typeof setAPILists>
+export type EditableSpanPropsType = {
+    value: string
+    callback:(value:string, taskId:string)=>void
+    itemID: string
+}
 

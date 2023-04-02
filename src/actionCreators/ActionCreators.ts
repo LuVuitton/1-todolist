@@ -1,36 +1,38 @@
 import {incompleteListAPIType, StatusesForTask} from "../Types";
 import {OneTaskType} from "../API-Functional/TasksAPI";
 
+export type AllACTypes = mainACTaskType | mainACListType
+
 export type mainACTaskType =
     | addTaskACType
     | removeTaskACType
     | switchCheckboxACType
     | addEditedTaskACType
-    | addArrTasksACType
     | setAPITasksACType
+    | setAPIListsAndArrToTasksACType
+    | addListCreateEmptyTasksACType
 
 export type mainACListType =
-    | addListACType
+    | addListCreateEmptyTasksACType
     | removeListACType
     | addEditedListACTitleType
-    | setListsAPIACType
+    | setAPIListsAndArrToTasksACType
 
-export type addListACType = ReturnType<typeof addListAC>
+export type addListCreateEmptyTasksACType = ReturnType<typeof addListCreateEmptyTasksAC>
 export type removeListACType = ReturnType<typeof removeListAC>
 export type addEditedListACTitleType = ReturnType<typeof addEditedListTitleAC>
 export type addTaskACType = ReturnType<typeof addTaskAC>
 export type removeTaskACType = ReturnType<typeof removeTaskAC>
 export type switchCheckboxACType = ReturnType<typeof switchCheckboxAC>
 export type addEditedTaskACType = ReturnType<typeof addEditedTaskAC>
-export type addArrTasksACType = ReturnType<typeof addArrTasksAC>
-export type setListsAPIACType = ReturnType<typeof setAPIListsAC>
+export type setAPIListsAndArrToTasksACType = ReturnType<typeof setAPIListsAndArrToTasksAC>
 export type setAPITasksACType = ReturnType<typeof setAPITasksAC>
 
 
 //AC
-export const addListAC = (inputValue: string, newListID: string) => {
+export const addListCreateEmptyTasksAC = (inputValue: string, newListID: string) => {
     return {
-        type: 'ADD-LIST',
+        type: 'ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR',
         payload: {
             inputValue,
             newListID
@@ -92,23 +94,24 @@ export const addEditedTaskAC = (value: string, toDoListId: string, taskId: strin
         }
     } as const
 }
-export const addArrTasksAC = (newListIDArr: string[]) => {
-    return {
-        type: 'ADD-ARR-TASKS',
-        payload: {
-            newListIDArr: newListIDArr
-        }
-    } as const
-}
+// export const addArrTasksAC = (newListIDArr: string[]) => {
+//     return {
+//         type: '"SET-API-LISTS-AND-ARR-TO-TASKS"',
+//         payload: {
+//             newListIDArr: newListIDArr
+//         }
+//     } as const
+// }
 
 
 //AC API
-export const setAPIListsAC = (lists: incompleteListAPIType[]) => {
+export const setAPIListsAndArrToTasksAC = (lists: incompleteListAPIType[], newListIDArr: string[]) => {
 
     return {
-        type: 'SET-API-LISTS',
+        type: 'SET-API-LISTS-AND-ARR-TO-TASKS',
         payload: {
-            lists
+            lists,
+            newListIDArr
         }
     } as const
 }
@@ -122,3 +125,4 @@ export const setAPITasksAC = (tasksArr: OneTaskType[], listID: string) => {
         }
     } as const
 }
+

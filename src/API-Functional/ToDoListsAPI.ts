@@ -1,5 +1,5 @@
 import axios from "axios";
-import {incompleteListAPIType} from "../Types";
+import {GeneralResponseType, incompleteListAPIType} from "../Types";
 
 export const settings = {
     withCredentials: true,
@@ -14,12 +14,6 @@ export const instance = axios.create({ //позволяет создать ша�
 })
 
 
-export type ToDoListsResponseType<D={}> = {
-    resultCode: number
-    messages: string[],
-    fieldsErrors: []
-    data: D
-}
 
 
 export const toDoListsAPI = {
@@ -28,13 +22,14 @@ export const toDoListsAPI = {
         return instance.get<incompleteListAPIType[]>(`/todo-lists`).then((r) => r.data)
     },
     postList(title: string) {
-        return instance.post<ToDoListsResponseType<{ item: ToDoListsResponseType }>>(`/todo-lists`, {title: title})
+        return instance.post<GeneralResponseType<{ item: incompleteListAPIType }>>(`/todo-lists`, {title: title})
+            .then(r=>r.data)
     },
     deleteList(listID: string) {
-        return instance.delete<ToDoListsResponseType>(`/todo-lists/${listID}`)
+        return instance.delete<GeneralResponseType>(`/todo-lists/${listID}`)
     },
     renameList(listID: string, newListTitle: string) {
-        return instance.put<ToDoListsResponseType>(`/todo-lists/${listID}`, {title: newListTitle})
+        return instance.put<GeneralResponseType>(`/todo-lists/${listID}`, {title: newListTitle})
     },
 
 }

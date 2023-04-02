@@ -1,13 +1,9 @@
 import React, {ChangeEvent, useState} from "react";
+import {EditableSpanPropsType} from "../Types";
 
-type EditableSpanPropsType = {
-    value: string
-    callback:(value:string, taskId:string)=>void
-    itemID: string
-}
+
 
 export const EditableSpan = React.memo((props:EditableSpanPropsType) =>{
-    // console.log('EditableSpan')
     const [spanState, setSpanState] = useState(true)
     const [newValue, setNewValue] = useState(props.value)
 
