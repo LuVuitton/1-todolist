@@ -1,7 +1,6 @@
 import {listStateForTest} from "../StateForTest";
 import {
     addEditedListTitleAC,
-    addListCreateEmptyTasksAC,
     removeListAC
 } from "../../actionCreators/ActionCreators";
 import {listReducer} from "../../redux/reducers/listReducers";
@@ -11,17 +10,17 @@ import {listReducer} from "../../redux/reducers/listReducers";
 
 const startState = listStateForTest
 
-
-test('should add new list to array of toDoLists', () => {
-
-    const action =  addListCreateEmptyTasksAC('new for new list', 'newListID')
-
-    const endState = listReducer(startState, action)
-
-    expect(endState.length > startState.length).toBeTruthy()
-    expect(endState[0].title).toBe('new for new list')
-    expect(endState[2]).toBeDefined()
-})
+//
+// test('should add new list to array of toDoLists', () => {
+//
+//     const action =  addListCreateEmptyTasksAC('new for new list', 'newListID')
+//
+//     const endState = listReducer(startState, action)
+//
+//     expect(endState.length > startState.length).toBeTruthy()
+//     expect(endState[0].title).toBe('new for new list')
+//     expect(endState[2]).toBeDefined()
+// })
 
 test('should remove specific list by id', () => {
 

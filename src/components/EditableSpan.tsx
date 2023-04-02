@@ -14,7 +14,7 @@ export const EditableSpan = React.memo((props:EditableSpanPropsType) =>{
         setNewValue(e.currentTarget.value)
     }
     const onBlurHandler = ()=>{
-        props.callback(newValue, props.itemID)
+        props.callback(newValue)
         setSpanState(!spanState)
     }
 

@@ -7,9 +7,10 @@ import {
     addTaskAC,
     mainACTaskType,
     removeTaskAC,
-    setAPITasksAC
+    setAPITasksAC, switchCheckboxAC
 } from "../../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
+import {rootStateType} from "../store";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 const initState: AllTasksType = {
@@ -32,28 +33,6 @@ const initState: AllTasksType = {
             todoListId: idToDoList1,
             order: 1,
             status: StatusesForTask.New,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        }, {
-            id: v1(),
-            title: 'Redux',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        }, {
-            id: v1(),
-            title: 'JS',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.Completed,
             priority: 1,
             startDate: '',
             deadline: '',
@@ -83,29 +62,7 @@ const initState: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: ''
-        }, {
-            id: v1(),
-            title: 'Event Loop',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        }, {
-            id: v1(),
-            title: 'Promises',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        },
+        }
     ]
 }
 
@@ -116,23 +73,10 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
     switch (action.type) {
         case 'ADD-TASK' : {
             //посмотреть еще раз
-            const newTask: OneTaskType = {
-                id: v1(),
-                title: action.payload.inputValue,
-                description: 'to learn',
-                todoListId: action.payload.toDoListId,
-                order: 1,
-                status: StatusesForTask.New,
-                priority: 1,
-                startDate: '',
-                deadline: '',
-                addedDate: ''
-            }
+            const newTask: OneTaskType = action.payload.newTask
+            const listFromTasksArr = state[action.payload.newTask.todoListId] //отсальные такси из списка
 
-            //в массиве тасок находим [нужный тудулист] по ключу, выносим в переменную (массив тасок это [IDтудулистаВстроке]: [массив обьектов{тасок}]
-            const listFromTasksArr = state[action.payload.toDoListId]
-
-            return {...state, [action.payload.toDoListId]: [newTask, ...listFromTasksArr]} //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
+            return {...state, [action.payload.newTask.todoListId]: [newTask, ...listFromTasksArr]} //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
         }
         case 'REMOVE-TASK' : {
             const specificToDOList = state[action.payload.toDoListId] //находим тудулист
@@ -147,7 +91,7 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
                 [action.payload.toDoListId]:
                     state[action.payload.toDoListId].map(e => e.id === action.payload.taskId ? {
                         ...e,
-                        status: action.payload.checked === StatusesForTask.Completed ? StatusesForTask.New : StatusesForTask.Completed
+                        status: action.payload.checked
                     } : e)
             }
         }
@@ -170,7 +114,7 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
             return {...state, [action.payload.listID]: action.payload.tasksArr}
         }
         case "ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR": {
-            return {...state, [action.payload.newListID]: []}
+            return {...state, [action.payload.newList.id]: []}
         }
 
         default:
@@ -179,23 +123,43 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
 }
 
 
-export const getTasksTC = (listID: string) => (dispatch: Dispatch) => {
+export const getAPITasksTC = (listID: string) => (dispatch: Dispatch) => {
     tasksAPI.getTasks(listID)
         .then(r => dispatch(setAPITasksAC(r, listID)))
 }
 
-
-export const deleteTaskTC = (listID: string, taskID: string) => (dispatch: Dispatch) => {
+export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch) => {
     tasksAPI.deleteTask(listID, taskID)
-        .then(() => dispatch(removeTaskAC(taskID,listID)))
+        .then(() => dispatch(removeTaskAC(taskID, listID)))
 }
 
-export const setAPITaskTC = (listID:string, taskValue:string) =>(dispatch:Dispatch)=> {
+export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch) => {
     tasksAPI.postTask(listID, taskValue)
-        .then(()=>dispatch(addTaskAC(taskValue,listID)))
+        .then((r) => {
+            dispatch(addTaskAC(r))
+        })
 }
 
-export const updateAPIEditableSpanTC = (listID:string, taskID:string,newValue: string) =>(dispatch:Dispatch)=> {
-tasksAPI.updateTask(listID,taskID, newValue)
-    .then(()=> dispatch(addEditedTaskAC(newValue,listID,taskID)))
+export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue: string) => {
+   return (dispatch: Dispatch, getState:()=>rootStateType) => {
+       const task = getState().tasks[listID].find(e=> e.id === taskID)
+       if (task) {
+           const updatedTask = {...task, title: newValue}
+           tasksAPI.updateTask(listID, taskID, updatedTask)
+               .then(() => dispatch(addEditedTaskAC(newValue, listID, taskID)))
+       }
+    }
+}
+
+export const switchCheckAPITaskTC =  (listID: string, taskID: string, statusValue:StatusesForTask) => {
+
+    return (dispatch: Dispatch, getState:()=>rootStateType) => {
+        const task = getState().tasks[listID].find(e=> e.id === taskID)
+        if (task) {
+            const updatedTask = {...task, status: statusValue}
+
+            tasksAPI.updateTask(listID, taskID, updatedTask)
+                .then(() => dispatch(switchCheckboxAC(taskID,statusValue, listID)))
+        }
+    }
 }

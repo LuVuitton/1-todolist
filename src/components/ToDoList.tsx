@@ -5,14 +5,17 @@ import {FilterButtonDataType, FilterType, StatusesForTask, ToDoListPropsType} fr
 import {FilterButton} from "./FilterButton";
 import {Task} from "./Task";
 import {v1} from "uuid";
-import {
-    addEditedTaskAC,
-    switchCheckboxAC
-} from "../actionCreators/ActionCreators";
 import {OneTaskType} from "../API-Functional/TasksAPI";
 import {useCustomSelector} from "../customHooks/CustomHooks";
 import {useCustomThunkDispatch} from "../redux/store";
-import {deleteTaskTC, getTasksTC, setAPITaskTC, updateAPIEditableSpanTC} from "../redux/reducers/taskReduser";
+import {
+    deleteAPITaskTC,
+    getAPITasksTC,
+    addAPITaskTC,
+    updateAPIEditableTaskTC,
+    switchCheckAPITaskTC
+} from "../redux/reducers/taskReduser";
+import {addEditedListTitleTC} from "../redux/reducers/listReducers";
 
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
@@ -23,7 +26,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     const [filter, setFilter] = useState<FilterType>('all')
 
     useEffect(() => {
-        dispatch(getTasksTC(props.toDoListID))
+        dispatch(getAPITasksTC(props.toDoListID))
     }, [])
 
 
@@ -49,18 +52,16 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
 
     const clickToRemoveList = useCallback(() => props.removeList(props.toDoListID), [])
-    const addEditedListTitle = useCallback((value: string, taskID:string) => {
-        dispatch(updateAPIEditableSpanTC(props.toDoListID, taskID, value))
-    }, [])
-
 
     const addTask = useCallback((inputValue: string) => {
-        dispatch(setAPITaskTC(props.toDoListID, inputValue))
+        dispatch(addAPITaskTC(props.toDoListID, inputValue))
     }, [])
 
-    const addEditedTask = useCallback((value: string, taskId: string) => {
-        dispatch(addEditedTaskAC(value, props.toDoListID, taskId))
+    const addEditedListTitle = useCallback((value: string) => {
+        dispatch(addEditedListTitleTC(props.toDoListID, value))
     }, [])
+
+
 
 
 ////////////tasksMAP
@@ -75,14 +76,13 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
         return filteredTasks.map((e) => {
 
-            const onChangeHandler = () => {
-                dispatch(switchCheckboxAC(
-                    e.id,
-                    e.status,
-                    props.toDoListID))
+            const onChangeHandler = (statusValue:StatusesForTask) => {
+                dispatch(switchCheckAPITaskTC(props.toDoListID, e.id, statusValue))
             }
-            const removeTaskHandler = (taskID: string) => dispatch(deleteTaskTC(props.toDoListID,taskID))
-
+            const removeTaskHandler = (taskID: string) => dispatch(deleteAPITaskTC(props.toDoListID,taskID))
+            const addEditedTask = (value: string) => {
+                dispatch(updateAPIEditableTaskTC(props.toDoListID, e.id, value))
+            }
             return (
                 <Task
                     key={e.id}

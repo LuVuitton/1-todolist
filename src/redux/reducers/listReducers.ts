@@ -1,10 +1,11 @@
 import {v1} from "uuid";
 import {
+    addEditedListTitleAC,
     addListCreateEmptyTasksAC,
     mainACListType, removeListAC,
     setAPIListsAndArrToTasksAC,
 } from "../../actionCreators/ActionCreators";
-import {incompleteListAPIType, OneToDoListAPIType} from "../../Types";
+import {IncompleteListAPIType, OneToDoListAPIType} from "../../Types";
 import {toDoListsAPI} from "../../API-Functional/ToDoListsAPI";
 import {Dispatch} from "redux";
 
@@ -24,13 +25,7 @@ export const listReducer = (state: OneToDoListAPIType[] = initState, action: mai
     switch (action.type) {
 
         case 'ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR': {
-            const newToDoList: OneToDoListAPIType = {
-                id: action.payload.newListID,
-                title: action.payload.inputValue,
-                filter: 'all',
-                addedDate: '',
-                order: 1,
-            }
+            const newToDoList: OneToDoListAPIType = {...action.payload.newList, filter:'all'}
             return [newToDoList, ...state]
         }
         case 'REMOVE-LIST': {
@@ -57,8 +52,8 @@ export const getListTC = () => (dispatch: Dispatch) => {
     let listsID: string[] = []
 
     toDoListsAPI.getLists()
-        .then((r: incompleteListAPIType[]) => {
-            listsID = r.map((e: incompleteListAPIType) => e.id)
+        .then((r: IncompleteListAPIType[]) => {
+            listsID = r.map((e: IncompleteListAPIType) => e.id)
             // написал одинаковые типы в двух редьюсерах что бы раскинуть айди от только что полученых туду листов в таски
             dispatch(setAPIListsAndArrToTasksAC(r, listsID))
         })
@@ -66,9 +61,17 @@ export const getListTC = () => (dispatch: Dispatch) => {
 
 export const addAPIListTC = (listTitle:string) => (dispatch:Dispatch)=> {
     toDoListsAPI.postList(listTitle)
-        .then(r=>dispatch(addListCreateEmptyTasksAC(listTitle, r.data.item.id)) )
+        .then(r=> {
+            dispatch(addListCreateEmptyTasksAC(listTitle, r.item))
+        } )
 }
 
 export const deleteAPIListTC = (listID:string)=> (dispatch:Dispatch)=> {
-    toDoListsAPI.deleteList(listID).then(()=>dispatch(removeListAC(listID)))
+    toDoListsAPI.deleteList(listID)
+        .then(()=>dispatch(removeListAC(listID)))
+}
+
+export const addEditedListTitleTC = (listID:string, newValue:string)=> (dispatch:Dispatch)=> {
+    toDoListsAPI.updateList(listID,newValue)
+        .then(()=>dispatch(addEditedListTitleAC(newValue,listID)))
 }

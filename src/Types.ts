@@ -15,14 +15,14 @@ export type InputAddPropsType = {
 
 export type FilterType = 'all' | 'completed' | 'active';
 
-export type incompleteListAPIType = {
+export type IncompleteListAPIType = {
     addedDate: string
     id: string
     order: number
     title: string
 }
 
-export type OneToDoListAPIType = incompleteListAPIType & {
+export type OneToDoListAPIType = IncompleteListAPIType & {
     filter: FilterType
 }
 
@@ -68,14 +68,14 @@ export type TaskPropsType = {
     checked: StatusesForTask
     taskValue: string
     taskID: string
-    onChangeHandler: () => void
-    coverAddEditedTask: (value: string, taskId: string) => void
+    onChangeHandler: (statusValue:StatusesForTask) => void
+    coverAddEditedTask: (value: string) => void
     removeTaskHandler: (taskID: string) => void
 }
 
 export type EditableSpanPropsType = {
     value: string
-    callback:(value:string, taskId:string)=>void
+    callback:(value:string)=>void
     itemID: string
 }
 

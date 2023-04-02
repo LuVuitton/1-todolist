@@ -3,11 +3,9 @@ import '../styles/App.css';
 import {ToDoList} from "./ToDoList";
 import {InputAdd} from "./InputAdd";
 import {OneToDoListAPIType} from "../Types";
-
 import {useCustomThunkDispatch} from "../redux/store";
 import {addAPIListTC, deleteAPIListTC, getListTC} from "../redux/reducers/listReducers";
 import {useCustomSelector} from "../customHooks/CustomHooks";
-import {tasksAPI} from "../API-Functional/TasksAPI";
 
 
 //убрать юз колбэки \ реакт мемо \ юз мемо там где они не нужны
@@ -48,10 +46,6 @@ const App = () => {
         )
     })
 
-    const testPUT = ()=> {
-       tasksAPI.updateTask('04eed9b9-1e7c-4b78-8430-48f22589a71b','a6520c9d-f4a9-4752-9aa1-fa0f7b40b8f1', 'NEWVALUE')
-    }
-
     return (
         <>
             <div>New List</div>
@@ -62,7 +56,6 @@ const App = () => {
                 {/*<TestComp/>*/}
 
             </div>
-            <button onClick={testPUT}>NEWVALUE</button>
         </>
     );
 }

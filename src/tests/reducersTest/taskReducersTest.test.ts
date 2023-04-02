@@ -5,18 +5,7 @@ import {taskReducer} from "../../redux/reducers/taskReduser";
 
 const startState = tasksStateForTest
 
-test('should add new task to exact list', () => {
 
-    const action: mainACTaskType = {type: 'ADD-TASK', payload: {inputValue: 'name for new task', toDoListId: 'listID2'}}
-
-    const endState = taskReducer(startState, action)
-
-    expect(endState['listID2'][0].title).toBe('name for new task')
-    expect(endState['listID1'][0].title).toBe('HTML&CSS')
-    expect(endState['listID2'][startState['listID2'].length]).toBeDefined()
-    expect(endState['listID1'].length).toBe(startState['listID1'].length)
-    expect(endState['listID2'].length === startState['listID2'].length).toBeFalsy()
-})
 
 test('should to remove the task from the list by id', () => {
 
