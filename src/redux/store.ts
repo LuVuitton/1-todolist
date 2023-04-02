@@ -3,7 +3,7 @@ import thunk, {ThunkDispatch} from 'redux-thunk';
 import {listReducer} from "./reducers/listReducers";
 import {taskReducer} from "./reducers/taskReduser";
 import { useDispatch} from "react-redux";
-import {AllACTypes} from "../actionCreators/ActionCreators";
+import {AllACTypes} from "./actionCreators/ActionCreators";
 
 
 const rootReducer = combineReducers({

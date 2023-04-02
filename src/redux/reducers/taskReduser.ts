@@ -1,69 +1,46 @@
-import {v1} from "uuid";
-import {AllTasksType, StatusesForTask} from "../../Types";
-import {idToDoList1, idToDoList2} from "./listReducers";
-import {OneTaskType, tasksAPI} from "../../API-Functional/TasksAPI";
+import {AllTasksType, checkStatus} from "../../Types";
+import {tasksAPI} from "../../DAL/TasksAPI";
 import {
+    mainACTaskType,
     addEditedTaskAC,
     addTaskAC,
-    mainACTaskType,
     removeTaskAC,
-    setAPITasksAC, switchCheckboxAC
-} from "../../actionCreators/ActionCreators";
+    setAPITasksAC,
+    switchCheckboxAC
+} from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
 import {rootStateType} from "../store";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 const initState: AllTasksType = {
-    [idToDoList1]: [                             //походу если не обернуть в [] он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
-        {
-            id: v1(),
-            title: 'HtML&CSS',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        }, {
-            id: v1(),
-            title: 'MongoDB',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.New,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        },
-    ],
-    [idToDoList2]: [
-        {
-            id: v1(),
-            title: 'Prototypes',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.New,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        }, {
-            id: v1(),
-            title: 'Context this',
-            description: 'to learn',
-            todoListId: idToDoList1,
-            order: 1,
-            status: StatusesForTask.New,
-            priority: 1,
-            startDate: '',
-            deadline: '',
-            addedDate: ''
-        }
-    ]
+    // [idToDoList1]: [                             //походу если не обернуть в [] он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
+    //     {
+    //         id: v1(),
+    //         title: 'HtML&CSS',
+    //         description: 'to learn',
+    //         todoListId: idToDoList1,
+    //         order: 1,
+    //         status: checkStatus.Completed,
+    //         priority: PrioritiesForTask.Middle,
+    //         startDate: '',
+    //         deadline: '',
+    //         addedDate: ''
+    //     },
+    // ],
+    // [idToDoList2]: [
+    //     {
+    //         id: v1(),
+    //         title: 'Prototypes',
+    //         description: 'to learn',
+    //         todoListId: idToDoList1,
+    //         order: 1,
+    //         status: checkStatus.Completed,
+    //         priority: PrioritiesForTask.Middle,
+    //         startDate: '',
+    //         deadline: '',
+    //         addedDate: ''
+    //     }
+    // ]
 }
 
 
@@ -71,36 +48,34 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
 
 
     switch (action.type) {
-        case 'ADD-TASK' : {
-            //посмотреть еще раз
-            const newTask: OneTaskType = action.payload.newTask
-            const listFromTasksArr = state[action.payload.newTask.todoListId] //отсальные такси из списка
+        case 'ADD-TASK' :
+            //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
+            return {...state, [action.payload.newTask.todoListId]:
+                    [action.payload.newTask, ...state[action.payload.newTask.todoListId]]}
 
-            return {...state, [action.payload.newTask.todoListId]: [newTask, ...listFromTasksArr]} //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
-        }
         case 'REMOVE-TASK' : {
-            const specificToDOList = state[action.payload.toDoListId] //находим тудулист
+            const specificToDOList = state[action.payload.listID] //находим тудулист
             return {
                 ...state,
-                [action.payload.toDoListId]: specificToDOList.filter((e) => e.id !== action.payload.taskID)
+                [action.payload.listID]: specificToDOList.filter((e) => e.id !== action.payload.taskID)
             }   //меняем в нужном тудулисте масив таксок на отфильтрованый(новый массив без удаленной таски)
         }
         case 'SWITCH-TASKS-CHECKBOX' : {
             return {
                 ...state,
-                [action.payload.toDoListId]:
-                    state[action.payload.toDoListId].map(e => e.id === action.payload.taskId ? {
+                [action.payload.listID]:
+                    state[action.payload.listID].map(e => e.id === action.payload.taskID ? {
                         ...e,
                         status: action.payload.checked
                     } : e)
             }
         }
         case 'ADD-EDITED-TASK': {
-            const editedTask = state[action.payload.toDoListId].map((e) => {
-                return e.id === action.payload.taskId ? {...e, title: action.payload.value} : e
+            const editedTask = state[action.payload.listID].map((e) => {
+                return e.id === action.payload.taskID ? {...e, title: action.payload.value} : e
             })
             return {
-                ...state, [action.payload.toDoListId]: editedTask
+                ...state, [action.payload.listID]: editedTask
             }
         }
         case "SET-API-LISTS-AND-ARR-TO-TASKS": { // сначала запрашиваем листы затем таски, между такси возвращают андефайнд
@@ -110,13 +85,10 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
             })
             return {...state, ...newObj}
         }
-        case "SET-API-TASKS-AC": {
+        case "SET-API-TASKS-AC":
             return {...state, [action.payload.listID]: action.payload.tasksArr}
-        }
-        case "ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR": {
+        case "ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR":
             return {...state, [action.payload.newList.id]: []}
-        }
-
         default:
             return state
     }
@@ -141,7 +113,9 @@ export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Di
 }
 
 export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue: string) => {
+
    return (dispatch: Dispatch, getState:()=>rootStateType) => {
+
        const task = getState().tasks[listID].find(e=> e.id === taskID)
        if (task) {
            const updatedTask = {...task, title: newValue}
@@ -151,7 +125,7 @@ export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue
     }
 }
 
-export const switchCheckAPITaskTC =  (listID: string, taskID: string, statusValue:StatusesForTask) => {
+export const switchCheckAPITaskTC =  (listID: string, taskID: string, statusValue:checkStatus) => {
 
     return (dispatch: Dispatch, getState:()=>rootStateType) => {
         const task = getState().tasks[listID].find(e=> e.id === taskID)

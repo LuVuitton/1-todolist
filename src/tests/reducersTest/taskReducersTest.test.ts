@@ -1,15 +1,37 @@
 import {tasksStateForTest} from "../StateForTest";
-import { StatusesForTask} from "../../Types";
-import {addEditedTaskAC, mainACTaskType, switchCheckboxAC} from "../../actionCreators/ActionCreators";
+import { checkStatus} from "../../Types";
+import {
+    addEditedTaskAC, addTaskAC, mainACTaskType,
+    switchCheckboxAC
+} from "../../redux/actionCreators/ActionCreators";
 import {taskReducer} from "../../redux/reducers/taskReduser";
 
 const startState = tasksStateForTest
 
 
+test('should to add new task to List', () => {
+    const action: mainACTaskType = addTaskAC({
+        id: 'taskID5',
+        status: checkStatus.New,
+        title: 'new task',
+        todoListId: 'listID2',
+        order: 1,
+        addedDate: '',
+        deadline: '',
+        description: 'to learn',
+        priority: 1,
+        startDate: '',
+    })
+
+    const endState = taskReducer(startState, action)
+
+    expect(endState['listID2'].length>startState['listID2'].length).toBeTruthy()
+})
+
 
 test('should to remove the task from the list by id', () => {
 
-    const action: mainACTaskType = {type: 'REMOVE-TASK', payload: {taskID: 'taskID4', toDoListId: 'listID2'}}
+    const action: mainACTaskType = {type: 'REMOVE-TASK', payload: {taskID: 'taskID4', listID: 'listID2'}}
 
     const endState = taskReducer(startState, action)
 
@@ -19,14 +41,16 @@ test('should to remove the task from the list by id', () => {
     expect(endState['listID2'].every(e => e.id != 'taskID4')).toBeTruthy()
 })
 
+
+
 test('should to switch checkbox in task by id', () => {
 
-    const action = switchCheckboxAC('taskID2', StatusesForTask.Completed, 'listID1')
+    const action = switchCheckboxAC('taskID2', checkStatus.Completed, 'listID1')
 
     const endState = taskReducer(startState, action)
 
-    expect(endState['listID1'][1].status).toBe(StatusesForTask.Completed)
-    expect(endState['listID2'][1].status).toBe(StatusesForTask.New)
+    expect(endState['listID1'][1].status).toBe(checkStatus.Completed)
+    expect(endState['listID2'][1].status).toBe(checkStatus.New)
     expect(endState['listID1'].length).toEqual(startState['listID1'].length)
 })
 

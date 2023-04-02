@@ -1,16 +1,16 @@
 import React from 'react';
 import {EditableSpan} from "./EditableSpan";
-import {StatusesForTask, TaskPropsType} from "../Types";
+import {checkStatus, TaskPropsType} from "../Types";
 
 
 export const Task = React.memo((props: TaskPropsType) => {
 
-    return <div className={props.checked === StatusesForTask.Completed ? 'isDone': ''} key={props.taskID}>
+    return <div className={props.checked === checkStatus.Completed ? 'isDone': ''} key={props.taskID}>
         <input
             type={props.type}
             //костыли пока чекбокс заточен по булево значение
-            checked={props.checked === StatusesForTask.Completed}
-            onChange={()=>props.onChangeHandler(props.checked === StatusesForTask.Completed ? StatusesForTask.New: StatusesForTask.Completed)}
+            checked={props.checked === checkStatus.Completed}
+            onChange={()=>props.onChangeHandler(props.checked === checkStatus.Completed ? checkStatus.New: checkStatus.Completed)}
             key={props.taskID}
         />
         <EditableSpan value={props.taskValue} callback={props.coverAddEditedTask}

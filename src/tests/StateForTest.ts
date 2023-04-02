@@ -1,5 +1,4 @@
-import {AllTasksType, OneToDoListAPIType, StatusesForTask} from "../Types";
-
+import {AllTasksType, OneToDoListAPIType, PrioritiesForTask, checkStatus} from "../Types";
 
 
 export const listStateForTest: OneToDoListAPIType[] = [
@@ -26,8 +25,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
+            status: checkStatus.Completed,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''
@@ -37,8 +36,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: StatusesForTask.New,
-            priority: 1,
+            status: checkStatus.New,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''
@@ -48,8 +47,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
+            status: checkStatus.Completed,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''
@@ -59,8 +58,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
+            status: checkStatus.Completed,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''
@@ -73,8 +72,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: StatusesForTask.New,
-            priority: 1,
+            status: checkStatus.New,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''
@@ -84,8 +83,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: StatusesForTask.New,
-            priority: 1,
+            status: checkStatus.New,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''
@@ -95,8 +94,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
+            status: checkStatus.Completed,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''
@@ -106,8 +105,8 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: StatusesForTask.Completed,
-            priority: 1,
+            status: checkStatus.Completed,
+            priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
             addedDate: ''

@@ -1,11 +1,10 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
-import {FilterButtonDataType, FilterType, StatusesForTask, ToDoListPropsType} from "../Types";
+import {FilterButtonDataType, FilterType, OneTaskType, checkStatus, ToDoListPropsType} from "../Types";
 import {FilterButton} from "./FilterButton";
 import {Task} from "./Task";
 import {v1} from "uuid";
-import {OneTaskType} from "../API-Functional/TasksAPI";
 import {useCustomSelector} from "../customHooks/CustomHooks";
 import {useCustomThunkDispatch} from "../redux/store";
 import {
@@ -40,10 +39,10 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     let filteredTasks: OneTaskType[] = tasks;
 
     if (filter === 'active') {
-        filteredTasks = tasks.filter(e => e.status === StatusesForTask.New)
+        filteredTasks = tasks.filter(e => e.status === checkStatus.New)
     }
     if (filter === 'completed') {
-        filteredTasks = tasks.filter(e => e.status === StatusesForTask.Completed)
+        filteredTasks = tasks.filter(e => e.status === checkStatus.Completed)
     }
 
     const filterAll = useCallback(() => setFilter('all'), [])
@@ -76,7 +75,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
         return filteredTasks.map((e) => {
 
-            const onChangeHandler = (statusValue:StatusesForTask) => {
+            const onChangeHandler = (statusValue:checkStatus) => {
                 dispatch(switchCheckAPITaskTC(props.toDoListID, e.id, statusValue))
             }
             const removeTaskHandler = (taskID: string) => dispatch(deleteAPITaskTC(props.toDoListID,taskID))

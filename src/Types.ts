@@ -1,5 +1,4 @@
 
-import {OneTaskType} from "./API-Functional/TasksAPI";
 
 export type GeneralResponseType<D={}> = {
     resultCode: number
@@ -35,12 +34,20 @@ export type AllTasksType = {
 
 //тип перечисления, задаем какой либо статус в цифрах(значения)
 // и описываем его именем свойства, что бы было понятно как с ним работать
-export enum StatusesForTask {
+export enum checkStatus {
     New,
     InProgress,
     Completed,
     Draft //черновик
 
+}
+
+export enum PrioritiesForTask {
+    Low,
+    Middle,
+    High,
+    Urgently,
+    Later
 }
 
 export type ToDoListPropsType = {
@@ -65,10 +72,10 @@ export type FilterButtonDataType = {
 
 export type TaskPropsType = {
     type: string
-    checked: StatusesForTask
+    checked: checkStatus
     taskValue: string
     taskID: string
-    onChangeHandler: (statusValue:StatusesForTask) => void
+    onChangeHandler: (statusValue:checkStatus) => void
     coverAddEditedTask: (value: string) => void
     removeTaskHandler: (taskID: string) => void
 }
@@ -79,3 +86,22 @@ export type EditableSpanPropsType = {
     itemID: string
 }
 
+export type ResponseTasksType = {
+    items: OneTaskType[]
+    totalCount: number
+    error: null | string
+}
+
+
+export type OneTaskType = {
+    id: string
+    title: string
+    description: string
+    todoListId: string
+    order: number
+    status: checkStatus
+    priority: PrioritiesForTask
+    startDate: string
+    deadline: string
+    addedDate: string
+}

@@ -1,25 +1,7 @@
 import {instance} from "./ToDoListsAPI";
-import {GeneralResponseType, StatusesForTask} from "../Types";
-
-export type ResponseTasksType = {
-    items: OneTaskType[]
-    totalCount: number
-    error: null | string
-}
+import {GeneralResponseType, OneTaskType, ResponseTasksType} from "../Types";
 
 
-export type OneTaskType = {
-    id: string
-    title: string
-    description: string
-    todoListId: string
-    order: number
-    status: StatusesForTask
-    priority: number
-    startDate: string
-    deadline: string
-    addedDate: string
-}
 
 
 export const tasksAPI = {
