@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
-import {FilterButtonDataType, FilterType, OneTaskType, checkStatus, ToDoListPropsType} from "../Types";
+import {FilterButtonDataType, FilterType, OneTaskType, CheckStatus, ToDoListPropsType} from "../Types";
 import {FilterButton} from "./FilterButton";
 import {Task} from "./Task";
 import {v1} from "uuid";
@@ -39,10 +39,10 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     let filteredTasks: OneTaskType[] = tasks;
 
     if (filter === 'active') {
-        filteredTasks = tasks.filter(e => e.status === checkStatus.New)
+        filteredTasks = tasks.filter(e => e.status === CheckStatus.New)
     }
     if (filter === 'completed') {
-        filteredTasks = tasks.filter(e => e.status === checkStatus.Completed)
+        filteredTasks = tasks.filter(e => e.status === CheckStatus.Completed)
     }
 
     const filterAll = useCallback(() => setFilter('all'), [])
@@ -61,8 +61,6 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     }, [])
 
 
-
-
 ////////////tasksMAP
     // юзМемо, т.к. у нас 2 компоненты с тудулистом, каждый отрисовывает свои таски(2 разных мапа в двух разных тудулистах)
     // пропсы в каждый тудулист приходят со своими тасками
@@ -75,13 +73,11 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
         return filteredTasks.map((e) => {
 
-            const onChangeHandler = (statusValue:checkStatus) => {
-                dispatch(switchCheckAPITaskTC(props.toDoListID, e.id, statusValue))
-            }
-            const removeTaskHandler = (taskID: string) => dispatch(deleteAPITaskTC(props.toDoListID,taskID))
-            const addEditedTask = (value: string) => {
-                dispatch(updateAPIEditableTaskTC(props.toDoListID, e.id, value))
-            }
+            const onChangeHandler = (statusValue: CheckStatus) => dispatch(switchCheckAPITaskTC(props.toDoListID, e.id, statusValue))
+
+            const removeTaskHandler = (taskID: string) => dispatch(deleteAPITaskTC(props.toDoListID, taskID))
+            const addEditedTask = (value: string) => dispatch(updateAPIEditableTaskTC(props.toDoListID, e.id, value))
+
             return (
                 <Task
                     key={e.id}
@@ -92,6 +88,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                     onChangeHandler={onChangeHandler}
                     coverAddEditedTask={addEditedTask}
                     removeTaskHandler={removeTaskHandler}
+                    entityStatus={e.entityStatus}
                 />)
         })
     }, [filteredTasks])
@@ -120,7 +117,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                 <h3>
                     <EditableSpan value={props.titleList} callback={addEditedListTitle}
                                   itemID={props.toDoListID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
-                    <button onClick={clickToRemoveList}>x</button>
+                    <button disabled={props.entityStatus === 'loading'} onClick={clickToRemoveList}>x</button>
                 </h3>
 
                 <InputAdd clickToAddTask={addTask}/>

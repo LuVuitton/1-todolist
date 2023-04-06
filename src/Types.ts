@@ -1,3 +1,4 @@
+import {GlobalRequestStatusType} from "./redux/reducers/globalReducer";
 
 
 export type GeneralResponseType<D={}> = {
@@ -23,6 +24,7 @@ export type IncompleteListAPIType = {
 
 export type OneToDoListAPIType = IncompleteListAPIType & {
     filter: FilterType
+    entityStatus: GlobalRequestStatusType
 }
 
 
@@ -34,7 +36,7 @@ export type AllTasksType = {
 
 //тип перечисления, задаем какой либо статус в цифрах(значения)
 // и описываем его именем свойства, что бы было понятно как с ним работать
-export enum checkStatus {
+export enum CheckStatus {
     New,
     InProgress,
     Completed,
@@ -55,6 +57,7 @@ export type ToDoListPropsType = {
     filter: FilterType
     toDoListID: string
     removeList: (toDoListId: string) => void
+    entityStatus: GlobalRequestStatusType
 
 
 }
@@ -72,12 +75,13 @@ export type FilterButtonDataType = {
 
 export type TaskPropsType = {
     type: string
-    checked: checkStatus
+    checked: CheckStatus
     taskValue: string
     taskID: string
-    onChangeHandler: (statusValue:checkStatus) => void
+    onChangeHandler: (statusValue:CheckStatus) => void
     coverAddEditedTask: (value: string) => void
     removeTaskHandler: (taskID: string) => void
+    entityStatus: GlobalRequestStatusType
 }
 
 export type EditableSpanPropsType = {
@@ -87,21 +91,25 @@ export type EditableSpanPropsType = {
 }
 
 export type ResponseTasksType = {
-    items: OneTaskType[]
+    items: IncompleteOneTaskAPIType[]
     totalCount: number
     error: null | string
 }
 
 
-export type OneTaskType = {
+export type IncompleteOneTaskAPIType = {
     id: string
     title: string
     description: string
     todoListId: string
     order: number
-    status: checkStatus
+    status: CheckStatus
     priority: PrioritiesForTask
     startDate: string
     deadline: string
     addedDate: string
+}
+
+export type OneTaskType = IncompleteOneTaskAPIType & {
+    entityStatus: GlobalRequestStatusType
 }

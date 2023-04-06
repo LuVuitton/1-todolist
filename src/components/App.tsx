@@ -6,7 +6,8 @@ import {OneToDoListAPIType} from "../Types";
 import {useCustomThunkDispatch} from "../redux/store";
 import {addAPIListTC, deleteAPIListTC, getListTC} from "../redux/reducers/listReducers";
 import {useCustomSelector} from "../customHooks/CustomHooks";
-import {GlobalStatusesType} from "../redux/reducers/globalReducer";
+import {GlobalRequestStatusType} from "../redux/reducers/globalReducer";
+import {ErrorSnackbar} from "./ErrorSnackbar";
 
 
 //убрать юз колбэки \ реакт мемо \ юз мемо там где они не нужны
@@ -17,7 +18,7 @@ const App = () => {
     const dispatch = useCustomThunkDispatch()
     // описание кастомного селектора в кастомных хуках
     const toDoLists = useCustomSelector<OneToDoListAPIType[]>(state => state.lists)
-    const globalStatus = useCustomSelector<GlobalStatusesType>(state => state.global.status)
+    const globalStatus = useCustomSelector<GlobalRequestStatusType>(state => state.global.status)
 
     useEffect(() => {
         dispatch(getListTC())
@@ -41,6 +42,7 @@ const App = () => {
                 filter={tl.filter}
                 toDoListID={tl.id}
                 removeList={removeList}
+                entityStatus = {tl.entityStatus}
             />
         )
     })
@@ -53,7 +55,7 @@ const App = () => {
             <div className="App">
 
                 {mappedLists}
-                {/*<TestComp/>*/}
+                <ErrorSnackbar/>
 
             </div>
         </>

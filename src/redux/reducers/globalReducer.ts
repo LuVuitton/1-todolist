@@ -1,8 +1,8 @@
 
-export type GlobalStatusesType = 'idle' | 'loading' | 'succeeded' | 'failed' // бездействующий|загружается|успешно|неуспешно
+export type GlobalRequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed' // бездействующий|загружается|успешно|неуспешно
 export type GlobalErrorMessageType = string | null
 export type GlobalStateType = {
-    status: GlobalStatusesType
+    status: GlobalRequestStatusType
     errorMessage: GlobalErrorMessageType
 }
 
@@ -28,10 +28,10 @@ export const globalReducer = (state: GlobalStateType = initialErrorState, action
 
 
 export type AllGlobalACType =
-    | ReturnType<typeof setStatusAC>
+    | ReturnType<typeof setGlobalStatusAC>
     | ReturnType<typeof setErrorMessageAC>
 
-export const setStatusAC = (status: GlobalStatusesType) =>
+export const setGlobalStatusAC = (status: GlobalRequestStatusType) =>
     ({type: 'SET-STATUS', payload: {status}} as const)
 export const setErrorMessageAC = (errorMessage: GlobalErrorMessageType) =>
     ({type: 'SET-ERROR-MESSAGE', payload: {errorMessage}} as const)

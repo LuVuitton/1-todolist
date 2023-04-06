@@ -3,7 +3,7 @@ import thunk, {ThunkDispatch} from 'redux-thunk';
 import {listReducer} from "./reducers/listReducers";
 import {taskReducer} from "./reducers/taskReduser";
 import { useDispatch} from "react-redux";
-import {AllACTypes} from "./actionCreators/ActionCreators";
+import {GeneralACType} from "./actionCreators/ActionCreators";
 import {globalReducer} from "./reducers/globalReducer";
 
 
@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
     global: globalReducer
 })
 
-export type rootStateType = ReturnType<typeof rootReducer>
+export type RootStateType = ReturnType<typeof rootReducer>
 
 // applyMiddleware сортирует функции и обьекты и если приходит фун, то он ее вызывает, при выхове помезает туда диспатч и гетСтейт
 export const store = createStore(rootReducer, applyMiddleware(thunk))
@@ -27,7 +27,7 @@ window.store = store
 
 
 // кастомный хук для юзДиспатч, теперь он опять может принимать санки а не только объекты
-export type DispatchThunkType = ThunkDispatch<rootStateType, any, AllACTypes>
+export type DispatchThunkType = ThunkDispatch<RootStateType, any, GeneralACType>
 export const useCustomThunkDispatch = () => useDispatch<DispatchThunkType>()
 
 

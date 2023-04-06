@@ -1,18 +1,18 @@
 import {tasksStateForTest} from "../StateForTest";
-import { checkStatus} from "../../Types";
+import { CheckStatus} from "../../Types";
 import {
-    addEditedTaskAC, addTaskAC, mainACTaskType,
+    addEditedTaskAC, addTaskAC, GeneralACTaskType,
     switchCheckboxAC
 } from "../../redux/actionCreators/ActionCreators";
-import {taskReducer} from "../../redux/reducers/taskReduser";
+import {changeEntityTaskStatusAC, taskReducer} from "../../redux/reducers/taskReduser";
 
 const startState = tasksStateForTest
 
 
 test('should to add new task to List', () => {
-    const action: mainACTaskType = addTaskAC({
+    const action: GeneralACTaskType = addTaskAC({
         id: 'taskID5',
-        status: checkStatus.New,
+        status: CheckStatus.New,
         title: 'new task',
         todoListId: 'listID2',
         order: 1,
@@ -31,7 +31,7 @@ test('should to add new task to List', () => {
 
 test('should to remove the task from the list by id', () => {
 
-    const action: mainACTaskType = {type: 'REMOVE-TASK', payload: {taskID: 'taskID4', listID: 'listID2'}}
+    const action: GeneralACTaskType = {type: 'REMOVE-TASK', payload: {taskID: 'taskID4', listID: 'listID2'}}
 
     const endState = taskReducer(startState, action)
 
@@ -45,12 +45,12 @@ test('should to remove the task from the list by id', () => {
 
 test('should to switch checkbox in task by id', () => {
 
-    const action = switchCheckboxAC('taskID2', checkStatus.Completed, 'listID1')
+    const action = switchCheckboxAC('taskID2', CheckStatus.Completed, 'listID1')
 
     const endState = taskReducer(startState, action)
 
-    expect(endState['listID1'][1].status).toBe(checkStatus.Completed)
-    expect(endState['listID2'][1].status).toBe(checkStatus.New)
+    expect(endState['listID1'][1].status).toBe(CheckStatus.Completed)
+    expect(endState['listID2'][1].status).toBe(CheckStatus.New)
     expect(endState['listID1'].length).toEqual(startState['listID1'].length)
 })
 
@@ -64,4 +64,14 @@ test('should to set a new name for the existing task', () => {
     expect(endState['listID1'][0].title).toBe('HTML&CSS')
 })
 
+test('should to change entity task status to loading', ()=> {
 
+    const action = changeEntityTaskStatusAC('taskID1', 'listID1', 'loading' )
+
+    const endState = taskReducer(startState, action)
+
+    expect(endState['listID1'][0].entityStatus).toBe('loading')
+    expect(endState['listID1'][0].entityStatus).not.toEqual(startState['listID1'][0].entityStatus)
+
+
+})

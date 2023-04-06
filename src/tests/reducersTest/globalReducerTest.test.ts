@@ -1,5 +1,5 @@
 import {globalStateForTests} from "../StateForTest";
-import {globalReducer, GlobalStateType, setErrorMessageAC, setStatusAC} from "../../redux/reducers/globalReducer";
+import {globalReducer, GlobalStateType, setErrorMessageAC, setGlobalStatusAC} from "../../redux/reducers/globalReducer";
 
 let startState: GlobalStateType;
 
@@ -11,7 +11,7 @@ beforeEach(() => {
 test('have to change status to loading', () => {
 
 
-    const action = setStatusAC('loading')
+    const action = setGlobalStatusAC('loading')
 
     const endState = globalReducer(startState, action)
 

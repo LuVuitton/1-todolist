@@ -1,4 +1,4 @@
-import {AllTasksType, OneToDoListAPIType, PrioritiesForTask, checkStatus} from "../Types";
+import {AllTasksType, OneToDoListAPIType, PrioritiesForTask, CheckStatus} from "../Types";
 import {GlobalStateType} from "../redux/reducers/globalReducer";
 
 
@@ -8,13 +8,18 @@ export const listStateForTest: OneToDoListAPIType[] = [
         title: 'what to learn',
         filter: 'all',
         addedDate: '',
-        order: 1},
+        order: 1,
+        entityStatus: 'idle'
+    },
+
     {
         id: 'listID2',
         title: 'numbers',
         filter: 'all',
         addedDate: '',
-        order: 1}
+        order: 1,
+        entityStatus: 'idle'
+    }
 ]
 
 export const tasksStateForTest: AllTasksType = {
@@ -26,44 +31,49 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: checkStatus.Completed,
+            status: CheckStatus.Completed,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
         }, {
             id:'taskID2',
             title: 'MongoDB',
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: checkStatus.New,
+            status: CheckStatus.New,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
+
         }, {
             id: 'taskID3',
             title: 'Redux',
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: checkStatus.Completed,
+            status: CheckStatus.Completed,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
         }, {
             id: 'taskID4',
             title: 'JS',
             description: 'to learn',
             todoListId: 'listID1',
             order: 1,
-            status: checkStatus.Completed,
+            status: CheckStatus.Completed,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
         },
     ],
     ['listID2']: [
@@ -73,44 +83,48 @@ export const tasksStateForTest: AllTasksType = {
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: checkStatus.New,
+            status: CheckStatus.New,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
         }, {
             id: 'taskID2',
             title: 'Context this',
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: checkStatus.New,
+            status: CheckStatus.New,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
         }, {
             id: 'taskID3',
             title: 'Event Loop',
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: checkStatus.Completed,
+            status: CheckStatus.Completed,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
         }, {
             id: 'taskID4',
             title: 'Promises',
             description: 'to learn',
             todoListId: 'listID2',
             order: 1,
-            status: checkStatus.Completed,
+            status: CheckStatus.Completed,
             priority: PrioritiesForTask.Middle,
             startDate: '',
             deadline: '',
-            addedDate: ''
+            addedDate: '',
+            entityStatus: 'idle'
         },
     ]
 }

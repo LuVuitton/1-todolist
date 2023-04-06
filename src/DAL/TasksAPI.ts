@@ -1,5 +1,5 @@
 import {instance} from "./ToDoListsAPI";
-import {GeneralResponseType, OneTaskType, ResponseTasksType} from "../Types";
+import {GeneralResponseType, IncompleteOneTaskAPIType, OneTaskType, ResponseTasksType} from "../Types";
 
 
 
@@ -12,7 +12,7 @@ export const tasksAPI = {
             .then(r => r.data.items)
     },
     postTask(listID: string, taskTitle: string) {
-        return instance.post<GeneralResponseType<{item:OneTaskType}>>(`/todo-lists/${listID}/tasks`, {title: taskTitle}).
+        return instance.post<GeneralResponseType<{item:IncompleteOneTaskAPIType}>>(`/todo-lists/${listID}/tasks`, {title: taskTitle}).
             then(r=>r)
     },
     deleteTask(listID: string, taskID: string) {
@@ -20,6 +20,6 @@ export const tasksAPI = {
     },
     updateTask(listID:string, taskID:string, updatedTask:OneTaskType) {
 
-        return instance.put<any>(`todo-lists/${listID}/tasks/${taskID}`, updatedTask )
+        return instance.put<GeneralResponseType<IncompleteOneTaskAPIType>>(`todo-lists/${listID}/tasks/${taskID}`, updatedTask )
     }
 }

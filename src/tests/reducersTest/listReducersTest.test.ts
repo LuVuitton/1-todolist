@@ -3,7 +3,7 @@ import {
     addEditedListTitleAC, addListCreateEmptyTasksAC,
     removeListAC
 } from "../../redux/actionCreators/ActionCreators";
-import {listReducer} from "../../redux/reducers/listReducers";
+import {changeEntityListStatusAC, listReducer} from "../../redux/reducers/listReducers";
 import {IncompleteListAPIType} from "../../Types";
 
 
@@ -54,4 +54,16 @@ test('should to set a new name for the existing list', () => {
     expect(endState[1].title).toBe('numbers')
 })
 
+
+test('should to change entity list status to loading', ()=> {
+
+    const action = changeEntityListStatusAC('listID1', 'loading')
+
+    const endState = listReducer(startState, action)
+
+    expect(endState[0].entityStatus).toBe('loading')
+    expect(endState[0].entityStatus).not.toEqual(startState[0].entityStatus)
+
+
+})
 
