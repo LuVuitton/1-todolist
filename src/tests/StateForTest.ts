@@ -1,4 +1,5 @@
 import {AllTasksType, OneToDoListAPIType, PrioritiesForTask, checkStatus} from "../Types";
+import {GlobalStateType} from "../redux/reducers/globalReducer";
 
 
 export const listStateForTest: OneToDoListAPIType[] = [
@@ -115,3 +116,7 @@ export const tasksStateForTest: AllTasksType = {
 }
 
 
+export const globalStateForTests: GlobalStateType = {
+    status: "idle",
+    errorMessage: null
+}

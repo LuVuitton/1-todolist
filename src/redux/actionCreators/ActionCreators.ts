@@ -19,8 +19,8 @@ export type mainACListType =
 
 
 //AC
-export const addListCreateEmptyTasksAC = (inputValue: string, newList: IncompleteListAPIType) =>
-    ({type: 'ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR', payload: {inputValue, newList}} as const)
+export const addListCreateEmptyTasksAC = (newList: IncompleteListAPIType) =>
+    ({type: 'ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR', payload: {newList:newList}} as const)
 
 export const removeListAC = (listID: string) =>
     ({type: 'REMOVE-LIST', payload: {listID}} as const)

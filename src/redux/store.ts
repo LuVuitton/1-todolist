@@ -4,11 +4,13 @@ import {listReducer} from "./reducers/listReducers";
 import {taskReducer} from "./reducers/taskReduser";
 import { useDispatch} from "react-redux";
 import {AllACTypes} from "./actionCreators/ActionCreators";
+import {globalReducer} from "./reducers/globalReducer";
 
 
 const rootReducer = combineReducers({
     lists: listReducer, // сюда возврщается стейт из редьюсеров и на этот обьект(или ключи или шо) подписан юз селектор
-    tasks: taskReducer
+    tasks: taskReducer,
+    global: globalReducer
 })
 
 export type rootStateType = ReturnType<typeof rootReducer>

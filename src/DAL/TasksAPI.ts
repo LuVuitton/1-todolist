@@ -13,7 +13,7 @@ export const tasksAPI = {
     },
     postTask(listID: string, taskTitle: string) {
         return instance.post<GeneralResponseType<{item:OneTaskType}>>(`/todo-lists/${listID}/tasks`, {title: taskTitle}).
-            then(r=>r.data.data.item)
+            then(r=>r)
     },
     deleteTask(listID: string, taskID: string) {
         return instance.delete<GeneralResponseType>(`/todo-lists/${listID}/tasks/${taskID}`)

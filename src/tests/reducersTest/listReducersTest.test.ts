@@ -1,26 +1,34 @@
 import {listStateForTest} from "../StateForTest";
 import {
-    addEditedListTitleAC,
+    addEditedListTitleAC, addListCreateEmptyTasksAC,
     removeListAC
 } from "../../redux/actionCreators/ActionCreators";
 import {listReducer} from "../../redux/reducers/listReducers";
+import {IncompleteListAPIType} from "../../Types";
 
 
 //beforeEach(()=>{}) сработает перед началом каждого теста
 
 const startState = listStateForTest
 
-//
-// test('should add new list to array of toDoLists', () => {
-//
-//     const action =  addListCreateEmptyTasksAC('new for new list', 'newListID')
-//
-//     const endState = listReducer(startState, action)
-//
-//     expect(endState.length > startState.length).toBeTruthy()
-//     expect(endState[0].title).toBe('new for new list')
-//     expect(endState[2]).toBeDefined()
-// })
+
+test('should add new list to array of toDoLists', () => {
+
+    const newList:IncompleteListAPIType = {
+        addedDate: '',
+        order:1,
+        id: 'newListId',
+        title: 'new for new list'
+    }
+    //на сервер постим
+    const action =  addListCreateEmptyTasksAC(newList )
+
+    const endState = listReducer(startState, action)
+
+    expect(endState.length > startState.length).toBeTruthy()
+    expect(endState[0].title).toBe('new for new list')
+
+})
 
 test('should remove specific list by id', () => {
 

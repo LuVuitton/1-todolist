@@ -10,6 +10,7 @@ import {
 } from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
 import {rootStateType} from "../store";
+import {setErrorMessageAC, setStatusAC} from "./globalReducer";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 const initState: AllTasksType = {
@@ -50,8 +51,10 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
     switch (action.type) {
         case 'ADD-TASK' :
             //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
-            return {...state, [action.payload.newTask.todoListId]:
-                    [action.payload.newTask, ...state[action.payload.newTask.todoListId]]}
+            return {
+                ...state, [action.payload.newTask.todoListId]:
+                    [action.payload.newTask, ...state[action.payload.newTask.todoListId]]
+            }
 
         case 'REMOVE-TASK' : {
             const specificToDOList = state[action.payload.listID] //находим тудулист
@@ -96,44 +99,72 @@ export const taskReducer = (state: AllTasksType = initState, action: mainACTaskT
 
 
 export const getAPITasksTC = (listID: string) => (dispatch: Dispatch) => {
+    dispatch(setStatusAC("loading"))
     tasksAPI.getTasks(listID)
-        .then(r => dispatch(setAPITasksAC(r, listID)))
+        .then(r => {
+            dispatch(setAPITasksAC(r, listID))
+            dispatch(setStatusAC("succeeded"))
+
+        })
+
 }
 
 export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch) => {
+    dispatch(setStatusAC("loading"))
+
     tasksAPI.deleteTask(listID, taskID)
-        .then(() => dispatch(removeTaskAC(taskID, listID)))
+        .then(() => {
+            dispatch(removeTaskAC(taskID, listID))
+            dispatch(setStatusAC("succeeded"))
+
+        })
 }
 
 export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch) => {
+    dispatch(setStatusAC("loading"))
     tasksAPI.postTask(listID, taskValue)
-        .then((r) => {
-            dispatch(addTaskAC(r))
+        .then(r => {
+            if (r.data.resultCode === 0) { //0 только приуспешном выполнении, ошибки всё кроме 0
+                dispatch(addTaskAC(r.data.data.item))
+                dispatch(setStatusAC("succeeded"))
+            } else {
+                if (r.data.messages.length) { // проверяем есть ли какое то описание ошибки или массив пустой
+                    dispatch(setErrorMessageAC(r.data.messages[0])) //ошибки находятся в массиве строк[]
+                } else {
+                    dispatch(setErrorMessageAC('some error has occurred')) // если масс пустой в текст ошибки сетаем это
+                }
+                dispatch(setStatusAC("failed"))
+            }
         })
 }
 
 export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue: string) => {
 
-   return (dispatch: Dispatch, getState:()=>rootStateType) => {
+    return (dispatch: Dispatch, getState: () => rootStateType) => {
+        dispatch(setStatusAC("loading"))
 
-       const task = getState().tasks[listID].find(e=> e.id === taskID)
-       if (task) {
-           const updatedTask = {...task, title: newValue}
-           tasksAPI.updateTask(listID, taskID, updatedTask)
-               .then(() => dispatch(addEditedTaskAC(newValue, listID, taskID)))
-       }
+        const task = getState().tasks[listID].find(e => e.id === taskID)
+        if (task) {
+            const updatedTask = {...task, title: newValue}
+            tasksAPI.updateTask(listID, taskID, updatedTask)
+                .then(() => {
+                    dispatch(addEditedTaskAC(newValue, listID, taskID))
+                    dispatch(setStatusAC("succeeded"))
+                })
+        }
     }
 }
 
-export const switchCheckAPITaskTC =  (listID: string, taskID: string, statusValue:checkStatus) => {
+export const switchCheckAPITaskTC = (listID: string, taskID: string, statusValue: checkStatus) => {
 
-    return (dispatch: Dispatch, getState:()=>rootStateType) => {
-        const task = getState().tasks[listID].find(e=> e.id === taskID)
+    return (dispatch: Dispatch, getState: () => rootStateType) => {
+
+        const task = getState().tasks[listID].find(e => e.id === taskID)
         if (task) {
             const updatedTask = {...task, status: statusValue}
 
             tasksAPI.updateTask(listID, taskID, updatedTask)
-                .then(() => dispatch(switchCheckboxAC(taskID,statusValue, listID)))
+                .then(() => dispatch(switchCheckboxAC(taskID, statusValue, listID)))
         }
     }
 }

@@ -6,19 +6,18 @@ import {OneToDoListAPIType} from "../Types";
 import {useCustomThunkDispatch} from "../redux/store";
 import {addAPIListTC, deleteAPIListTC, getListTC} from "../redux/reducers/listReducers";
 import {useCustomSelector} from "../customHooks/CustomHooks";
+import {GlobalStatusesType} from "../redux/reducers/globalReducer";
 
 
 //убрать юз колбэки \ реакт мемо \ юз мемо там где они не нужны
 // где диспатчить?
 
 const App = () => {
-
-
     // описание кастомного диспатча в сторе
     const dispatch = useCustomThunkDispatch()
-
-    // описание кастомного диспатча в кастомных хуках
+    // описание кастомного селектора в кастомных хуках
     const toDoLists = useCustomSelector<OneToDoListAPIType[]>(state => state.lists)
+    const globalStatus = useCustomSelector<GlobalStatusesType>(state => state.global.status)
 
     useEffect(() => {
         dispatch(getListTC())
@@ -48,7 +47,8 @@ const App = () => {
 
     return (
         <>
-            <div>New List</div>
+            <span>New List </span>
+            {globalStatus === 'loading' && <span style={{color: 'red'}}> LOADING...</span>}
             <InputAdd clickToAddTask={addList}/>
             <div className="App">
 
