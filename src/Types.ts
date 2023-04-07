@@ -8,9 +8,15 @@ export type GeneralResponseType<D={}> = {
     data: D
 }
 
+export type ErrorResponseDataAPI = {
+    //то что сюда класть переписываем из документации бэка
+    //этот обьект формирует бэк и кладет его в респонс ошибки
+    message:string
+}
 
 export type InputAddPropsType = {
     clickToAddTask: (inputValue: string) => void
+    disabled?:boolean
 }
 
 export type FilterType = 'all' | 'completed' | 'active';
@@ -52,6 +58,12 @@ export enum PrioritiesForTask {
     Later
 }
 
+export enum ResulAPICode {
+    Ok,
+    Error,
+    Captcha = 10,
+}
+
 export type ToDoListPropsType = {
     titleList: string,
     filter: FilterType
@@ -91,9 +103,9 @@ export type EditableSpanPropsType = {
 }
 
 export type ResponseTasksType = {
+    error: null | string
     items: IncompleteOneTaskAPIType[]
     totalCount: number
-    error: null | string
 }
 
 

@@ -1,3 +1,4 @@
+import {GeneralGlobalACType} from "../actionCreators/ActionCreators";
 
 export type GlobalRequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed' // бездействующий|загружается|успешно|неуспешно
 export type GlobalErrorMessageType = string | null
@@ -13,7 +14,7 @@ const initialErrorState: GlobalStateType = {
 }
 
 
-export const globalReducer = (state: GlobalStateType = initialErrorState, actions: AllGlobalACType) => {
+export const globalReducer = (state: GlobalStateType = initialErrorState, actions: GeneralGlobalACType) => {
     switch (actions.type) {
         case 'SET-STATUS': {
             return {...state, status: actions.payload.status}
@@ -27,9 +28,7 @@ export const globalReducer = (state: GlobalStateType = initialErrorState, action
 }
 
 
-export type AllGlobalACType =
-    | ReturnType<typeof setGlobalStatusAC>
-    | ReturnType<typeof setErrorMessageAC>
+
 
 export const setGlobalStatusAC = (status: GlobalRequestStatusType) =>
     ({type: 'SET-STATUS', payload: {status}} as const)

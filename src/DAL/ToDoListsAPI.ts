@@ -19,17 +19,19 @@ export const instance = axios.create({ //позволяет создать ша�
 export const toDoListsAPI = {
     //инстанс выше
     getLists() {
-        return instance.get<IncompleteListAPIType[]>(`/todo-lists`).then((r) => r.data)
+        return instance.get<IncompleteListAPIType[]>(`/todo-lists`)
     },
     postList(title: string) {
         return instance.post<GeneralResponseType<{ item: IncompleteListAPIType }>>(`/todo-lists`, {title: title})
-            .then(r=>r.data.data)
+            .then(r=>r.data)
     },
     deleteList(listID: string) {
         return instance.delete<GeneralResponseType>(`/todo-lists/${listID}`)
+            .then(r=>r.data)
     },
     updateList(listID: string, newValue: string) {
         return instance.put<GeneralResponseType>(`/todo-lists/${listID}`, {title: newValue})
+            .then(r=>r.data)
     },
 
 }

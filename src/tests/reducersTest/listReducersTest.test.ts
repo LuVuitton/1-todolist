@@ -1,9 +1,9 @@
 import {listStateForTest} from "../StateForTest";
 import {
-    addEditedListTitleAC, addListCreateEmptyTasksAC,
+    addEditedListTitleAC, addListCreateEmptyTasksAC, setEntityListStatusAC,
     removeListAC
 } from "../../redux/actionCreators/ActionCreators";
-import {changeEntityListStatusAC, listReducer} from "../../redux/reducers/listReducers";
+import {listReducer} from "../../redux/reducers/listReducers";
 import {IncompleteListAPIType} from "../../Types";
 
 
@@ -57,7 +57,7 @@ test('should to set a new name for the existing list', () => {
 
 test('should to change entity list status to loading', ()=> {
 
-    const action = changeEntityListStatusAC('listID1', 'loading')
+    const action = setEntityListStatusAC('listID1', 'loading')
 
     const endState = listReducer(startState, action)
 

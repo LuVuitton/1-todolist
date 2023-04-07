@@ -1,16 +1,18 @@
-import {AllTasksType, CheckStatus} from "../../Types";
+import {AllTasksType, CheckStatus, ErrorResponseDataAPI, ResulAPICode} from "../../Types";
 import {tasksAPI} from "../../DAL/TasksAPI";
 import {
-    GeneralACTaskType,
+    GeneralTaskACType,
     addEditedTaskAC,
     addTaskAC,
     removeTaskAC,
     setAPITasksAC,
-    switchCheckboxAC
+    switchCheckboxAC, setEntityTaskStatusAC, setEntityListStatusAC
 } from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
 import {RootStateType} from "../store";
-import {GlobalRequestStatusType, setErrorMessageAC, setGlobalStatusAC} from "./globalReducer";
+import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
+import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
+import {AxiosError} from "axios";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 const initState: AllTasksType = {
@@ -45,7 +47,7 @@ const initState: AllTasksType = {
 }
 
 
-export const taskReducer = (state: AllTasksType = initState, action: GeneralACTaskType): AllTasksType => {
+export const taskReducer = (state: AllTasksType = initState, action: GeneralTaskACType): AllTasksType => {
 
 
     switch (action.type) {
@@ -104,97 +106,125 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralACTa
                         ? {...e, entityStatus: action.payload.newStatus}
                         : e)
             }
-
-
         default:
             return state
     }
 }
 
-export const changeEntityTaskStatusAC = (entityID: string, listID: string, newStatus: GlobalRequestStatusType) => {
-    return {
-        type: 'CHANGE-ENTITY-TASK-STATUS',
-        payload: {
-            entityID,
-            newStatus,
-            listID
-        }
-    } as const
-}
 
-
-export const getAPITasksTC = (listID: string) => (dispatch: Dispatch<GeneralACTaskType>) => {
+export const getAPITasksTC = (listID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
     dispatch(setGlobalStatusAC("loading"))
     tasksAPI.getTasks(listID)
         .then(r => {
-            dispatch(setAPITasksAC(r, listID))
+            dispatch(setAPITasksAC(r.data.items, listID))
             dispatch(setGlobalStatusAC("succeeded"))
-
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            const error = err.response ? err.response.data.message: err.message
+            runDefaultCatch(dispatch, error)
         })
 
 }
 
-export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch<GeneralACTaskType>) => {
-    dispatch(setGlobalStatusAC("loading"))
-    dispatch(changeEntityTaskStatusAC(taskID, listID, 'loading'))
+export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
+    dispatch(setGlobalStatusAC('loading'))
+    dispatch(setEntityTaskStatusAC(taskID, listID, 'loading'))
     tasksAPI.deleteTask(listID, taskID)
-        .then(() => {
-            dispatch(removeTaskAC(taskID, listID))
-            dispatch(setGlobalStatusAC("succeeded"))
-            dispatch(changeEntityTaskStatusAC(taskID, listID, 'succeeded'))
+        .then(r => {
+            if (r.resultCode === ResulAPICode.Ok) {
+                dispatch(removeTaskAC(taskID, listID))
+                dispatch(setGlobalStatusAC('succeeded'))
+                dispatch(setEntityTaskStatusAC(taskID, listID, 'succeeded'))
+            } else {
+                setErrorTextDependingMessage(dispatch, r)
+                dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
+            }
         })
-        .catch(err=> {
-            dispatch(setGlobalStatusAC('failed'))
-            dispatch(changeEntityTaskStatusAC(taskID,listID,'failed'))
-            dispatch(setErrorMessageAC(err.message))
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            const error = err.response ? err.response.data.message: err.message
+            runDefaultCatch(dispatch, error)
+            dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
         })
 }
 
-export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch<GeneralACTaskType>) => {
+export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
     dispatch(setGlobalStatusAC("loading"))
+    dispatch(setEntityListStatusAC(listID, 'loading'))
     tasksAPI.postTask(listID, taskValue)
         .then(r => {
-            if (r.data.resultCode === 0) { //0 только приуспешном выполнении, ошибки всё кроме 0
-                dispatch(addTaskAC(r.data.data.item))
+            if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
+                dispatch(addTaskAC(r.data.item))
                 dispatch(setGlobalStatusAC("succeeded"))
+                dispatch(setEntityListStatusAC(listID, 'succeeded'))
             } else {
-                if (r.data.messages.length) { // проверяем есть ли какое то описание ошибки или массив пустой
-                    dispatch(setErrorMessageAC(r.data.messages[0])) //ошибки находятся в массиве строк[]
-                } else {
-                    dispatch(setErrorMessageAC('some error has occurred')) // если масс пустой в текст ошибки сетаем это
-                }
-                dispatch(setGlobalStatusAC("failed"))
+                setErrorTextDependingMessage(dispatch, r)
+                dispatch(setEntityListStatusAC(listID, 'failed'))
             }
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            const error = err.response ? err.response.data.message: err.message
+            runDefaultCatch(dispatch, error)
+            dispatch(setEntityListStatusAC(listID, 'failed'))
         })
 }
 
 export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue: string) => {
+    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
 
-    return (dispatch: Dispatch<GeneralACTaskType>, getState: () => RootStateType) => {
         dispatch(setGlobalStatusAC("loading"))
-
+        dispatch(setEntityTaskStatusAC(taskID, listID, 'loading'))
         const task = getState().tasks[listID].find(e => e.id === taskID)
+
         if (task) {
             const updatedTask = {...task, title: newValue}
             tasksAPI.updateTask(listID, taskID, updatedTask)
-                .then(() => {
-                    dispatch(addEditedTaskAC(newValue, listID, taskID))
-                    dispatch(setGlobalStatusAC("succeeded"))
+                .then(r => {
+                    if (r.resultCode === ResulAPICode.Ok) {
+                        dispatch(addEditedTaskAC(newValue, listID, taskID))
+                        dispatch(setGlobalStatusAC("succeeded"))
+                        dispatch(setEntityTaskStatusAC(taskID, listID, 'succeeded'))
+
+                    } else {
+                        setErrorTextDependingMessage(dispatch, r)
+                        dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
+                    }
+                })
+                .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+                    const error = err.response ? err.response.data.message: err.message
+                    runDefaultCatch(dispatch, error)
+                    dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
                 })
         }
     }
 }
 
 export const switchCheckAPITaskTC = (listID: string, taskID: string, statusValue: CheckStatus) => {
+    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
 
-    return (dispatch: Dispatch<GeneralACTaskType>, getState: () => RootStateType) => {
+        dispatch(setGlobalStatusAC("loading"))
+        dispatch(setEntityTaskStatusAC(taskID, listID, 'loading'))
 
         const task = getState().tasks[listID].find(e => e.id === taskID)
         if (task) {
             const updatedTask = {...task, status: statusValue}
 
             tasksAPI.updateTask(listID, taskID, updatedTask)
-                .then(() => dispatch(switchCheckboxAC(taskID, statusValue, listID)))
+                .then(r => {
+                    if (r.resultCode === ResulAPICode.Ok) {
+                        dispatch(switchCheckboxAC(taskID, statusValue, listID))
+                        dispatch(setGlobalStatusAC("succeeded"))
+                        dispatch(setEntityTaskStatusAC(taskID, listID, 'succeeded'))
+
+                    } else {
+                        setErrorTextDependingMessage(dispatch, r)
+                        dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
+                    }
+                })
+                .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+                    const error = err.response ? err.response.data.message: err.message
+                    runDefaultCatch(dispatch, error)
+                    dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
+                })
         }
     }
 }

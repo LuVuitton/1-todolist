@@ -5,7 +5,6 @@ import {InputAddPropsType} from "../Types";
 
 
 export const InputAdd = React.memo( (props:InputAddPropsType) => {
-    // console.log('InputAdd')
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState<boolean>(false)
 
@@ -44,8 +43,12 @@ export const InputAdd = React.memo( (props:InputAddPropsType) => {
                 value={inputValue}
                 onChange={onChangeHandler}
                 onKeyPress={pressEnterToAddTask}
+                disabled={props.disabled}
             />
-            <button onClick={clickOnButton}>
+            <button
+                onClick={clickOnButton}
+            disabled={props.disabled}
+            >
                 +
             </button>
         </div>

@@ -1,11 +1,13 @@
 import {IncompleteListAPIType, CheckStatus, IncompleteOneTaskAPIType} from "../../Types";
-import {AllGlobalACType} from "../reducers/globalReducer";
-import {changeEntityListStatusAC} from "../reducers/listReducers";
-import {changeEntityTaskStatusAC} from "../reducers/taskReduser";
+import {
+    GlobalRequestStatusType,
+    setErrorMessageAC,
+    setGlobalStatusAC
+} from "../reducers/globalReducer";
 
-export type GeneralACType = GeneralACTaskType | GeneralACListType
+export type GeneralMainACType = GeneralTaskACType | GeneralListACType
 
-export type GeneralACTaskType =
+export type GeneralTaskACType =
     | ReturnType<typeof addTaskAC>
     | ReturnType<typeof removeTaskAC>
     | ReturnType<typeof switchCheckboxAC>
@@ -13,19 +15,23 @@ export type GeneralACTaskType =
     | ReturnType<typeof setAPITasksAC>
     | ReturnType<typeof setAPIListsAndArrToTasksAC>
     | ReturnType<typeof addListCreateEmptyTasksAC>
-    | AllGlobalACType
-    | ReturnType<typeof changeEntityTaskStatusAC>
+    | GeneralGlobalACType
+    | ReturnType<typeof setEntityTaskStatusAC>
+    | ReturnType<typeof setEntityListStatusAC>
 
 
-export type GeneralACListType =
+
+export type GeneralListACType =
     | ReturnType<typeof addListCreateEmptyTasksAC>
     | ReturnType<typeof removeListAC>
     | ReturnType<typeof addEditedListTitleAC>
     | ReturnType<typeof setAPIListsAndArrToTasksAC>
-    | AllGlobalACType
-    | ReturnType<typeof changeEntityListStatusAC>
+    | GeneralGlobalACType
+    | ReturnType<typeof setEntityListStatusAC>
 
-
+export type GeneralGlobalACType =
+    | ReturnType<typeof setGlobalStatusAC>
+    | ReturnType<typeof setErrorMessageAC>
 
 //AC
 export const addListCreateEmptyTasksAC = (newList: IncompleteListAPIType) =>
@@ -49,6 +55,12 @@ export const switchCheckboxAC = (taskID: string, checked: CheckStatus, listID: s
 export const addEditedTaskAC = (value: string, listID: string, taskID: string) =>
     ({type: 'ADD-EDITED-TASK', payload: {value, listID, taskID}} as const)
 
+export const setEntityTaskStatusAC = (entityID: string, listID: string, newStatus: GlobalRequestStatusType) =>
+    ({type: 'CHANGE-ENTITY-TASK-STATUS', payload: {entityID, newStatus, listID}} as const)
+
+export const setEntityListStatusAC = (entityID: string, newStatus: GlobalRequestStatusType) =>
+    ({type: 'CHANGE-ENTITY-LIST-STATUS', payload: {entityID, newStatus,}} as const)
+
 
 //AC API
 export const setAPIListsAndArrToTasksAC = (lists: IncompleteListAPIType[], newListIDArr: string[]) =>
@@ -56,4 +68,6 @@ export const setAPIListsAndArrToTasksAC = (lists: IncompleteListAPIType[], newLi
 
 export const setAPITasksAC = (tasksArr: IncompleteOneTaskAPIType[], listID: string) =>
     ({type: 'SET-API-TASKS-AC', payload: {tasksArr, listID}} as const)
+
+
 

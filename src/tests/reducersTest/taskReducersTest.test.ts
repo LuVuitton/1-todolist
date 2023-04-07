@@ -1,16 +1,16 @@
 import {tasksStateForTest} from "../StateForTest";
-import { CheckStatus} from "../../Types";
+import {CheckStatus} from "../../Types";
 import {
-    addEditedTaskAC, addTaskAC, GeneralACTaskType,
+    addEditedTaskAC, addTaskAC, setEntityTaskStatusAC, GeneralTaskACType,
     switchCheckboxAC
 } from "../../redux/actionCreators/ActionCreators";
-import {changeEntityTaskStatusAC, taskReducer} from "../../redux/reducers/taskReduser";
+import {taskReducer} from "../../redux/reducers/taskReduser";
 
 const startState = tasksStateForTest
 
 
 test('should to add new task to List', () => {
-    const action: GeneralACTaskType = addTaskAC({
+    const action: GeneralTaskACType = addTaskAC({
         id: 'taskID5',
         status: CheckStatus.New,
         title: 'new task',
@@ -25,13 +25,13 @@ test('should to add new task to List', () => {
 
     const endState = taskReducer(startState, action)
 
-    expect(endState['listID2'].length>startState['listID2'].length).toBeTruthy()
+    expect(endState['listID2'].length > startState['listID2'].length).toBeTruthy()
 })
 
 
 test('should to remove the task from the list by id', () => {
 
-    const action: GeneralACTaskType = {type: 'REMOVE-TASK', payload: {taskID: 'taskID4', listID: 'listID2'}}
+    const action: GeneralTaskACType = {type: 'REMOVE-TASK', payload: {taskID: 'taskID4', listID: 'listID2'}}
 
     const endState = taskReducer(startState, action)
 
@@ -40,7 +40,6 @@ test('should to remove the task from the list by id', () => {
     expect(endState['listID2'].length).not.toEqual(startState['listID2'].length)
     expect(endState['listID2'].every(e => e.id != 'taskID4')).toBeTruthy()
 })
-
 
 
 test('should to switch checkbox in task by id', () => {
@@ -64,9 +63,9 @@ test('should to set a new name for the existing task', () => {
     expect(endState['listID1'][0].title).toBe('HTML&CSS')
 })
 
-test('should to change entity task status to loading', ()=> {
+test('should to change entity task status to loading', () => {
 
-    const action = changeEntityTaskStatusAC('taskID1', 'listID1', 'loading' )
+    const action = setEntityTaskStatusAC('taskID1', 'listID1', 'loading')
 
     const endState = taskReducer(startState, action)
 

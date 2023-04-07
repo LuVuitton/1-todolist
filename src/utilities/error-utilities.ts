@@ -1,0 +1,28 @@
+import {setErrorMessageAC, setGlobalStatusAC} from "../redux/reducers/globalReducer";
+import {Dispatch} from "redux";
+import {GeneralMainACType} from "../redux/actionCreators/ActionCreators";
+import {GeneralResponseType} from "../Types";
+
+
+export const runDefaultCatch = (dispatch: Dispatch<GeneralMainACType>, errMessage: string) => {
+    dispatch(setGlobalStatusAC('failed'))
+    dispatch(setErrorMessageAC(errMessage))
+}
+
+
+//с бэка придет массив строк, ошибок, но он может быть пустой, в этом случае сетаем свой текст
+// в конце засетал глобальный статус на фейлед потому как везде повторялось
+//дженерик <D> перед скобками показывает на то что в момент вызова эта функция собирается
+// перехватить тип который в нее приходит и заменить им все D,
+// он возьмет r и захватит его data: во время вызова, а после подствит тип(который был в r.data во время вызова)
+// в функцию
+//в общем мы явно указываем на то что D внутри GeneralResponseType будет динамическим
+//<D> - это не тип входящего обьекта!
+export const setErrorTextDependingMessage = <D>(dispatch: Dispatch, r:GeneralResponseType<D>):void => {
+    if (r.messages.length) { // проверяем есть ли какое то описание ошибки или массив пустой
+        dispatch(setErrorMessageAC(r.messages[0])) //ошибки находятся в массиве строк[]
+    } else {
+        dispatch(setErrorMessageAC('some error has occurred')) // если масс пустой в текст ошибки сетаем это
+    }
+    dispatch(setGlobalStatusAC('failed'))
+}

@@ -120,7 +120,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                     <button disabled={props.entityStatus === 'loading'} onClick={clickToRemoveList}>x</button>
                 </h3>
 
-                <InputAdd clickToAddTask={addTask}/>
+                <InputAdd clickToAddTask={addTask} disabled={props.entityStatus==='loading'}/>
 
                 <ul>{tasksList}</ul>
 
