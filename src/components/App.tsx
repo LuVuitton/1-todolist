@@ -29,7 +29,7 @@ const App = () => {
 
     return (
         <>
-            {globalStatus === 'loading' && <span style={{color: 'red'}}> LOADING...</span>}
+          <div style={{height: '20px'}}>  {globalStatus === 'loading' && <span style={{color: 'red'}}> LOADING...</span>}</div>
             <Routes>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/' element={<MainContainer/>}/>

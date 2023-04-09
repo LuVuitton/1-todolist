@@ -2,12 +2,15 @@ import {instance} from "./ToDoListsAPI";
 import {GeneralResponseType} from "../Types";
 
 
-export type PostLoginModelType = {
-    email: string
-    password: string
-    rememberMe?: boolean
+
+
+export type AuthDataType = {
+    email: string,
+    password: string,
+    rememberMe?: boolean,
     captcha?: boolean
 }
+
 
 export type GetAuthResponseDataType = {
     id: number,
@@ -18,9 +21,8 @@ export type GetAuthResponseDataType = {
 
 export const authAPI = {
 
-    login(email: string, password: string, rememberMe?: boolean, captcha?: boolean) {
-        const PostLoginModel: PostLoginModelType = {email, password, captcha, rememberMe} // упаковал параметры в обьект
-        return instance.post<GeneralResponseType<{ userId: number }>>('auth/login', PostLoginModel)
+    login(data:AuthDataType) {
+        return instance.post<GeneralResponseType<{ userId: number }>>('auth/login', data)
             .then(r => r.data)
     },
 

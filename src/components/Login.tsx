@@ -48,7 +48,7 @@ export const Login = () => {
         },
         onSubmit: (values:FormikValuesType) => {
                formik.resetForm()
-               dispatch(logInTC(values.email, values.password, values.rememberMe))
+               dispatch(logInTC(values))
            },
     })
 

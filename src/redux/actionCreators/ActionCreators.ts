@@ -6,41 +6,49 @@ import {
 } from "../reducers/globalReducer";
 import {setIsLoggedInAC} from "../reducers/authReducer";
 
-export type GeneralMainACType = GeneralTaskACType | GeneralListACType
+export type GeneralACType = GeneralTaskACType | GeneralListACType
+type SetAPITasksACType = ReturnType<typeof setAPITasksAC>
+type SetAPIListsAndArrToTasksACType = ReturnType<typeof setAPIListsAndArrToTasksAC>
+type AddListCreateEmptyTasksACType = ReturnType<typeof addListCreateEmptyTasksAC>
+type SetEntityListStatusACType = ReturnType<typeof setEntityListStatusAC>
+type ClearAllStateType = ReturnType<typeof clearAllStateAC>
+
 
 export type GeneralTaskACType =
+    | SetAPITasksACType
+    | SetAPIListsAndArrToTasksACType
+    | AddListCreateEmptyTasksACType
+    | GeneralGlobalACType
+    | SetEntityListStatusACType
+    | ClearAllStateType
     | ReturnType<typeof addTaskAC>
     | ReturnType<typeof removeTaskAC>
     | ReturnType<typeof switchCheckboxAC>
     | ReturnType<typeof addEditedTaskAC>
-    | ReturnType<typeof setAPITasksAC>
-    | ReturnType<typeof setAPIListsAndArrToTasksAC>
-    | ReturnType<typeof addListCreateEmptyTasksAC>
-    | GeneralGlobalACType
     | ReturnType<typeof setEntityTaskStatusAC>
-    | ReturnType<typeof setEntityListStatusAC>
-
 
 export type GeneralListACType =
-    | ReturnType<typeof addListCreateEmptyTasksAC>
+    | AddListCreateEmptyTasksACType
+    | SetAPIListsAndArrToTasksACType
+    | GeneralGlobalACType
+    | SetEntityListStatusACType
+    | SetAPITasksACType
+    | ClearAllStateType
     | ReturnType<typeof removeListAC>
     | ReturnType<typeof addEditedListTitleAC>
-    | ReturnType<typeof setAPIListsAndArrToTasksAC>
-    | GeneralGlobalACType
-    | ReturnType<typeof setEntityListStatusAC>
-    | ReturnType<typeof setAPITasksAC>
 
 export type GeneralGlobalACType =
     | ReturnType<typeof setGlobalStatusAC>
     | ReturnType<typeof setErrorMessageAC>
     | ReturnType<typeof setIsInitializedAC>
 
-
 export type GeneralAuthACType =
     | GeneralGlobalACType
     | ReturnType<typeof setIsLoggedInAC>
 
 //AC
+export const clearAllStateAC = () => ({type: 'CLEAR-ALL-STATE'} as const)
+
 export const addListCreateEmptyTasksAC = (newList: IncompleteListAPIType) =>
     ({type: 'ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR', payload: {newList: newList}} as const)
 
@@ -67,7 +75,6 @@ export const setEntityTaskStatusAC = (entityID: string, listID: string, newStatu
 
 export const setEntityListStatusAC = (entityID: string, newStatus: GlobalRequestStatusType) =>
     ({type: 'CHANGE-ENTITY-LIST-STATUS', payload: {entityID, newStatus,}} as const)
-
 
 //AC API
 export const setAPIListsAndArrToTasksAC = (lists: IncompleteListAPIType[], newListIDArr: string[]) =>

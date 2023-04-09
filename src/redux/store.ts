@@ -3,7 +3,7 @@ import thunk, {ThunkDispatch} from 'redux-thunk';
 import {listReducer} from "./reducers/listReducers";
 import {taskReducer} from "./reducers/taskReduser";
 import {useDispatch} from "react-redux";
-import {GeneralMainACType} from "./actionCreators/ActionCreators";
+import {GeneralACType} from "./actionCreators/ActionCreators";
 import {globalReducer} from "./reducers/globalReducer";
 import {authReducer} from "./reducers/authReducer";
 
@@ -25,7 +25,7 @@ window.store = store
 
 
 // кастомный хук для юзДиспатч, теперь он опять может принимать санки а не только объекты
-export type DispatchThunkType = ThunkDispatch<RootStateType, any, GeneralMainACType>
+export type DispatchThunkType = ThunkDispatch<RootStateType, any, GeneralACType>
 export const useCustomThunkDispatch = () => useDispatch<DispatchThunkType>()
 
 

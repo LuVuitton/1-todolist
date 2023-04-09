@@ -1,6 +1,6 @@
 import {Dispatch} from "redux";
-import {authAPI} from "../../DAL/AuthAPI";
-import {GeneralAuthACType} from "../actionCreators/ActionCreators";
+import {authAPI, AuthDataType} from "../../DAL/AuthAPI";
+import {clearAllStateAC, GeneralAuthACType} from "../actionCreators/ActionCreators";
 import {setGlobalStatusAC, setIsInitializedAC} from "./globalReducer";
 import {ErrorResponseDataAPI, ResulAPICode} from "../../Types";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
@@ -19,7 +19,6 @@ export const authReducer = (state: AuthStateType = initialState, action: General
     switch (action.type) {
         case "login/SET-IS-LOGGED-IN":
             return {...state, isLoggedIn: action.payload.logValue}
-
         default:
             return state
     }
@@ -28,12 +27,12 @@ export const authReducer = (state: AuthStateType = initialState, action: General
 export const setIsLoggedInAC = (logValue: boolean) => ({type: 'login/SET-IS-LOGGED-IN', payload: {logValue} as const})
 
 
-export const logInTC = (email: string, password: string, rememberMe?: boolean, captcha?: boolean) =>
+export const logInTC = (data:AuthDataType) =>
     (dispatch: Dispatch<GeneralAuthACType>) => {
 
         dispatch(setGlobalStatusAC("loading"))
 
-        authAPI.login(email, password, rememberMe, captcha)
+        authAPI.login(data)
             .then(r => {
                 if (r.resultCode === ResulAPICode.Ok) {
                     const userID = r.data.userId //перке пока не ясно
@@ -46,7 +45,6 @@ export const logInTC = (email: string, password: string, rememberMe?: boolean, c
             .catch((err: AxiosError<ErrorResponseDataAPI>) => {
                 runDefaultCatch(dispatch, err)
             })
-
     }
 
 
@@ -77,6 +75,7 @@ export const logOutTC = ()=> (dispatch:Dispatch)=> {
             if (r.resultCode === ResulAPICode.Ok) {
                 dispatch(setIsLoggedInAC(false))
                 dispatch(setGlobalStatusAC("succeeded"))
+                dispatch(clearAllStateAC())
             } else {
                 setErrorTextDependingMessage(dispatch, r)
             }

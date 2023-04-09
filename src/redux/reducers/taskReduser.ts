@@ -2,10 +2,7 @@ import {AllTasksType, CheckStatus, ErrorResponseDataAPI, ResulAPICode} from "../
 import {tasksAPI} from "../../DAL/TasksAPI";
 import {
     GeneralTaskACType,
-    addEditedTaskAC,
-    addTaskAC,
-    removeTaskAC,
-    setAPITasksAC,
+    addEditedTaskAC, addTaskAC, removeTaskAC,
     switchCheckboxAC, setEntityTaskStatusAC, setEntityListStatusAC
 } from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
@@ -106,6 +103,8 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralTask
                         ? {...e, entityStatus: action.payload.newStatus}
                         : e)
             }
+        case "CLEAR-ALL-STATE":
+            return {}
 
         default:
             return state
@@ -120,19 +119,18 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralTask
 //         }
 //     } as const
 // }
-
-
-export const getAPITasksTC = (listID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
-    dispatch(setGlobalStatusAC("loading"))
-    tasksAPI.getTasks(listID)
-        .then(r => {
-            dispatch(setAPITasksAC(r.data.items, listID))
-            dispatch(setGlobalStatusAC("succeeded"))
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-        })
-}
+//
+// export const getAPITasksTC = (listID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
+//     dispatch(setGlobalStatusAC("loading"))
+//     tasksAPI.getTasks(listID)
+//         .then(r => {
+//             dispatch(setAPITasksAC(r.data.items, listID))
+//             dispatch(setGlobalStatusAC("succeeded"))
+//         })
+//         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+//             runDefaultCatch(dispatch, err)
+//         })
+// }
 
 export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
     dispatch(setGlobalStatusAC('loading'))

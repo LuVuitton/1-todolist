@@ -3,8 +3,8 @@ import {
     addEditedListTitleAC,
     addListCreateEmptyTasksAC,
     removeListAC,
-    setAPIListsAndArrToTasksAC, setEntityListStatusAC, setAPITasksAC,
-} from "../actionCreators/ActionCreators";
+    setAPIListsAndArrToTasksAC, setEntityListStatusAC,
+    setAPITasksAC} from "../actionCreators/ActionCreators";
 import {ErrorResponseDataAPI, IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
 import {toDoListsAPI} from "../../DAL/ToDoListsAPI";
 import {Dispatch} from "redux";
@@ -39,12 +39,18 @@ export const listReducer = (state: OneToDoListAPIType[] = initState, action: Gen
             return action.payload.lists.map((e) => ({...e, filter: 'all', entityStatus: "idle"}))
         case 'CHANGE-ENTITY-LIST-STATUS':
             return state.map(e => e.id === action.payload.entityID ? {...e, entityStatus: action.payload.newStatus} : e)
+        case "CLEAR-ALL-STATE":
+            return []
 
         default:
             return state
     }
 
 }
+
+
+
+
 
 
 // т.к. на бэке некоторые ошибки возвращаются с успешным статусом, мы их не можем отловить через кэч
@@ -58,12 +64,15 @@ export const getListTC = () => (dispatch: Dispatch<GeneralListACType>) => {
         .then((r) => {
             const listsID = r.data.map((e: IncompleteListAPIType) => e.id)
             dispatch(setAPIListsAndArrToTasksAC(r.data, listsID))
-            dispatch(setGlobalStatusAC("succeeded"))
             return listsID
         })
         .then((r: string[]) => {
-            r.forEach((e)=> tasksAPI.getTasks(e)
-                .then(r=>dispatch(setAPITasksAC(r.data.items,e))))
+            r.forEach((e) =>
+                tasksAPI.getTasks(e)
+                    .then(r => {
+                        dispatch(setAPITasksAC(r.data.items, e))
+                        dispatch(setGlobalStatusAC("succeeded"))
+                    }))
         })
         //AxiosError<?> сюда вкладываем то что по документации должен вернуть бэк в респонсе ошибки
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
