@@ -1,5 +1,6 @@
 import {AllTasksType, OneToDoListAPIType, PrioritiesForTask, CheckStatus} from "../Types";
 import {GlobalStateType} from "../redux/reducers/globalReducer";
+import {AuthStateType} from "../redux/reducers/authReducer";
 
 
 export const listStateForTest: OneToDoListAPIType[] = [
@@ -11,7 +12,6 @@ export const listStateForTest: OneToDoListAPIType[] = [
         order: 1,
         entityStatus: 'idle'
     },
-
     {
         id: 'listID2',
         title: 'numbers',
@@ -129,8 +129,11 @@ export const tasksStateForTest: AllTasksType = {
     ]
 }
 
-
 export const globalStateForTests: GlobalStateType = {
     status: "idle",
     errorMessage: null
+}
+
+export const authStateForTests: AuthStateType = {
+    isLoggedIn: false
 }

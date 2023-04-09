@@ -18,7 +18,6 @@ export const authReducer = (state: AuthStateType = initialState, action: General
 
     switch (action.type) {
         case "login/SET-IS-LOGGED-IN":
-            console.log('im here')
             return {...state, isLoggedIn: action.payload.logValue}
 
         default:
@@ -38,7 +37,7 @@ export const logInTC = (email: string, password: string, rememberMe?: boolean, c
             .then(r => {
                 if (r.resultCode === ResulAPICode.Ok) {
                     const userID = r.data.userId //перке пока не ясно
-                    dispatch(setIsLoggedInAC(true)) //захардкодил шоб затестить
+                    dispatch(setIsLoggedInAC(true))
                     dispatch(setGlobalStatusAC("succeeded"))
                 } else {
                     setErrorTextDependingMessage(dispatch, r)
@@ -51,4 +50,35 @@ export const logInTC = (email: string, password: string, rememberMe?: boolean, c
     }
 
 
+export const checkLoginTC = () => (dispatch: Dispatch<GeneralAuthACType>) => {
+    dispatch(setGlobalStatusAC("loading"))
+    authAPI.checkLogin()
+        .then(r => {
+            if (r.resultCode === ResulAPICode.Ok) {
+                dispatch(setIsLoggedInAC(true))
+                dispatch(setGlobalStatusAC("succeeded"))
+            } else {
+                setErrorTextDependingMessage(dispatch, r)
+            }
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            runDefaultCatch(dispatch, err)
+        })
+}
 
+export const logOutTC = ()=> (dispatch:Dispatch)=> {
+    dispatch(setGlobalStatusAC("loading"))
+
+    authAPI.logout()
+        .then(r=> {
+            if (r.resultCode === ResulAPICode.Ok) {
+                dispatch(setIsLoggedInAC(false))
+                dispatch(setGlobalStatusAC("succeeded"))
+            } else {
+                setErrorTextDependingMessage(dispatch, r)
+            }
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            runDefaultCatch(dispatch, err)
+        })
+}

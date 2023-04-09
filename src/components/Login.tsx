@@ -10,6 +10,8 @@ import Button from '@mui/material/Button';
 import {useFormik} from "formik";
 import {logInTC} from "../redux/reducers/authReducer";
 import {useCustomThunkDispatch} from "../redux/store";
+import {useCustomSelector} from "../customHooks/CustomHooks";
+import {Navigate} from "react-router-dom";
 
 type FormikErrorType = {
     email?: string
@@ -25,8 +27,9 @@ type FormikValuesType = {
 
 
 export const Login = () => {
-
     const dispatch = useCustomThunkDispatch()
+
+
 
     const formik = useFormik({
         initialValues: {
@@ -51,7 +54,11 @@ export const Login = () => {
 
 
 
+    const isLoading = useCustomSelector<boolean>(state => state.auth.isLoggedIn)
+    if (isLoading){
 
+        return <Navigate to='/'/>
+    }
 
 
 

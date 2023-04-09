@@ -16,3 +16,9 @@
 .isDone {
   opacity: 0.5;
 }
+
+.buttonExitWrapper {
+  padding: 10px;
+  display: flex;
+  justify-content: end;
+}

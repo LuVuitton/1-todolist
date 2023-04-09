@@ -5,6 +5,8 @@ import {useCustomSelector} from "../customHooks/CustomHooks";
 import {OneToDoListAPIType} from "../Types";
 import {addAPIListTC, deleteAPIListTC, getListTC} from "../redux/reducers/listReducers";
 import {ToDoList} from "./ToDoList";
+import {Navigate} from "react-router-dom";
+import {logOutTC} from "../redux/reducers/authReducer";
 
 
 export const MainContainer = () => {
@@ -13,19 +15,26 @@ export const MainContainer = () => {
     const dispatch = useCustomThunkDispatch()
     // описание кастомного селектора в кастомных хуках
     const toDoLists = useCustomSelector<OneToDoListAPIType[]>(state => state.lists)
+    const isLogin = useCustomSelector<boolean>(state => state.auth.isLoggedIn)
 
     useEffect(() => {
-        dispatch(getListTC())
+        if (isLogin) {
+            dispatch(getListTC())
+        }
     }, [])
 
 
     const addList = useCallback((inputValue: string) => {
-        dispatch( addAPIListTC(inputValue))
+        dispatch(addAPIListTC(inputValue))
     }, []) //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
 
     const removeList = useCallback((toDoListId: string) => {
         dispatch(deleteAPIListTC(toDoListId))
     }, [])// можно еще добавить delete
+
+    const exitHandler = () => {
+       dispatch(logOutTC())
+    }
 
 
     const mappedLists = toDoLists.map((tl) => { //мапим массив со всеми тудулистами
@@ -36,15 +45,22 @@ export const MainContainer = () => {
                 filter={tl.filter}
                 toDoListID={tl.id}
                 removeList={removeList}
-                entityStatus = {tl.entityStatus}
+                entityStatus={tl.entityStatus}
             />
         )
     })
 
+    if (!isLogin) {
+        return <Navigate to={'/login'}/>   //если isLogin фолс, редиректи на логин
+    }
+
     return (
         <>
+            <div className="buttonExitWrapper">
+                <button onClick={exitHandler}>EXIT</button>
+            </div>
             <span>New List </span>
-            <InputAdd clickToAddTask={addList}/>
+            <InputAdd disabled={!isLogin} clickToAddTask={addList}/>
             <div className="App">
                 {mappedLists}
             </div>
