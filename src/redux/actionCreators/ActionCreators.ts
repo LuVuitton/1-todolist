@@ -4,6 +4,7 @@ import {
     setErrorMessageAC,
     setGlobalStatusAC
 } from "../reducers/globalReducer";
+import {setIsLoggedInAC} from "../reducers/authReducer";
 
 export type GeneralMainACType = GeneralTaskACType | GeneralListACType
 
@@ -20,7 +21,6 @@ export type GeneralTaskACType =
     | ReturnType<typeof setEntityListStatusAC>
 
 
-
 export type GeneralListACType =
     | ReturnType<typeof addListCreateEmptyTasksAC>
     | ReturnType<typeof removeListAC>
@@ -32,6 +32,11 @@ export type GeneralListACType =
 export type GeneralGlobalACType =
     | ReturnType<typeof setGlobalStatusAC>
     | ReturnType<typeof setErrorMessageAC>
+
+
+export type GeneralAuthACType =
+    | GeneralGlobalACType
+    | ReturnType<typeof setIsLoggedInAC>
 
 //AC
 export const addListCreateEmptyTasksAC = (newList: IncompleteListAPIType) =>

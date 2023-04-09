@@ -61,8 +61,7 @@ export const getListTC = () => (dispatch: Dispatch<GeneralListACType>) => {
         })
         //AxiosError<?> сюда вкладываем то что по документации должен вернуть бэк в респонсе ошибки
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            const error = err.response ? err.response.data.message: err.message
-            runDefaultCatch(dispatch, error)
+            runDefaultCatch(dispatch, err)
         })
 }
 
@@ -78,8 +77,7 @@ export const addAPIListTC = (listTitle: string) => (dispatch: Dispatch<GeneralLi
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            const error = err.response ? err.response.data.message: err.message
-            runDefaultCatch(dispatch, error)
+            runDefaultCatch(dispatch, err)
         })
 }
 
@@ -98,8 +96,7 @@ export const deleteAPIListTC = (listID: string) => (dispatch: Dispatch<GeneralLi
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            const error = err.response ? err.response.data.message: err.message
-            runDefaultCatch(dispatch, error)
+            runDefaultCatch(dispatch, err)
             dispatch(setEntityListStatusAC(listID, 'failed'))
         })
 }
@@ -120,8 +117,7 @@ export const addEditedListTitleTC = (listID: string, newValue: string) => (dispa
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            const error = err.response ? err.response.data.message: err.message
-            runDefaultCatch(dispatch, error)
+            runDefaultCatch(dispatch, err)
             dispatch(setEntityListStatusAC(listID, 'failed'))
         })
 }

@@ -120,8 +120,7 @@ export const getAPITasksTC = (listID: string) => (dispatch: Dispatch<GeneralTask
             dispatch(setGlobalStatusAC("succeeded"))
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            const error = err.response ? err.response.data.message: err.message
-            runDefaultCatch(dispatch, error)
+            runDefaultCatch(dispatch, err)
         })
 
 }
@@ -141,8 +140,7 @@ export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Di
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            const error = err.response ? err.response.data.message: err.message
-            runDefaultCatch(dispatch, error)
+            runDefaultCatch(dispatch, err)
             dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
         })
 }
@@ -162,8 +160,7 @@ export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Di
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            const error = err.response ? err.response.data.message: err.message
-            runDefaultCatch(dispatch, error)
+            runDefaultCatch(dispatch, err)
             dispatch(setEntityListStatusAC(listID, 'failed'))
         })
 }
@@ -190,8 +187,7 @@ export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue
                     }
                 })
                 .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-                    const error = err.response ? err.response.data.message: err.message
-                    runDefaultCatch(dispatch, error)
+                    runDefaultCatch(dispatch, err)
                     dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
                 })
         }
@@ -221,8 +217,7 @@ export const switchCheckAPITaskTC = (listID: string, taskID: string, statusValue
                     }
                 })
                 .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-                    const error = err.response ? err.response.data.message: err.message
-                    runDefaultCatch(dispatch, error)
+                    runDefaultCatch(dispatch, err)
                     dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
                 })
         }

@@ -2,15 +2,17 @@ import {applyMiddleware, combineReducers, createStore} from 'redux'
 import thunk, {ThunkDispatch} from 'redux-thunk';
 import {listReducer} from "./reducers/listReducers";
 import {taskReducer} from "./reducers/taskReduser";
-import { useDispatch} from "react-redux";
+import {useDispatch} from "react-redux";
 import {GeneralMainACType} from "./actionCreators/ActionCreators";
 import {globalReducer} from "./reducers/globalReducer";
+import {authReducer} from "./reducers/authReducer";
 
 
 const rootReducer = combineReducers({
     lists: listReducer, // сюда возврщается стейт из редьюсеров и на этот обьект(или ключи или шо) подписан юз селектор
     tasks: taskReducer,
-    global: globalReducer
+    global: globalReducer,
+    auth: authReducer
 })
 
 export type RootStateType = ReturnType<typeof rootReducer>
@@ -20,10 +22,6 @@ export const store = createStore(rootReducer, applyMiddleware(thunk))
 
 // @ts-ignore
 window.store = store
-
-
-
-
 
 
 // кастомный хук для юзДиспатч, теперь он опять может принимать санки а не только объекты

@@ -8,6 +8,8 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {useFormik} from "formik";
+import {logInTC} from "../redux/reducers/authReducer";
+import {useCustomThunkDispatch} from "../redux/store";
 
 type FormikErrorType = {
     email?: string
@@ -15,8 +17,16 @@ type FormikErrorType = {
     rememberMe?: boolean
 }
 
+type FormikValuesType = {
+    email: string
+    password: string
+    rememberMe: boolean
+}
+
 
 export const Login = () => {
+
+    const dispatch = useCustomThunkDispatch()
 
     const formik = useFormik({
         initialValues: {
@@ -26,16 +36,17 @@ export const Login = () => {
         },
         validate: (values) => {
             const errors: FormikErrorType = {}
-            if (!values.email) {
+            if (!values.email && !formik.touched) {
                 errors.email = 'Required'
             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
                 errors.email = 'Invalid email address'
             }
             return errors
         },
-        onSubmit: values => {
-            alert(JSON.stringify(values))
-        },
+        onSubmit: (values:FormikValuesType) => {
+               formik.resetForm()
+               dispatch(logInTC(values.email, values.password, values.rememberMe))
+           },
     })
 
 
@@ -64,27 +75,21 @@ export const Login = () => {
                         <TextField
                             label="Email"
                             margin="normal"
-                            name={'email'}
-                            onChange={formik.handleChange}
-                            value={formik.values.email}
+                            {...formik.getFieldProps('email')}
                         />
-                        {formik.errors.email? <div style={{color:"red"}}>{formik.errors.email}</div>:null }
+                        {formik.touched.email && formik.errors.email? <div style={{color:"red"}}>{formik.errors.email}</div>:null }
                         <TextField
                             type="password"
                             label="Password"
                             margin="normal"
-                            name={'password'}
-                            onChange={formik.handleChange}
-                            value={formik.values.password}
+                            {...formik.getFieldProps('password')}
                         />
-                        {formik.errors.password? <div style={{color:"red"}}>{formik.errors.password}</div>:null }
+                        {formik.touched.email && formik.errors.password? <div style={{color:"red"}}>{formik.errors.password}</div>:null }
 
                         <FormControlLabel
                             label={'Remember me'}
                             control={<Checkbox   //добавлять в чекбокс
-                                name={'rememberMe'}
-                                onChange={formik.handleChange}
-                                value={formik.values.rememberMe}
+                                {...formik.getFieldProps('rememberMe')}
                             />}
                         />
                         <Button type={'submit'} variant={'contained'} color={'primary'}>
