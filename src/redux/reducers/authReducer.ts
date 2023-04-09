@@ -1,7 +1,7 @@
 import {Dispatch} from "redux";
 import {authAPI} from "../../DAL/AuthAPI";
 import {GeneralAuthACType} from "../actionCreators/ActionCreators";
-import {setGlobalStatusAC} from "./globalReducer";
+import {setGlobalStatusAC, setIsInitializedAC} from "./globalReducer";
 import {ErrorResponseDataAPI, ResulAPICode} from "../../Types";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {AxiosError} from "axios";
@@ -63,6 +63,9 @@ export const checkLoginTC = () => (dispatch: Dispatch<GeneralAuthACType>) => {
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
             runDefaultCatch(dispatch, err)
+        })
+        .finally(()=>{
+            dispatch(setIsInitializedAC(true))
         })
 }
 

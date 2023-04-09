@@ -106,10 +106,20 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralTask
                         ? {...e, entityStatus: action.payload.newStatus}
                         : e)
             }
+
         default:
             return state
     }
 }
+
+// export const setTasksForAllLists = (allListsID: string[])=> {
+//     return {
+//         type: 'SET-TASKS-FOR-ALL-LISTS',
+//         payload: {
+//             allListsID
+//         }
+//     } as const
+// }
 
 
 export const getAPITasksTC = (listID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
@@ -122,7 +132,6 @@ export const getAPITasksTC = (listID: string) => (dispatch: Dispatch<GeneralTask
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
             runDefaultCatch(dispatch, err)
         })
-
 }
 
 export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {

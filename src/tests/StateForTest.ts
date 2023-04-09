@@ -131,7 +131,8 @@ export const tasksStateForTest: AllTasksType = {
 
 export const globalStateForTests: GlobalStateType = {
     status: "idle",
-    errorMessage: null
+    errorMessage: null,
+    isInitialized:false
 }
 
 export const authStateForTests: AuthStateType = {

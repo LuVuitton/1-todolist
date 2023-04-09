@@ -2,7 +2,7 @@ import {IncompleteListAPIType, CheckStatus, IncompleteOneTaskAPIType} from "../.
 import {
     GlobalRequestStatusType,
     setErrorMessageAC,
-    setGlobalStatusAC
+    setGlobalStatusAC, setIsInitializedAC
 } from "../reducers/globalReducer";
 import {setIsLoggedInAC} from "../reducers/authReducer";
 
@@ -28,10 +28,12 @@ export type GeneralListACType =
     | ReturnType<typeof setAPIListsAndArrToTasksAC>
     | GeneralGlobalACType
     | ReturnType<typeof setEntityListStatusAC>
+    | ReturnType<typeof setAPITasksAC>
 
 export type GeneralGlobalACType =
     | ReturnType<typeof setGlobalStatusAC>
     | ReturnType<typeof setErrorMessageAC>
+    | ReturnType<typeof setIsInitializedAC>
 
 
 export type GeneralAuthACType =

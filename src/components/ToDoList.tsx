@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {InputAdd} from "./InputAdd";
 import {EditableSpan} from "./EditableSpan";
 import {FilterButtonDataType, FilterType, OneTaskType, CheckStatus, ToDoListPropsType} from "../Types";
@@ -9,7 +9,6 @@ import {useCustomSelector} from "../customHooks/CustomHooks";
 import {useCustomThunkDispatch} from "../redux/store";
 import {
     deleteAPITaskTC,
-    getAPITasksTC,
     addAPITaskTC,
     updateAPIEditableTaskTC,
     switchCheckAPITaskTC
@@ -23,11 +22,6 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     const tasks = useCustomSelector<OneTaskType[]>(state => state.tasks[props.toDoListID])
 
     const [filter, setFilter] = useState<FilterType>('all')
-
-    useEffect(() => {
-        dispatch(getAPITasksTC(props.toDoListID))
-    }, [])
-
 
     const filterButtonsData: FilterButtonDataType[] = [
         {id: v1(), title: 'all'},

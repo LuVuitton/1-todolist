@@ -15,12 +15,17 @@ import {checkLoginTC} from "../redux/reducers/authReducer";
 const App = () => {
     const dispatch = useCustomThunkDispatch()
     const globalStatus = useCustomSelector<GlobalRequestStatusType>(state => state.global.status)
+    const isInitialized = useCustomSelector<boolean>(state => state.global.isInitialized)
 
 
     useEffect(() => {         //преверяем залогиген или нет, если да меняем стейт
         dispatch(checkLoginTC())
     }, [])
 
+
+    if (!isInitialized) {
+        return <div className='firstLoading'><span>LOADING...</span></div>
+    }
 
     return (
         <>

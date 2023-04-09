@@ -22,3 +22,14 @@
   display: flex;
   justify-content: end;
 }
+
+.firstLoading {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: green;
+  font-size: 30px;
+  font-weight: bolder;
+}
+

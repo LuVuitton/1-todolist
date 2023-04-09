@@ -3,7 +3,7 @@ import {
     addEditedListTitleAC,
     addListCreateEmptyTasksAC,
     removeListAC,
-    setAPIListsAndArrToTasksAC, setEntityListStatusAC,
+    setAPIListsAndArrToTasksAC, setEntityListStatusAC, setAPITasksAC,
 } from "../actionCreators/ActionCreators";
 import {ErrorResponseDataAPI, IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
 import {toDoListsAPI} from "../../DAL/ToDoListsAPI";
@@ -11,6 +11,7 @@ import {Dispatch} from "redux";
 import {setGlobalStatusAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {AxiosError} from "axios";
+import {tasksAPI} from "../../DAL/TasksAPI";
 
 
 // export const idToDoList1 = v1(); //значение свойства toDoListID с айди в тудулисте и ключ листа в массиве тасок
@@ -58,6 +59,11 @@ export const getListTC = () => (dispatch: Dispatch<GeneralListACType>) => {
             const listsID = r.data.map((e: IncompleteListAPIType) => e.id)
             dispatch(setAPIListsAndArrToTasksAC(r.data, listsID))
             dispatch(setGlobalStatusAC("succeeded"))
+            return listsID
+        })
+        .then((r: string[]) => {
+            r.forEach((e)=> tasksAPI.getTasks(e)
+                .then(r=>dispatch(setAPITasksAC(r.data.items,e))))
         })
         //AxiosError<?> сюда вкладываем то что по документации должен вернуть бэк в респонсе ошибки
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
