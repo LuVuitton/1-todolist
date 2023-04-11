@@ -3,13 +3,19 @@ import {tasksAPI} from "../../DAL/TasksAPI";
 import {
     GeneralTaskACType,
     addEditedTaskAC, addTaskAC, removeTaskAC,
-    switchCheckboxAC, setEntityTaskStatusAC, setEntityListStatusAC
+    switchCheckboxAC, setEntityTaskStatusAC
 } from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
 import {RootStateType} from "../store";
 import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {AxiosError} from "axios";
+import {
+    addListCreateEmptyTasksAC,
+    clearAllStateAC,
+    setAPIListsAndArrToTasksAC,
+    setEntityListStatusAC
+} from "./listReducers";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 const initState: AllTasksType = {
@@ -80,7 +86,7 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralTask
                 ...state, [action.payload.listID]: editedTask
             }
         }
-        case "SET-API-LISTS-AND-ARR-TO-TASKS": { // сначала запрашиваем листы затем таски, между такси возвращают андефайнд
+        case setAPIListsAndArrToTasksAC.type: { // сначала запрашиваем листы затем таски, между такси возвращают андефайнд
             let newObj: AllTasksType = {}
             action.payload.newListIDArr.forEach((e: string) => {
                 newObj[e] = [] // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
@@ -94,7 +100,7 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralTask
             }))
             return {...state, [action.payload.listID]: [...mappedTasks]}
         }
-        case "ADD-LIST-AND-CREATE-EMPTY-TASKS-ARR":
+        case addListCreateEmptyTasksAC.type:
             return {...state, [action.payload.newList.id]: []}
         case "CHANGE-ENTITY-TASK-STATUS":
             return {
@@ -103,7 +109,7 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralTask
                         ? {...e, entityStatus: action.payload.newStatus}
                         : e)
             }
-        case "CLEAR-ALL-STATE":
+        case clearAllStateAC.type:
             return {}
 
         default:
@@ -154,21 +160,21 @@ export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Di
 
 export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
     dispatch(setGlobalStatusAC("loading"))
-    dispatch(setEntityListStatusAC(listID, 'loading'))
+    dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'loading'}))
     tasksAPI.postTask(listID, taskValue)
         .then(r => {
             if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
                 dispatch(addTaskAC(r.data.item))
                 dispatch(setGlobalStatusAC("succeeded"))
-                dispatch(setEntityListStatusAC(listID, 'succeeded'))
+                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'succeeded'}))
             } else {
                 setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityListStatusAC(listID, 'failed'))
+                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
             runDefaultCatch(dispatch, err)
-            dispatch(setEntityListStatusAC(listID, 'failed'))
+            dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
         })
 }
 

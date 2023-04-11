@@ -10,7 +10,7 @@ beforeEach(() => {
 
 test('have to change key "isLoggedIn" to true', () => {
 
-    const action = setIsLoggedInAC(true)
+    const action = setIsLoggedInAC({logValue:true})
     const endState = authReducer(startState, action)
 
     expect(endState.isLoggedIn).toBe(true)
@@ -18,9 +18,9 @@ test('have to change key "isLoggedIn" to true', () => {
 
 test('have to change key "isLoggedIn" to false', ()=> {
 
-    const action = setIsLoggedInAC(false)
+    const action = setIsLoggedInAC({logValue:true})
     const endState = authReducer(startState,action)
 
-    expect(endState.isLoggedIn).toBe(true)
+    expect(endState.isLoggedIn).toBe(false)
 })
 
