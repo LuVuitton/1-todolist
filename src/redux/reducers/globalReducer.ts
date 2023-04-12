@@ -4,15 +4,11 @@ export type GlobalRequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed
 export type GlobalErrorMessageType = string | null
 
 
-export type GlobalStateType = {
-    status: GlobalRequestStatusType,
-    errorMessage: GlobalErrorMessageType,
-    isInitialized: boolean,
-}
+export type GlobalStateType = typeof initialGlobalState
 
-const initialGlobalState: GlobalStateType = {
-    status: "idle",
-    errorMessage: null,
+const initialGlobalState = {
+    entityStatus: "idle" as GlobalRequestStatusType,
+    errorMessage: null as GlobalErrorMessageType,
     isInitialized: false,
     //параметр что дождется ответа на ME что бы картинка не прыгала с логина на листы, сетаем тру, потом отображаем загрузку
 }
@@ -21,14 +17,14 @@ const slice = createSlice({
     name:'global',
     initialState:initialGlobalState,
     reducers:{
-        setGlobalStatusAC(state: GlobalStateType, action:PayloadAction<{status: GlobalRequestStatusType}>){
-            state.status = action.payload.status
+        setGlobalStatusAC(state: GlobalStateType, action:PayloadAction<{globalStatus: GlobalRequestStatusType}>){
+            state.entityStatus = action.payload.globalStatus
         },
         setErrorMessageAC(state:GlobalStateType, action:PayloadAction<{errorMessage: GlobalErrorMessageType}>){
             state.errorMessage = action.payload.errorMessage
         },
-        setIsInitializedAC(state:GlobalStateType, action:PayloadAction<{value:boolean}>){
-            state.isInitialized =action.payload.value
+        setIsInitializedAC(state:GlobalStateType, action:PayloadAction<{isInitialized:boolean}>){
+            state.isInitialized =action.payload.isInitialized
         }
     }
 })

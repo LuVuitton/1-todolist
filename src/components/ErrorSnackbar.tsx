@@ -16,7 +16,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 })
 
 export function ErrorSnackbar() {
-    const status = useCustomSelector<GlobalRequestStatusType>(state => state.global.status)
+    const status = useCustomSelector<GlobalRequestStatusType>(state => state.global.entityStatus)
     const errorMessage = useCustomSelector<GlobalErrorMessageType>(state => state.global.errorMessage)
     const dispatch = useDispatch()
 
@@ -27,7 +27,7 @@ export function ErrorSnackbar() {
             return
         }
         // setOpen(false)
-        dispatch(setGlobalStatusAC({status:"idle"}))
+        dispatch(setGlobalStatusAC({globalStatus:"idle"}))
         setTimeout(()=>{dispatch(setErrorMessageAC({errorMessage:null}))}, 1000)
     }
 

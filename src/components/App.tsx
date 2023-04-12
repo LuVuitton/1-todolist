@@ -14,7 +14,7 @@ import {checkLoginTC} from "../redux/reducers/authReducer";
 
 const App = () => {
     const dispatch = useCustomThunkDispatch()
-    const globalStatus = useCustomSelector<GlobalRequestStatusType>(state => state.global.status)
+    const globalStatus = useCustomSelector<GlobalRequestStatusType>(state => state.global.entityStatus)
     const isInitialized = useCustomSelector<boolean>(state => state.global.isInitialized)
 
 

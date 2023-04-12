@@ -18,7 +18,7 @@ test('have to change key "isLoggedIn" to true', () => {
 
 test('have to change key "isLoggedIn" to false', ()=> {
 
-    const action = setIsLoggedInAC({logValue:true})
+    const action = setIsLoggedInAC({logValue:false})
     const endState = authReducer(startState,action)
 
     expect(endState.isLoggedIn).toBe(false)

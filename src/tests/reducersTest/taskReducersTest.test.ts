@@ -1,9 +1,6 @@
 import {tasksStateForTest} from "../StateForTest";
 import {CheckStatus} from "../../Types";
 import {
-     GeneralTaskACType,
-} from "../../redux/actionCreators/ActionCreators";
-import {
     addEditedTaskAC,
     addTaskAC,
     removeTaskAC,
@@ -16,7 +13,7 @@ const startState = tasksStateForTest
 
 
 test('should to add new task to List', () => {
-    const action: GeneralTaskACType = addTaskAC({
+    const action = addTaskAC({
         newTask:{
             id: 'taskID5',
             status: CheckStatus.New,
@@ -38,7 +35,7 @@ test('should to add new task to List', () => {
 
 test('should to remove the task from the list by id', () => {
 
-    const action: GeneralTaskACType = removeTaskAC({taskID: 'taskID4', listID: 'listID2'})
+    const action = removeTaskAC({taskID: 'taskID4', listID: 'listID2'})
 
     const endState = taskReducer(startState, action)
 
@@ -72,7 +69,7 @@ test('should to set a new name for the existing task', () => {
 
 test('should to change entity task status to loading', () => {
 
-    const action = setEntityTaskStatusAC({entityID: 'taskID1', listID:'listID1', newStatus:'loading'})
+    const action = setEntityTaskStatusAC({taskID: 'taskID1', listID:'listID1', entityStatus:'loading'})
 
     const endState = taskReducer(startState, action)
 

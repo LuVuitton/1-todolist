@@ -1,13 +1,12 @@
 import {setErrorMessageAC, setGlobalStatusAC} from "../redux/reducers/globalReducer";
 import {Dispatch} from "redux";
-import {GeneralACType} from "../redux/actionCreators/ActionCreators";
 import {ErrorResponseDataAPI, GeneralResponseType} from "../Types";
 import {AxiosError} from "axios";
 
 
-export const runDefaultCatch = (dispatch: Dispatch<GeneralACType>, error: AxiosError<ErrorResponseDataAPI>) => {
+export const runDefaultCatch = (dispatch: Dispatch, error: AxiosError<ErrorResponseDataAPI>) => {
    const errMessage = error.response ? error.response.data.message: error.message
-    dispatch(setGlobalStatusAC({status:'failed'}))
+    dispatch(setGlobalStatusAC({globalStatus:'failed'}))
     dispatch(setErrorMessageAC({errorMessage:errMessage}))
 }
 
@@ -26,5 +25,5 @@ export const setErrorTextDependingMessage = <D>(dispatch: Dispatch, r:GeneralRes
     } else {
         dispatch(setErrorMessageAC({errorMessage:'some error has occurred'})) // если масс пустой в текст ошибки сетаем это
     }
-    dispatch(setGlobalStatusAC({status:'failed'}))
+    dispatch(setGlobalStatusAC({globalStatus:'failed'}))
 }

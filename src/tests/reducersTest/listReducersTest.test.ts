@@ -47,7 +47,7 @@ test('should remove specific list by id', () => {
 
 test('should to set a new name for the existing list', () => {
 
-    const action = addEditedListTitleAC({listID: 'listID1', value: 'new list name'})
+    const action = addEditedListTitleAC({listID: 'listID1', title: 'new list name'})
 
     const endState = listReducer(startState, action)
 
@@ -59,7 +59,7 @@ test('should to set a new name for the existing list', () => {
 
 test('should to change entity list status to loading', () => {
 
-    const action = setEntityListStatusAC({entityID:'listID1', newStatus:'loading'})
+    const action = setEntityListStatusAC({listID:'listID1', entityStatus:'loading'})
 
     const endState = listReducer(startState, action)
 

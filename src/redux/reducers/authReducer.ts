@@ -1,4 +1,4 @@
-import {GeneralAuthACType} from "../actionCreators/ActionCreators";
+// import {GeneralAuthACType} from "../actionCreators/ActionCreators";
 import {setGlobalStatusAC, setIsInitializedAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {ErrorResponseDataAPI, ResulAPICode} from "../../Types";
@@ -25,8 +25,67 @@ const slice = createSlice({
 })
 export const authReducer = slice.reducer
 export const {setIsLoggedInAC} = slice.actions
+// export const authActions = slice.actions //или так тогда обращаемся через обьект
 
-// export const authActions = slice.actions //или так
+
+
+export const logInTC = (data: AuthDataType) =>
+    (dispatch: Dispatch) => {
+
+        dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+
+        authAPI.login(data)
+            .then(r => {
+                if (r.resultCode === ResulAPICode.Ok) {
+                    dispatch(setIsLoggedInAC({logValue: true}))
+                    dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                } else {
+                    setErrorTextDependingMessage(dispatch, r)
+                }
+            })
+            .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+                runDefaultCatch(dispatch, err)
+            })
+    }
+
+
+export const checkLoginTC = () => (dispatch: Dispatch) => {
+    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    authAPI.checkLogin()
+        .then(r => {
+            if (r.resultCode === ResulAPICode.Ok) {
+                dispatch(setIsLoggedInAC({logValue:true}))
+                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+            } else {
+                setErrorTextDependingMessage(dispatch, r)
+            }
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            runDefaultCatch(dispatch, err)
+        })
+        .finally(() => {
+            dispatch(setIsInitializedAC({isInitialized:true}))
+        })
+}
+
+export const logOutTC = () => (dispatch: Dispatch) => {
+    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+
+    authAPI.logout()
+        .then(r => {
+            if (r.resultCode === ResulAPICode.Ok) {
+                dispatch(setIsLoggedInAC({logValue: false}))
+                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                dispatch(clearAllStateAC())
+            } else {
+                setErrorTextDependingMessage(dispatch, r)
+            }
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            runDefaultCatch(dispatch, err)
+        })
+}
+
 
 
 // export const authReducer = (state: AuthStateType = initialState, action: GeneralAuthACType) => {
@@ -38,61 +97,3 @@ export const {setIsLoggedInAC} = slice.actions
 //     }
 // }
 // export const setIsLoggedInAC = (logValue: boolean) => ({type: 'login/SET-IS-LOGGED-IN', payload: {logValue} as const})
-
-
-export const logInTC = (data: AuthDataType) =>
-    (dispatch: Dispatch<GeneralAuthACType>) => {
-
-        dispatch(setGlobalStatusAC({status: 'loading'}))
-
-        authAPI.login(data)
-            .then(r => {
-                if (r.resultCode === ResulAPICode.Ok) {
-                    dispatch(setIsLoggedInAC({logValue: true}))
-                    dispatch(setGlobalStatusAC({status: 'succeeded'}))
-                } else {
-                    setErrorTextDependingMessage(dispatch, r)
-                }
-            })
-            .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-                runDefaultCatch(dispatch, err)
-            })
-    }
-
-
-export const checkLoginTC = () => (dispatch: Dispatch<GeneralAuthACType>) => {
-    dispatch(setGlobalStatusAC({status: 'loading'}))
-    authAPI.checkLogin()
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(setIsLoggedInAC({logValue: true}))
-                dispatch(setGlobalStatusAC({status: 'succeeded'}))
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-        })
-        .finally(() => {
-            dispatch(setIsInitializedAC({value:true}))
-        })
-}
-
-export const logOutTC = () => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC({status: 'loading'}))
-
-    authAPI.logout()
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(setIsLoggedInAC({logValue: false}))
-                dispatch(setGlobalStatusAC({status: 'succeeded'}))
-                dispatch(clearAllStateAC())
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-        })
-}

@@ -1,52 +1,21 @@
 import {
     ErrorResponseDataAPI, ResulAPICode,
-    CheckStatus, IncompleteListAPIType,
+    CheckStatus,
     IncompleteOneTaskAPIType, AllTasksType,
 } from "../../Types";
 import {tasksAPI} from "../../DAL/TasksAPI";
-import {GeneralTaskACType} from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
 import {RootStateType} from "../store";
 import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {AxiosError} from "axios";
-import {setAPIListsAndArrToTasksAC, setEntityListStatusAC} from "./listReducers";
+import {addListCreateEmptyTasksAC, setAPIListsAndArrToTasksAC, setEntityListStatusAC} from "./listReducers";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
-const initState: AllTasksType = {
-    // [idToDoList1]: [                             //походу если не обернуть в [] он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
-    //     {
-    //         id: v1(),
-    //         title: 'HtML&CSS',
-    //         description: 'to learn',
-    //         todoListId: idToDoList1,
-    //         order: 1,
-    //         status: checkStatus.Completed,
-    //         priority: PrioritiesForTask.Middle,
-    //         startDate: '',
-    //         deadline: '',
-    //         addedDate: ''
-    //     },
-    // ],
-    // [idToDoList2]: [
-    //     {
-    //         id: v1(),
-    //         title: 'Prototypes',
-    //         description: 'to learn',
-    //         todoListId: idToDoList1,
-    //         order: 1,
-    //         status: checkStatus.Completed,
-    //         priority: PrioritiesForTask.Middle,
-    //         startDate: '',
-    //         deadline: '',
-    //         addedDate: ''
-    //     }
-    // ]
-}
+const initState: AllTasksType = {}
 
 
-//!!!!!!!!!!!!!!!!!!!!сменить логику масивов на find поиск индекса по значению. ТОЧЕЧНО СТАРТЬСЯ ИЗМЕНЯТЬ НУЖНОЕ ЗНАЧЕНИЕ
 const slice = createSlice({
     name: 'task',
     initialState: initState,
@@ -55,107 +24,105 @@ const slice = createSlice({
             state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, entityStatus: 'idle'})
         },
         removeTaskAC(state: AllTasksType, action: PayloadAction<{ taskID: string, listID: string }>) {
-            state[action.payload.listID] = state[action.payload.listID].filter((e) => e.id !== action.payload.taskID)
+            const i = state[action.payload.listID].findIndex(e => e.id === action.payload.taskID)
+            state[action.payload.listID].splice(i, 1)
         },
         switchCheckboxAC(state: AllTasksType, action: PayloadAction<{ taskID: string, checked: CheckStatus, listID: string }>) {
-            const x = state[action.payload.listID].find(e => e.id === action.payload.taskID)
-            if (x)
-                x.status = action.payload.checked //шото не то
+            const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
+            if (task)
+                task.status = action.payload.checked
         },
         addEditedTaskAC(state: AllTasksType, action: PayloadAction<{ value: string, listID: string, taskID: string }>) {
-            const editedTask = state[action.payload.listID].find(e => e.id === action.payload.taskID)
-            if (editedTask)
-                editedTask.title = action.payload.value
+            const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
+            if (task)
+                task.title = action.payload.value
         },
         setAPITasksAC(state: AllTasksType, action: PayloadAction<{ tasksArr: IncompleteOneTaskAPIType[], listID: string }>) {
             const mappedTasks = action.payload.tasksArr.map(e => ({
                 ...e,
                 entityStatus: 'idle' as GlobalRequestStatusType
             }))
-
             state[action.payload.listID] = [...mappedTasks]
         },
-        addListCreateEmptyTasksAC(state: AllTasksType, action: PayloadAction<{ newList: IncompleteListAPIType }>) {
-            state[action.payload.newList.id] = []
-        },
-        setEntityTaskStatusAC(state: AllTasksType, action: PayloadAction<{ entityID: string, listID: string, newStatus: GlobalRequestStatusType }>) {
-            state[action.payload.listID] =
-                state[action.payload.listID].map(e => e.id === action.payload.entityID
-                    ? {...e, entityStatus: action.payload.newStatus}
-                    : e)
+        setEntityTaskStatusAC(state: AllTasksType, action: PayloadAction<{ taskID: string, listID: string, entityStatus: GlobalRequestStatusType }>) {
+            const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
+            if (task)
+                task.entityStatus = action.payload.entityStatus
         },
         clearAllStateAC() {
             return {}
         }
     },
     extraReducers: (builder) => { // Дополнительные редьюсеры
-        builder.addCase(setAPIListsAndArrToTasksAC, (state: AllTasksType, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) => {
+        builder.addCase(setAPIListsAndArrToTasksAC, (state, action) => {
             let newObj: AllTasksType = {}
-            action.payload.newListIDArr.forEach((e: string) => {
+            action.payload.newListIDArr.forEach(e => {
                 newObj[e] = []
             })
             return {...state, ...newObj}
         })
-            // .addCase()
+            .addCase(addListCreateEmptyTasksAC, (state, action) => {
+                state[action.payload.newList.id] = []
+            })
     },
 })
 
 
 export const taskReducer = slice.reducer
 export const {
-    addTaskAC, addListCreateEmptyTasksAC,
-    removeTaskAC,
-    setEntityTaskStatusAC, setAPITasksAC,
-    switchCheckboxAC, clearAllStateAC,
+    addTaskAC, removeTaskAC,
+    setEntityTaskStatusAC,
+    setAPITasksAC,
+    switchCheckboxAC,
     addEditedTaskAC,
 } = slice.actions
 
 
-export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
-    dispatch(setGlobalStatusAC({status: 'loading'}))
-    dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'loading'}))
+export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch) => {
+    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'loading'}))
     tasksAPI.deleteTask(listID, taskID)
         .then(r => {
             if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(removeTaskAC({listID: listID, taskID: taskID}))
-                dispatch(setGlobalStatusAC({status: 'succeeded'}))
-                dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'succeeded'}))
+                dispatch(removeTaskAC({listID, taskID}))
+                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'succeeded'}))
             } else {
                 setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'failed'}))
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
             runDefaultCatch(dispatch, err)
-            dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+            dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'failed'}))
         })
 }
 
-export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
-    dispatch(setGlobalStatusAC({status: 'loading'}))
-    dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'loading'}))
+export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch) => {
+    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    dispatch(setEntityListStatusAC({listID, entityStatus: 'loading'}))
     tasksAPI.postTask(listID, taskValue)
         .then(r => {
             if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
                 dispatch(addTaskAC({newTask: r.data.item}))
-                dispatch(setGlobalStatusAC({status: 'succeeded'}))
-                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'succeeded'}))
+                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                dispatch(setEntityListStatusAC({listID, entityStatus: 'succeeded'}))
             } else {
                 setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
+                dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
             runDefaultCatch(dispatch, err)
-            dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
+            dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
         })
 }
 
 export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue: string) => {
-    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
+    return (dispatch: Dispatch, getState: () => RootStateType) => {
 
-        dispatch(setGlobalStatusAC({status: 'loading'}))
-        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'loading'}))
+        dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+        dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'loading'}))
         const task = getState().tasks[listID].find(e => e.id === taskID)
 
         if (task) {
@@ -163,28 +130,28 @@ export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue
             tasksAPI.updateTask(listID, taskID, updatedTask)
                 .then(r => {
                     if (r.resultCode === ResulAPICode.Ok) {
-                        dispatch(addEditedTaskAC({taskID: taskID, listID: listID, value: newValue}))
-                        dispatch(setGlobalStatusAC({status: 'succeeded'}))
-                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'succeeded'}))
+                        dispatch(addEditedTaskAC({taskID, listID, value: newValue}))
+                        dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                        dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'succeeded'}))
 
                     } else {
                         setErrorTextDependingMessage(dispatch, r)
-                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                        dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'failed'}))
                     }
                 })
                 .catch((err: AxiosError<ErrorResponseDataAPI>) => {
                     runDefaultCatch(dispatch, err)
-                    dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                    dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'failed'}))
                 })
         }
     }
 }
 
 export const switchCheckAPITaskTC = (listID: string, taskID: string, statusValue: CheckStatus) => {
-    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
+    return (dispatch: Dispatch, getState: () => RootStateType) => {
 
-        dispatch(setGlobalStatusAC({status: 'loading'}))
-        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'loading'}))
+        dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+        dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'loading'}))
 
         const task = getState().tasks[listID].find(e => e.id === taskID)
         if (task) {
@@ -193,22 +160,52 @@ export const switchCheckAPITaskTC = (listID: string, taskID: string, statusValue
             tasksAPI.updateTask(listID, taskID, updatedTask)
                 .then(r => {
                     if (r.resultCode === ResulAPICode.Ok) {
-                        dispatch(switchCheckboxAC({taskID: taskID, listID: listID, checked: statusValue}))
-                        dispatch(setGlobalStatusAC({status: 'succeeded'}))
-                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'succeeded'}))
+                        dispatch(switchCheckboxAC({taskID, listID, checked: statusValue}))
+                        dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                        dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'succeeded'}))
 
                     } else {
                         setErrorTextDependingMessage(dispatch, r)
-                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                        dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'failed'}))
                     }
                 })
                 .catch((err: AxiosError<ErrorResponseDataAPI>) => {
                     runDefaultCatch(dispatch, err)
-                    dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                    dispatch(setEntityTaskStatusAC({taskID, listID, entityStatus: 'failed'}))
                 })
         }
     }
 }
+
+
+// state = [idToDoList1]: [                             //походу если не обернуть в [] он создвст отдельный ключ никак не связаный с переменной в которой вложена строка
+//     {
+//         id: v1(),
+//         title: 'HtML&CSS',
+//         description: 'to learn',
+//         todoListId: idToDoList1,
+//         order: 1,
+//         status: checkStatus.Completed,
+//         priority: PrioritiesForTask.Middle,
+//         startDate: '',
+//         deadline: '',
+//         addedDate: ''
+//     },
+// ],
+// [idToDoList2]: [
+//     {
+//         id: v1(),
+//         title: 'Prototypes',
+//         description: 'to learn',
+//         todoListId: idToDoList1,
+//         order: 1,
+//         status: checkStatus.Completed,
+//         priority: PrioritiesForTask.Middle,
+//         startDate: '',
+//         deadline: '',
+//         addedDate: ''
+//     }
+// ]
 
 
 // export const taskReducer = (state: AllTasksType = initState, action: GeneralTaskACType): AllTasksType => {

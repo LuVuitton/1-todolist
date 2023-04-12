@@ -16,11 +16,11 @@ beforeEach(() => {
 
 test('have to change status to loading', () => {
 
-    const action = setGlobalStatusAC({status:'loading'})
+    const action = setGlobalStatusAC({globalStatus:'loading'})
     const endState = globalReducer(startState, action)
 
-    expect(endState.status).toBe('loading')
-    expect(endState.status).not.toEqual(startState.status)
+    expect(endState.entityStatus).toBe('loading')
+    expect(endState.entityStatus).not.toEqual(startState.entityStatus)
 })
 
 
@@ -36,7 +36,7 @@ test('have to change errorMessage to "New Error Message" ', () => {
 
 test('have to change isInitialized to true', ()=> {
 
-    const action = setIsInitializedAC({value:true})
+    const action = setIsInitializedAC({isInitialized:true})
     const endState = globalReducer(startState,action)
 
     expect(endState.isInitialized).toBe(true)
