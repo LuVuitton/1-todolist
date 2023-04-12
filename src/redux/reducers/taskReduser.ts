@@ -1,9 +1,15 @@
-import {AllTasksType, CheckStatus, ErrorResponseDataAPI, ResulAPICode} from "../../Types";
+import {
+    AllTasksType,
+    CheckStatus,
+    ErrorResponseDataAPI,
+    IncompleteListAPIType,
+    IncompleteOneTaskAPIType,
+    ResulAPICode
+} from "../../Types";
 import {tasksAPI} from "../../DAL/TasksAPI";
 import {
     GeneralTaskACType,
-    addEditedTaskAC, addTaskAC, removeTaskAC,
-    switchCheckboxAC, setEntityTaskStatusAC
+    addEditedTaskAC, setEntityTaskStatusAC
 } from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
 import {RootStateType} from "../store";
@@ -16,6 +22,7 @@ import {
     setAPIListsAndArrToTasksAC,
     setEntityListStatusAC
 } from "./listReducers";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 const initState: AllTasksType = {
@@ -50,46 +57,83 @@ const initState: AllTasksType = {
 }
 
 
+//!!!!!!!!!!!!!!!!!!!!сменить логику масивов на find поиск индекса по значению. ТОЧЕЧНО СТАРТЬСЯ ИЗМЕНЯТЬ НУЖНОЕ ЗНАЧЕНИЕ
+const slice = createSlice({
+    name: 'task',
+    initialState: initState,
+    reducers: {
+        addTaskAC(state: AllTasksType, action: PayloadAction<{ newTask: IncompleteOneTaskAPIType }>) {
+            state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, entityStatus: 'idle'})
+        },
+        removeTaskAC(state: AllTasksType, action: PayloadAction<{ taskID: string, listID: string }>) {
+            state[action.payload.listID] = state[action.payload.listID].filter((e) => e.id !== action.payload.taskID)
+        },
+        switchCheckboxAC(state: AllTasksType, action: PayloadAction<{ taskID: string, checked: CheckStatus, listID: string }>) {
+            const x = state[action.payload.listID].find(e => e.id === action.payload.taskID)
+            if (x)
+                x.status = action.payload.checked //шото не то
+        },
+        addEditedTaskAC(state: AllTasksType, action: PayloadAction<{ value: string, listID: string, taskID: string }>) {
+            const editedTask = state[action.payload.listID].find(e => e.id === action.payload.taskID)
+            if (editedTask)
+                editedTask.title = action.payload.value
+        },
+        setAPIListsAndArrToTasksAC(state: AllTasksType, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>){
+
+        }
+
+    }
+})
+//
+// export const addEditedTaskAC = (value: string, listID: string, taskID: string) =>
+//     ({type: 'ADD-EDITED-TASK', payload: {value, listID, taskID}} as const)
+
+
+const {addTaskAC, removeTaskAC, switchCheckboxAC} = slice.actions
+
 export const taskReducer = (state: AllTasksType = initState, action: GeneralTaskACType): AllTasksType => {
 
 
     switch (action.type) {
-        case 'ADD-TASK' :
-            //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
-            return {
-                ...state, [action.payload.newTask.todoListId]:
-                    [{...action.payload.newTask, entityStatus: 'idle'}, ...state[action.payload.newTask.todoListId]]
-            }
+        // case 'ADD-TASK' :
+        //     //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
+        //     return {
+        //         ...state, [action.payload.newTask.todoListId]:
+        //             [{...action.payload.newTask, entityStatus: 'idle'}, ...state[action.payload.newTask.todoListId]]
+        //     }
 
-        case 'REMOVE-TASK' : {
-            const specificToDOList = state[action.payload.listID] //находим тудулист
-            return {
-                ...state,
-                [action.payload.listID]: specificToDOList.filter((e) => e.id !== action.payload.taskID)
-            }   //меняем в нужном тудулисте масив таксок на отфильтрованый(новый массив без удаленной таски)
-        }
-        case 'SWITCH-TASKS-CHECKBOX' : {
-            return {
-                ...state,
-                [action.payload.listID]:
-                    state[action.payload.listID].map(e => e.id === action.payload.taskID ? {
-                        ...e,
-                        status: action.payload.checked
-                    } : e)
-            }
-        }
-        case 'ADD-EDITED-TASK': {
-            const editedTask = state[action.payload.listID].map((e) => {
-                return e.id === action.payload.taskID ? {...e, title: action.payload.value} : e
-            })
-            return {
-                ...state, [action.payload.listID]: editedTask
-            }
-        }
+        // case 'REMOVE-TASK' : {
+        //     const specificToDOList = state[action.payload.listID] //находим тудулист
+        //     return {
+        //         ...state,
+        //         [action.payload.listID]: specificToDOList.filter((e) => e.id !== action.payload.taskID)
+        //     }   //меняем в нужном тудулисте масив таксок на отфильтрованый(новый массив без удаленной таски)
+        // }
+        // case 'SWITCH-TASKS-CHECKBOX' : {
+        //     return {
+        //         ...state,
+        //         [action.payload.listID]:
+        //             state[action.payload.listID].map(e => e.id === action.payload.taskID ? {
+        //                 ...e,
+        //                 status: action.payload.checked
+        //             } : e)
+        //     }
+        // }
+
+        // case 'ADD-EDITED-TASK': {
+        //     const editedTask = state[action.payload.listID].map((e) => {
+        //         return e.id === action.payload.taskID ? {...e, title: action.payload.value} : e
+        //     })
+        //     return {
+        //         ...state, [action.payload.listID]: editedTask
+        //     }
+        // }
+
         case setAPIListsAndArrToTasksAC.type: { // сначала запрашиваем листы затем таски, между такси возвращают андефайнд
+            // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
             let newObj: AllTasksType = {}
             action.payload.newListIDArr.forEach((e: string) => {
-                newObj[e] = [] // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
+                newObj[e] = []
             })
             return {...state, ...newObj}
         }

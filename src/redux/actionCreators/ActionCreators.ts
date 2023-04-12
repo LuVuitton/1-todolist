@@ -21,17 +21,17 @@ type ClearAllStateType = ReturnType<typeof clearAllStateAC>
 
 
 export type GeneralTaskACType =
+    | ReturnType<typeof addTaskAC>
+    | ReturnType<typeof removeTaskAC>
+    | ReturnType<typeof switchCheckboxAC>
+    | ReturnType<typeof addEditedTaskAC>
+    | ReturnType<typeof setEntityTaskStatusAC>
     | SetAPITasksACType
     | ReturnType<typeof setAPIListsAndArrToTasksAC>
     | AddListCreateEmptyTasksACType
     | GeneralGlobalACType
     | ReturnType<typeof setEntityListStatusAC>
     | ClearAllStateType
-    | ReturnType<typeof addTaskAC>
-    | ReturnType<typeof removeTaskAC>
-    | ReturnType<typeof switchCheckboxAC>
-    | ReturnType<typeof addEditedTaskAC>
-    | ReturnType<typeof setEntityTaskStatusAC>
 
 export type GeneralListACType =
     | AddListCreateEmptyTasksACType
@@ -67,17 +67,17 @@ export type GeneralAuthACType =
 // export const setEntityListStatusAC = (entityID: string, newStatus: GlobalRequestStatusType) =>
 //     ({type: 'CHANGE-ENTITY-LIST-STATUS', payload: {entityID, newStatus,}} as const)
 
-export const addTaskAC = (newTask: IncompleteOneTaskAPIType) =>
-    ({type: 'ADD-TASK', payload: {newTask}} as const)
+// export const addTaskAC = (newTask: IncompleteOneTaskAPIType) =>
+//     ({type: 'ADD-TASK', payload: {newTask}} as const)
 
-export const removeTaskAC = (taskID: string, listID: string) =>
-    ({type: 'REMOVE-TASK', payload: {taskID, listID}} as const)
+// export const removeTaskAC = (taskID: string, listID: string) =>
+//     ({type: 'REMOVE-TASK', payload: {taskID, listID}} as const)
 
-export const switchCheckboxAC = (taskID: string, checked: CheckStatus, listID: string) =>
-    ({type: 'SWITCH-TASKS-CHECKBOX', payload: {taskID, checked, listID}} as const)
+// export const switchCheckboxAC = (taskID: string, checked: CheckStatus, listID: string) =>
+//     ({type: 'SWITCH-TASKS-CHECKBOX', payload: {taskID, checked, listID}} as const)
 
-export const addEditedTaskAC = (value: string, listID: string, taskID: string) =>
-    ({type: 'ADD-EDITED-TASK', payload: {value, listID, taskID}} as const)
+// export const addEditedTaskAC = (value: string, listID: string, taskID: string) =>
+//     ({type: 'ADD-EDITED-TASK', payload: {value, listID, taskID}} as const)
 
 export const setEntityTaskStatusAC = (entityID: string, listID: string, newStatus: GlobalRequestStatusType) =>
     ({type: 'CHANGE-ENTITY-TASK-STATUS', payload: {entityID, newStatus, listID}} as const)
