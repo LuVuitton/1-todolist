@@ -7,8 +7,8 @@ import {AxiosError} from "axios";
 
 export const runDefaultCatch = (dispatch: Dispatch<GeneralACType>, error: AxiosError<ErrorResponseDataAPI>) => {
    const errMessage = error.response ? error.response.data.message: error.message
-    dispatch(setGlobalStatusAC('failed'))
-    dispatch(setErrorMessageAC(errMessage))
+    dispatch(setGlobalStatusAC({status:'failed'}))
+    dispatch(setErrorMessageAC({errorMessage:errMessage}))
 }
 
 
@@ -22,9 +22,9 @@ export const runDefaultCatch = (dispatch: Dispatch<GeneralACType>, error: AxiosE
 //<D> - это не тип входящего обьекта!
 export const setErrorTextDependingMessage = <D>(dispatch: Dispatch, r:GeneralResponseType<D>):void => {
     if (r.messages.length) { // проверяем есть ли какое то описание ошибки или массив пустой
-        dispatch(setErrorMessageAC(r.messages[0])) //ошибки находятся в массиве строк[]
+        dispatch(setErrorMessageAC({errorMessage:r.messages[0]})) //ошибки находятся в массиве строк[]
     } else {
-        dispatch(setErrorMessageAC('some error has occurred')) // если масс пустой в текст ошибки сетаем это
+        dispatch(setErrorMessageAC({errorMessage:'some error has occurred'})) // если масс пустой в текст ошибки сетаем это
     }
-    dispatch(setGlobalStatusAC('failed'))
+    dispatch(setGlobalStatusAC({status:'failed'}))
 }

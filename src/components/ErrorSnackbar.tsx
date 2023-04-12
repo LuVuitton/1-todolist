@@ -27,8 +27,8 @@ export function ErrorSnackbar() {
             return
         }
         // setOpen(false)
-        dispatch(setGlobalStatusAC('idle'))
-        setTimeout(()=>{dispatch(setErrorMessageAC(null))}, 1000)
+        dispatch(setGlobalStatusAC({status:"idle"}))
+        setTimeout(()=>{dispatch(setErrorMessageAC({errorMessage:null}))}, 1000)
     }
 
 

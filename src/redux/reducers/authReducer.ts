@@ -43,14 +43,13 @@ export const {setIsLoggedInAC} = slice.actions
 export const logInTC = (data: AuthDataType) =>
     (dispatch: Dispatch<GeneralAuthACType>) => {
 
-        dispatch(setGlobalStatusAC("loading"))
+        dispatch(setGlobalStatusAC({status: 'loading'}))
 
         authAPI.login(data)
             .then(r => {
                 if (r.resultCode === ResulAPICode.Ok) {
-                    const userID = r.data.userId //перке пока не ясно
                     dispatch(setIsLoggedInAC({logValue: true}))
-                    dispatch(setGlobalStatusAC("succeeded"))
+                    dispatch(setGlobalStatusAC({status: 'succeeded'}))
                 } else {
                     setErrorTextDependingMessage(dispatch, r)
                 }
@@ -62,12 +61,12 @@ export const logInTC = (data: AuthDataType) =>
 
 
 export const checkLoginTC = () => (dispatch: Dispatch<GeneralAuthACType>) => {
-    dispatch(setGlobalStatusAC("loading"))
+    dispatch(setGlobalStatusAC({status: 'loading'}))
     authAPI.checkLogin()
         .then(r => {
             if (r.resultCode === ResulAPICode.Ok) {
                 dispatch(setIsLoggedInAC({logValue: true}))
-                dispatch(setGlobalStatusAC("succeeded"))
+                dispatch(setGlobalStatusAC({status: 'succeeded'}))
             } else {
                 setErrorTextDependingMessage(dispatch, r)
             }
@@ -76,18 +75,18 @@ export const checkLoginTC = () => (dispatch: Dispatch<GeneralAuthACType>) => {
             runDefaultCatch(dispatch, err)
         })
         .finally(() => {
-            dispatch(setIsInitializedAC(true))
+            dispatch(setIsInitializedAC({value:true}))
         })
 }
 
 export const logOutTC = () => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC("loading"))
+    dispatch(setGlobalStatusAC({status: 'loading'}))
 
     authAPI.logout()
         .then(r => {
             if (r.resultCode === ResulAPICode.Ok) {
                 dispatch(setIsLoggedInAC({logValue: false}))
-                dispatch(setGlobalStatusAC("succeeded"))
+                dispatch(setGlobalStatusAC({status: 'succeeded'}))
                 dispatch(clearAllStateAC())
             } else {
                 setErrorTextDependingMessage(dispatch, r)

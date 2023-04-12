@@ -18,7 +18,8 @@ const App = () => {
     const isInitialized = useCustomSelector<boolean>(state => state.global.isInitialized)
 
 
-    useEffect(() => {         //преверяем залогиген или нет, если да меняем стейт
+    useEffect(() => {
+        //преверяем залогиген или нет, если да меняем стейт
         dispatch(checkLoginTC())
     }, [])
 

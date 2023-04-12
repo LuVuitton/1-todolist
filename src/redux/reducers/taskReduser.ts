@@ -1,27 +1,16 @@
 import {
-    AllTasksType,
-    CheckStatus,
-    ErrorResponseDataAPI,
-    IncompleteListAPIType,
-    IncompleteOneTaskAPIType,
-    ResulAPICode
+    ErrorResponseDataAPI, ResulAPICode,
+    CheckStatus, IncompleteListAPIType,
+    IncompleteOneTaskAPIType, AllTasksType,
 } from "../../Types";
 import {tasksAPI} from "../../DAL/TasksAPI";
-import {
-    GeneralTaskACType,
-    addEditedTaskAC, setEntityTaskStatusAC
-} from "../actionCreators/ActionCreators";
+import {GeneralTaskACType} from "../actionCreators/ActionCreators";
 import {Dispatch} from "redux";
 import {RootStateType} from "../store";
 import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {AxiosError} from "axios";
-import {
-    addListCreateEmptyTasksAC,
-    clearAllStateAC,
-    setAPIListsAndArrToTasksAC,
-    setEntityListStatusAC
-} from "./listReducers";
+import {setAPIListsAndArrToTasksAC, setEntityListStatusAC} from "./listReducers";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
@@ -78,88 +67,219 @@ const slice = createSlice({
             if (editedTask)
                 editedTask.title = action.payload.value
         },
-        setAPIListsAndArrToTasksAC(state: AllTasksType, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>){
+        setAPITasksAC(state: AllTasksType, action: PayloadAction<{ tasksArr: IncompleteOneTaskAPIType[], listID: string }>) {
+            const mappedTasks = action.payload.tasksArr.map(e => ({
+                ...e,
+                entityStatus: 'idle' as GlobalRequestStatusType
+            }))
 
+            state[action.payload.listID] = [...mappedTasks]
+        },
+        addListCreateEmptyTasksAC(state: AllTasksType, action: PayloadAction<{ newList: IncompleteListAPIType }>) {
+            state[action.payload.newList.id] = []
+        },
+        setEntityTaskStatusAC(state: AllTasksType, action: PayloadAction<{ entityID: string, listID: string, newStatus: GlobalRequestStatusType }>) {
+            state[action.payload.listID] =
+                state[action.payload.listID].map(e => e.id === action.payload.entityID
+                    ? {...e, entityStatus: action.payload.newStatus}
+                    : e)
+        },
+        clearAllStateAC() {
+            return {}
         }
-
-    }
-})
-//
-// export const addEditedTaskAC = (value: string, listID: string, taskID: string) =>
-//     ({type: 'ADD-EDITED-TASK', payload: {value, listID, taskID}} as const)
-
-
-const {addTaskAC, removeTaskAC, switchCheckboxAC} = slice.actions
-
-export const taskReducer = (state: AllTasksType = initState, action: GeneralTaskACType): AllTasksType => {
-
-
-    switch (action.type) {
-        // case 'ADD-TASK' :
-        //     //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
-        //     return {
-        //         ...state, [action.payload.newTask.todoListId]:
-        //             [{...action.payload.newTask, entityStatus: 'idle'}, ...state[action.payload.newTask.todoListId]]
-        //     }
-
-        // case 'REMOVE-TASK' : {
-        //     const specificToDOList = state[action.payload.listID] //находим тудулист
-        //     return {
-        //         ...state,
-        //         [action.payload.listID]: specificToDOList.filter((e) => e.id !== action.payload.taskID)
-        //     }   //меняем в нужном тудулисте масив таксок на отфильтрованый(новый массив без удаленной таски)
-        // }
-        // case 'SWITCH-TASKS-CHECKBOX' : {
-        //     return {
-        //         ...state,
-        //         [action.payload.listID]:
-        //             state[action.payload.listID].map(e => e.id === action.payload.taskID ? {
-        //                 ...e,
-        //                 status: action.payload.checked
-        //             } : e)
-        //     }
-        // }
-
-        // case 'ADD-EDITED-TASK': {
-        //     const editedTask = state[action.payload.listID].map((e) => {
-        //         return e.id === action.payload.taskID ? {...e, title: action.payload.value} : e
-        //     })
-        //     return {
-        //         ...state, [action.payload.listID]: editedTask
-        //     }
-        // }
-
-        case setAPIListsAndArrToTasksAC.type: { // сначала запрашиваем листы затем таски, между такси возвращают андефайнд
-            // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
+    },
+    extraReducers: (builder) => { // Дополнительные редьюсеры
+        builder.addCase(setAPIListsAndArrToTasksAC, (state: AllTasksType, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) => {
             let newObj: AllTasksType = {}
             action.payload.newListIDArr.forEach((e: string) => {
                 newObj[e] = []
             })
             return {...state, ...newObj}
-        }
-        case "SET-API-TASKS-AC": {
-            const mappedTasks = action.payload.tasksArr.map(e => ({
-                ...e,
-                entityStatus: 'idle' as GlobalRequestStatusType
-            }))
-            return {...state, [action.payload.listID]: [...mappedTasks]}
-        }
-        case addListCreateEmptyTasksAC.type:
-            return {...state, [action.payload.newList.id]: []}
-        case "CHANGE-ENTITY-TASK-STATUS":
-            return {
-                ...state, [action.payload.listID]:
-                    state[action.payload.listID].map(e => e.id === action.payload.entityID
-                        ? {...e, entityStatus: action.payload.newStatus}
-                        : e)
-            }
-        case clearAllStateAC.type:
-            return {}
+        })
+            // .addCase()
+    },
+})
 
-        default:
-            return state
+
+export const taskReducer = slice.reducer
+export const {
+    addTaskAC, addListCreateEmptyTasksAC,
+    removeTaskAC,
+    setEntityTaskStatusAC, setAPITasksAC,
+    switchCheckboxAC, clearAllStateAC,
+    addEditedTaskAC,
+} = slice.actions
+
+
+export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
+    dispatch(setGlobalStatusAC({status: 'loading'}))
+    dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'loading'}))
+    tasksAPI.deleteTask(listID, taskID)
+        .then(r => {
+            if (r.resultCode === ResulAPICode.Ok) {
+                dispatch(removeTaskAC({listID: listID, taskID: taskID}))
+                dispatch(setGlobalStatusAC({status: 'succeeded'}))
+                dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'succeeded'}))
+            } else {
+                setErrorTextDependingMessage(dispatch, r)
+                dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+            }
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            runDefaultCatch(dispatch, err)
+            dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+        })
+}
+
+export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
+    dispatch(setGlobalStatusAC({status: 'loading'}))
+    dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'loading'}))
+    tasksAPI.postTask(listID, taskValue)
+        .then(r => {
+            if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
+                dispatch(addTaskAC({newTask: r.data.item}))
+                dispatch(setGlobalStatusAC({status: 'succeeded'}))
+                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'succeeded'}))
+            } else {
+                setErrorTextDependingMessage(dispatch, r)
+                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
+            }
+        })
+        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+            runDefaultCatch(dispatch, err)
+            dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
+        })
+}
+
+export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue: string) => {
+    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
+
+        dispatch(setGlobalStatusAC({status: 'loading'}))
+        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'loading'}))
+        const task = getState().tasks[listID].find(e => e.id === taskID)
+
+        if (task) {
+            const updatedTask = {...task, title: newValue}
+            tasksAPI.updateTask(listID, taskID, updatedTask)
+                .then(r => {
+                    if (r.resultCode === ResulAPICode.Ok) {
+                        dispatch(addEditedTaskAC({taskID: taskID, listID: listID, value: newValue}))
+                        dispatch(setGlobalStatusAC({status: 'succeeded'}))
+                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'succeeded'}))
+
+                    } else {
+                        setErrorTextDependingMessage(dispatch, r)
+                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                    }
+                })
+                .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+                    runDefaultCatch(dispatch, err)
+                    dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                })
+        }
     }
 }
+
+export const switchCheckAPITaskTC = (listID: string, taskID: string, statusValue: CheckStatus) => {
+    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
+
+        dispatch(setGlobalStatusAC({status: 'loading'}))
+        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'loading'}))
+
+        const task = getState().tasks[listID].find(e => e.id === taskID)
+        if (task) {
+            const updatedTask = {...task, status: statusValue}
+
+            tasksAPI.updateTask(listID, taskID, updatedTask)
+                .then(r => {
+                    if (r.resultCode === ResulAPICode.Ok) {
+                        dispatch(switchCheckboxAC({taskID: taskID, listID: listID, checked: statusValue}))
+                        dispatch(setGlobalStatusAC({status: 'succeeded'}))
+                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'succeeded'}))
+
+                    } else {
+                        setErrorTextDependingMessage(dispatch, r)
+                        dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                    }
+                })
+                .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+                    runDefaultCatch(dispatch, err)
+                    dispatch(setEntityTaskStatusAC({entityID: taskID, listID: listID, newStatus: 'failed'}))
+                })
+        }
+    }
+}
+
+
+// export const taskReducer = (state: AllTasksType = initState, action: GeneralTaskACType): AllTasksType => {
+//     switch (action.type) {
+//         // case 'ADD-TASK' :
+//         //     //нужному тудулисту присваиваем новый массив, [новая таска, ...старые таски]
+//         //     return {
+//         //         ...state, [action.payload.newTask.todoListId]:
+//         //             [{...action.payload.newTask, entityStatus: 'idle'}, ...state[action.payload.newTask.todoListId]]
+//         //     }
+//
+//         // case 'REMOVE-TASK' : {
+//         //     const specificToDOList = state[action.payload.listID] //находим тудулист
+//         //     return {
+//         //         ...state,
+//         //         [action.payload.listID]: specificToDOList.filter((e) => e.id !== action.payload.taskID)
+//         //     }   //меняем в нужном тудулисте масив таксок на отфильтрованый(новый массив без удаленной таски)
+//         // }
+//         // case 'SWITCH-TASKS-CHECKBOX' : {
+//         //     return {
+//         //         ...state,
+//         //         [action.payload.listID]:
+//         //             state[action.payload.listID].map(e => e.id === action.payload.taskID ? {
+//         //                 ...e,
+//         //                 status: action.payload.checked
+//         //             } : e)
+//         //     }
+//         // }
+//
+//         // case 'ADD-EDITED-TASK': {
+//         //     const editedTask = state[action.payload.listID].map((e) => {
+//         //         return e.id === action.payload.taskID ? {...e, title: action.payload.value} : e
+//         //     })
+//         //     return {
+//         //         ...state, [action.payload.listID]: editedTask
+//         //     }
+//         // }
+//         //
+//         // case setAPIListsAndArrToTasksAC.type: { // сначала запрашиваем листы затем таски, между такси возвращают андефайнд
+//         //     // если внутри обьекта(асс масс) свойство в [], то свойством будет то что вернет выражение в скобках
+//         //     let newObj: AllTasksType = {}
+//         //     action.payload.newListIDArr.forEach((e: string) => {
+//         //         newObj[e] = []
+//         //     })
+//         //     return {...state, ...newObj}
+//         // }
+//         // case "SET-API-TASKS-AC": {
+//         //     const mappedTasks = action.payload.tasksArr.map((e:any) => ({
+//         //         ...e,
+//         //         entityStatus: 'idle' as GlobalRequestStatusType
+//         //     }))
+//         //     return {...state, [action.payload.listID]: [...mappedTasks]}
+//         // }
+//         //
+//         // case addListCreateEmptyTasksAC.type:
+//         //     return {...state, [action.payload.newList.id]: []}
+//
+//         // case "CHANGE-ENTITY-TASK-STATUS":
+//         //     return {
+//         //         ...state, [action.payload.listID]:
+//         //             state[action.payload.listID].map(e => e.id === action.payload.entityID
+//         //                 ? {...e, entityStatus: action.payload.newStatus}
+//         //                 : e)
+//         //     }
+//     //     case clearAllStateAC.type:
+//     //         return {}
+//     //
+//     //     default:
+//     //         return state
+//     // }
+// }
 
 // export const setTasksForAllLists = (allListsID: string[])=> {
 //     return {
@@ -181,102 +301,3 @@ export const taskReducer = (state: AllTasksType = initState, action: GeneralTask
 //             runDefaultCatch(dispatch, err)
 //         })
 // }
-
-export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
-    dispatch(setGlobalStatusAC('loading'))
-    dispatch(setEntityTaskStatusAC(taskID, listID, 'loading'))
-    tasksAPI.deleteTask(listID, taskID)
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(removeTaskAC(taskID, listID))
-                dispatch(setGlobalStatusAC('succeeded'))
-                dispatch(setEntityTaskStatusAC(taskID, listID, 'succeeded'))
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-            dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
-        })
-}
-
-export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch<GeneralTaskACType>) => {
-    dispatch(setGlobalStatusAC("loading"))
-    dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'loading'}))
-    tasksAPI.postTask(listID, taskValue)
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
-                dispatch(addTaskAC(r.data.item))
-                dispatch(setGlobalStatusAC("succeeded"))
-                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'succeeded'}))
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-            dispatch(setEntityListStatusAC({entityID: listID, newStatus: 'failed'}))
-        })
-}
-
-export const updateAPIEditableTaskTC = (listID: string, taskID: string, newValue: string) => {
-    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
-
-        dispatch(setGlobalStatusAC("loading"))
-        dispatch(setEntityTaskStatusAC(taskID, listID, 'loading'))
-        const task = getState().tasks[listID].find(e => e.id === taskID)
-
-        if (task) {
-            const updatedTask = {...task, title: newValue}
-            tasksAPI.updateTask(listID, taskID, updatedTask)
-                .then(r => {
-                    if (r.resultCode === ResulAPICode.Ok) {
-                        dispatch(addEditedTaskAC(newValue, listID, taskID))
-                        dispatch(setGlobalStatusAC("succeeded"))
-                        dispatch(setEntityTaskStatusAC(taskID, listID, 'succeeded'))
-
-                    } else {
-                        setErrorTextDependingMessage(dispatch, r)
-                        dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
-                    }
-                })
-                .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-                    runDefaultCatch(dispatch, err)
-                    dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
-                })
-        }
-    }
-}
-
-export const switchCheckAPITaskTC = (listID: string, taskID: string, statusValue: CheckStatus) => {
-    return (dispatch: Dispatch<GeneralTaskACType>, getState: () => RootStateType) => {
-
-        dispatch(setGlobalStatusAC("loading"))
-        dispatch(setEntityTaskStatusAC(taskID, listID, 'loading'))
-
-        const task = getState().tasks[listID].find(e => e.id === taskID)
-        if (task) {
-            const updatedTask = {...task, status: statusValue}
-
-            tasksAPI.updateTask(listID, taskID, updatedTask)
-                .then(r => {
-                    if (r.resultCode === ResulAPICode.Ok) {
-                        dispatch(switchCheckboxAC(taskID, statusValue, listID))
-                        dispatch(setGlobalStatusAC("succeeded"))
-                        dispatch(setEntityTaskStatusAC(taskID, listID, 'succeeded'))
-
-                    } else {
-                        setErrorTextDependingMessage(dispatch, r)
-                        dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
-                    }
-                })
-                .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-                    runDefaultCatch(dispatch, err)
-                    dispatch(setEntityTaskStatusAC(taskID, listID, 'failed'))
-                })
-        }
-    }
-}

@@ -21,6 +21,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     // ререндерит (компоненту/все подряд) при изменении (запрашиваемого куска стейта\стейта)
     const tasks = useCustomSelector<OneTaskType[]>(state => state.tasks[props.toDoListID])
 
+
     const [filter, setFilter] = useState<FilterType>('all')
 
     const filterButtonsData: FilterButtonDataType[] = [

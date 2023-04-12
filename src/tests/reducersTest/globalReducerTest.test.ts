@@ -16,7 +16,7 @@ beforeEach(() => {
 
 test('have to change status to loading', () => {
 
-    const action = setGlobalStatusAC('loading')
+    const action = setGlobalStatusAC({status:'loading'})
     const endState = globalReducer(startState, action)
 
     expect(endState.status).toBe('loading')
@@ -26,7 +26,7 @@ test('have to change status to loading', () => {
 
 test('have to change errorMessage to "New Error Message" ', () => {
 
-    const action = setErrorMessageAC('New Error Message')
+    const action = setErrorMessageAC({errorMessage:'New Error Message'})
     const endState = globalReducer(startState, action)
 
     expect(endState.errorMessage).toBe('New Error Message')
@@ -36,7 +36,7 @@ test('have to change errorMessage to "New Error Message" ', () => {
 
 test('have to change isInitialized to true', ()=> {
 
-    const action = setIsInitializedAC(true)
+    const action = setIsInitializedAC({value:true})
     const endState = globalReducer(startState,action)
 
     expect(endState.isInitialized).toBe(true)
