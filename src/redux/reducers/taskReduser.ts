@@ -9,42 +9,47 @@ import {RootStateType} from "../store";
 import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {AxiosError} from "axios";
-import {addListCreateEmptyTasksAC, setAPIListsAndArrToTasksAC, setEntityListStatusAC} from "./listReducers";
+import {
+    addListCreateEmptyTasksAC,
+    removeListAC,
+    setAPIListsAndArrToTasksAC,
+    setEntityListStatusAC
+} from "./listReducers";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
-const initState: AllTasksType = {}
+// const initState: AllTasksType = {}
 
 
 const slice = createSlice({
     name: 'task',
-    initialState: initState,
+    initialState: {} as AllTasksType,
     reducers: {
-        addTaskAC(state: AllTasksType, action: PayloadAction<{ newTask: IncompleteOneTaskAPIType }>) {
-            state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, entityStatus: 'idle'})
+        addTaskAC(state, action: PayloadAction<{ newTask: IncompleteOneTaskAPIType }>) {
+            state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, entityStatus:'idle'})
         },
-        removeTaskAC(state: AllTasksType, action: PayloadAction<{ taskID: string, listID: string }>) {
+        removeTaskAC(state, action: PayloadAction<{ taskID: string, listID: string }>) {
             const i = state[action.payload.listID].findIndex(e => e.id === action.payload.taskID)
             state[action.payload.listID].splice(i, 1)
         },
-        switchCheckboxAC(state: AllTasksType, action: PayloadAction<{ taskID: string, checked: CheckStatus, listID: string }>) {
+        switchCheckboxAC(state, action: PayloadAction<{ taskID: string, checked: CheckStatus, listID: string }>) {
             const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
             if (task)
                 task.status = action.payload.checked
         },
-        addEditedTaskAC(state: AllTasksType, action: PayloadAction<{ value: string, listID: string, taskID: string }>) {
+        addEditedTaskAC(state, action: PayloadAction<{ value: string, listID: string, taskID: string }>) {
             const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
             if (task)
                 task.title = action.payload.value
         },
-        setAPITasksAC(state: AllTasksType, action: PayloadAction<{ tasksArr: IncompleteOneTaskAPIType[], listID: string }>) {
+        setAPITasksAC(state, action: PayloadAction<{ tasksArr: IncompleteOneTaskAPIType[], listID: string }>) {
             const mappedTasks = action.payload.tasksArr.map(e => ({
                 ...e,
                 entityStatus: 'idle' as GlobalRequestStatusType
             }))
             state[action.payload.listID] = [...mappedTasks]
         },
-        setEntityTaskStatusAC(state: AllTasksType, action: PayloadAction<{ taskID: string, listID: string, entityStatus: GlobalRequestStatusType }>) {
+        setEntityTaskStatusAC(state, action: PayloadAction<{ taskID: string, listID: string, entityStatus: GlobalRequestStatusType }>) {
             const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
             if (task)
                 task.entityStatus = action.payload.entityStatus
@@ -63,6 +68,9 @@ const slice = createSlice({
         })
             .addCase(addListCreateEmptyTasksAC, (state, action) => {
                 state[action.payload.newList.id] = []
+            })
+            .addCase(removeListAC,(state, action)=> {
+                delete state[action.payload.listID] //удаляем такски удаленного массива
             })
     },
 })

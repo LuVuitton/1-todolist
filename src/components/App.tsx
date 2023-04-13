@@ -1,21 +1,22 @@
 import React, {useEffect} from 'react';
 import '../styles/App.css';
 import {useCustomSelector} from "../customHooks/CustomHooks";
-import {GlobalRequestStatusType} from "../redux/reducers/globalReducer";
 import {ErrorSnackbar} from "./ErrorSnackbar";
 import {Login} from "./Login";
 import {Navigate, Route, Routes} from "react-router-dom";
 import {MainContainer} from "./MainContainer";
 import {useCustomThunkDispatch} from "../redux/store";
 import {checkLoginTC} from "../redux/reducers/authReducer";
+import {selectGlobalEntityStatus, selectIsInitialized} from "../redux/selectors/global.selectors";
 
 
 //убрать юз колбэки / реакт мемо / юз мемо там где они не нужны
 
 const App = () => {
     const dispatch = useCustomThunkDispatch()
-    const globalStatus = useCustomSelector<GlobalRequestStatusType>(state => state.global.entityStatus)
-    const isInitialized = useCustomSelector<boolean>(state => state.global.isInitialized)
+    // const globalStatus = useCustomSelector<GlobalRequestStatusType>(state => state.global.entityStatus)
+    const globalStatus = useCustomSelector(selectGlobalEntityStatus)
+    const isInitialized = useCustomSelector(selectIsInitialized)
 
 
     useEffect(() => {

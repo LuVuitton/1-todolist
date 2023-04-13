@@ -19,8 +19,8 @@ test('have to change status to loading', () => {
     const action = setGlobalStatusAC({globalStatus:'loading'})
     const endState = globalReducer(startState, action)
 
-    expect(endState.entityStatus).toBe('loading')
-    expect(endState.entityStatus).not.toEqual(startState.entityStatus)
+    expect(endState.globalStatus).toBe('loading')
+    expect(endState.globalStatus).not.toEqual(startState.globalStatus)
 })
 
 

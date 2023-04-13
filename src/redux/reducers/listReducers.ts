@@ -9,33 +9,33 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {setAPITasksAC} from "./taskReduser";
 
 
-const initState: OneToDoListAPIType[] = []
+// const initState: OneToDoListAPIType[] = []
 
 // субскрайбер в редаксе подписан на то что вернут редьюсеры, и поверхностно сравнивает обьекты старого и нового стейта
 const slice = createSlice({
     name: 'list',
-    initialState: initState,
+    initialState: [] as OneToDoListAPIType[],
     reducers: {
         //переписать мутабельно
-        addListCreateEmptyTasksAC(state: OneToDoListAPIType[], action: PayloadAction<{ newList: IncompleteListAPIType }>) {
-            state.unshift({...action.payload.newList, filter: 'all', entityStatus: "idle"})
+        addListCreateEmptyTasksAC(state, action: PayloadAction<{ newList: IncompleteListAPIType }>) {
+            state.unshift({...action.payload.newList, filter: 'all', entityStatus:'idle'})
         },
-        removeListAC(state: OneToDoListAPIType[], action: PayloadAction<{ listID: string }>) {
+        removeListAC(state, action: PayloadAction<{ listID: string }>) {
             const i = state.findIndex(e => e.id === action.payload.listID)
             state.splice(i, 1)
         },
-        addEditedListTitleAC(state: OneToDoListAPIType[], action: PayloadAction<{ title: string, listID: string }>) {
+        addEditedListTitleAC(state, action: PayloadAction<{ title: string, listID: string }>) {
             const list = state.find(e => e.id === action.payload.listID)
             if (list)
                 list.title = action.payload.title
         },
-        setEntityListStatusAC(state: OneToDoListAPIType[], action: PayloadAction<{ listID: string, entityStatus: GlobalRequestStatusType }>) {
+        setEntityListStatusAC(state, action: PayloadAction<{ listID: string, entityStatus: GlobalRequestStatusType }>) {
             const list = state.find(e => e.id === action.payload.listID)
             if (list)
                 list.entityStatus = action.payload.entityStatus
         },
-        setAPIListsAndArrToTasksAC(state: OneToDoListAPIType[], action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) {
-            return action.payload.lists.map(e => ({...e, filter: 'all', entityStatus: "idle"}))
+        setAPIListsAndArrToTasksAC(state, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) {
+            return action.payload.lists.map(e => ({...e, filter: 'all', entityStatus:'idle'}))
         },
         clearAllStateAC() {
             return []

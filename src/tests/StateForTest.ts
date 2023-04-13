@@ -130,7 +130,7 @@ export const tasksStateForTest: AllTasksType = {
 }
 
 export const globalStateForTests: GlobalStateType = {
-    entityStatus: "idle",
+    globalStatus: 'idle',
     errorMessage: null,
     isInitialized:false
 }

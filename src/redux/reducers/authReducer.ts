@@ -18,7 +18,7 @@ const slice = createSlice({
     name: 'auth',
     initialState: initialState, //❗Если будут писаться тесты на slice или понадобится типизация,выносим initialState наверх
     reducers: {
-        setIsLoggedInAC(state: AuthStateType, action: PayloadAction<{ logValue: boolean }>) {
+        setIsLoggedInAC(state, action: PayloadAction<{ logValue: boolean }>) {
             state.isLoggedIn = action.payload.logValue
         }
     }

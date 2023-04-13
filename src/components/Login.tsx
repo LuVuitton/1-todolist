@@ -12,6 +12,7 @@ import {logInTC} from "../redux/reducers/authReducer";
 import {useCustomThunkDispatch} from "../redux/store";
 import {useCustomSelector} from "../customHooks/CustomHooks";
 import {Navigate} from "react-router-dom";
+import {selectIsLoading} from "../redux/selectors/auth.selectors";
 
 type FormikErrorType = {
     email?: string
@@ -54,7 +55,7 @@ export const Login = () => {
 
 
 
-    const isLoading = useCustomSelector<boolean>(state => state.auth.isLoggedIn)
+    const isLoading = useCustomSelector(selectIsLoading)
     if (isLoading){
 
         return <Navigate to='/'/>

@@ -7,7 +7,7 @@ export type GlobalErrorMessageType = string | null
 export type GlobalStateType = typeof initialGlobalState
 
 const initialGlobalState = {
-    entityStatus: "idle" as GlobalRequestStatusType,
+    globalStatus: "idle" as GlobalRequestStatusType,
     errorMessage: null as GlobalErrorMessageType,
     isInitialized: false,
     //параметр что дождется ответа на ME что бы картинка не прыгала с логина на листы, сетаем тру, потом отображаем загрузку
@@ -17,13 +17,13 @@ const slice = createSlice({
     name:'global',
     initialState:initialGlobalState,
     reducers:{
-        setGlobalStatusAC(state: GlobalStateType, action:PayloadAction<{globalStatus: GlobalRequestStatusType}>){
-            state.entityStatus = action.payload.globalStatus
+        setGlobalStatusAC(state, action:PayloadAction<{globalStatus: GlobalRequestStatusType}>){
+            state.globalStatus = action.payload.globalStatus
         },
-        setErrorMessageAC(state:GlobalStateType, action:PayloadAction<{errorMessage: GlobalErrorMessageType}>){
+        setErrorMessageAC(state, action:PayloadAction<{errorMessage: GlobalErrorMessageType}>){
             state.errorMessage = action.payload.errorMessage
         },
-        setIsInitializedAC(state:GlobalStateType, action:PayloadAction<{isInitialized:boolean}>){
+        setIsInitializedAC(state, action:PayloadAction<{isInitialized:boolean}>){
             state.isInitialized =action.payload.isInitialized
         }
     }

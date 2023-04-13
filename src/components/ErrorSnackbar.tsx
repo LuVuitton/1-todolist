@@ -3,12 +3,11 @@ import Snackbar from '@mui/material/Snackbar/Snackbar'
 import MuiAlert, { AlertProps }  from '@mui/material/Alert/Alert'
 import {useCustomSelector} from "../customHooks/CustomHooks";
 import {
-    GlobalErrorMessageType,
-    GlobalRequestStatusType,
     setErrorMessageAC,
     setGlobalStatusAC
 } from "../redux/reducers/globalReducer";
 import {useDispatch} from "react-redux";
+import {selectErrorMessage, selectGlobalEntityStatus} from "../redux/selectors/global.selectors";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props, ref) {
@@ -16,8 +15,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 })
 
 export function ErrorSnackbar() {
-    const status = useCustomSelector<GlobalRequestStatusType>(state => state.global.entityStatus)
-    const errorMessage = useCustomSelector<GlobalErrorMessageType>(state => state.global.errorMessage)
+    const globalEntityStatus = useCustomSelector(selectGlobalEntityStatus)
+    const errorMessage = useCustomSelector(selectErrorMessage)
     const dispatch = useDispatch()
 
     // const [open, setOpen] = useState(true)
@@ -33,7 +32,7 @@ export function ErrorSnackbar() {
 
 
     return (
-        <Snackbar open={status==='failed'} autoHideDuration={4000} onClose={handleClose}>
+        <Snackbar open={globalEntityStatus==='failed'} autoHideDuration={4000} onClose={handleClose}>
             <Alert onClose={handleClose} severity='error' sx={{width: '100%'}}>
                 {errorMessage} 😐
             </Alert>

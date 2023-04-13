@@ -2,11 +2,12 @@ import {InputAdd} from "./InputAdd";
 import React, {useCallback, useEffect} from "react";
 import {useCustomThunkDispatch} from "../redux/store";
 import {useCustomSelector} from "../customHooks/CustomHooks";
-import {OneToDoListAPIType} from "../Types";
 import {addAPIListTC, deleteAPIListTC, getListTC} from "../redux/reducers/listReducers";
 import {ToDoList} from "./ToDoList";
 import {Navigate} from "react-router-dom";
 import {logOutTC} from "../redux/reducers/authReducer";
+import {selectLists} from "../redux/selectors/lists.selectors";
+import {selectIsLoading} from "../redux/selectors/auth.selectors";
 
 
 export const MainContainer = () => {
@@ -14,11 +15,11 @@ export const MainContainer = () => {
     // описание кастомного диспатча в сторе
     const dispatch = useCustomThunkDispatch()
     // описание кастомного селектора в кастомных хуках
-    const toDoLists = useCustomSelector<OneToDoListAPIType[]>(state => state.lists)
-    const isLogin = useCustomSelector<boolean>(state => state.auth.isLoggedIn)
+    const toDoLists = useCustomSelector(selectLists)
+    const isLoggedIn = useCustomSelector(selectIsLoading)
 
     useEffect(() => {
-        if (isLogin) {
+        if (isLoggedIn) {
             dispatch(getListTC())
         }
     }, [])
@@ -50,7 +51,7 @@ export const MainContainer = () => {
         )
     })
 
-    if (!isLogin) {
+    if (!isLoggedIn) {
         return <Navigate to={'/login'}/>   //если isLogin фолс, редиректи на логин
     }
 
@@ -60,7 +61,7 @@ export const MainContainer = () => {
                 <button onClick={exitHandler}>EXIT</button>
             </div>
             <span>New List </span>
-            <InputAdd disabled={!isLogin} clickToAddTask={addList}/>
+            <InputAdd disabled={!isLoggedIn} clickToAddTask={addList}/>
             <div className="App">
                 {mappedLists}
             </div>
