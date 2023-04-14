@@ -2,7 +2,7 @@ import {InputAdd} from "./InputAdd";
 import React, {useCallback, useEffect} from "react";
 import {useCustomThunkDispatch} from "../redux/store";
 import {useCustomSelector} from "../customHooks/CustomHooks";
-import {addAPIListTC, deleteAPIListTC, getListTC} from "../redux/reducers/listReducers";
+import {deleteAPIListTC, listsThunk} from "../redux/reducers/listReducers";
 import {ToDoList} from "./ToDoList";
 import {Navigate} from "react-router-dom";
 import {logOutTC} from "../redux/reducers/authReducer";
@@ -20,13 +20,13 @@ export const MainContainer = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            dispatch(getListTC())
+            dispatch(listsThunk.getListTC())
         }
     }, [])
 
 
     const addList = useCallback((inputValue: string) => {
-        dispatch(addAPIListTC(inputValue))
+        dispatch(listsThunk.addAPIListTC(inputValue))
     }, []) //передаем диспатч таскок в редьюсер листов, либо создаем тут переменную [айди](const newID = v1()) и делаем 2 диспатча
 
     const removeList = useCallback((toDoListId: string) => {

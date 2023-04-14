@@ -1,15 +1,71 @@
-import {ErrorResponseDataAPI, IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
+import {IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
 import {toDoListsAPI} from "../../DAL/ToDoListsAPI";
-import {Dispatch} from "redux";
 import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
-import {AxiosError} from "axios";
 import {tasksAPI} from "../../DAL/TasksAPI";
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {setAPITasksAC} from "./taskReduser";
 
 
-// const initState: OneToDoListAPIType[] = []
+const getListTC = createAsyncThunk('list/getList', async (arg, thunkAPI) => {
+    const {dispatch} = thunkAPI
+    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    try {
+        const r = await toDoListsAPI.getLists()
+        const listsID = r.data.map((e: IncompleteListAPIType) => e.id)
+        dispatch(setAPIListsAndArrToTasksAC({lists: r.data, newListIDArr: listsID}))
+        listsID.forEach(async (e) => {
+            const tasks = await tasksAPI.getTasks(e)
+            dispatch(setAPITasksAC({listID: e, tasksArr: tasks.data.items}))
+            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+        })
+        //следующая итерация цикла не будет ждать пока вернется промис,
+        // в этом случает нам этом подходит поэтому оставляю так
+    } catch (err: any) {
+        runDefaultCatch(dispatch, err)
+    }
+
+})
+const addAPIListTC = createAsyncThunk('list/addAPILis', async (listTitle: string, thunkAPI) => {
+    const {dispatch} = thunkAPI
+    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    try {
+        const r = await toDoListsAPI.postList(listTitle)
+        if (r.resultCode === ResulAPICode.Ok) {
+            dispatch(addListCreateEmptyTasksAC({newList: r.data.item}))
+            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+        } else {
+            setErrorTextDependingMessage(dispatch, r)
+        }
+    } catch (err: any) {
+        runDefaultCatch(dispatch, err)
+    }
+})
+const deleteAPIListTC = createAsyncThunk('list/deleteAPIList', async (listID: string, thunkAPI) => {
+    const {dispatch} = thunkAPI
+    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    dispatch(setEntityListStatusAC({listID, entityStatus: 'loading'}))
+    try {
+        const r = await toDoListsAPI.deleteList(listID)
+        if (r.resultCode === ResulAPICode.Ok) {
+            dispatch(removeListAC({listID}))
+            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+        } else {
+            setErrorTextDependingMessage(dispatch, r)
+            dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+        }
+    } catch (err: any) {
+        runDefaultCatch(dispatch, err)
+        dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+    }
+})
+
+// export const addEditedListTitleTC = (listID: string, newValue: string) => (dispatch: Dispatch) => {
+
+
+
+export const listsThunk = {addAPIListTC, getListTC, deleteAPIListTC}
+
 
 // субскрайбер в редаксе подписан на то что вернут редьюсеры, и поверхностно сравнивает обьекты старого и нового стейта
 const slice = createSlice({
@@ -18,7 +74,7 @@ const slice = createSlice({
     reducers: {
         //переписать мутабельно
         addListCreateEmptyTasksAC(state, action: PayloadAction<{ newList: IncompleteListAPIType }>) {
-            state.unshift({...action.payload.newList, filter: 'all', entityStatus:'idle'})
+            state.unshift({...action.payload.newList, filter: 'all', entityStatus: 'idle'})
         },
         removeListAC(state, action: PayloadAction<{ listID: string }>) {
             const i = state.findIndex(e => e.id === action.payload.listID)
@@ -35,7 +91,7 @@ const slice = createSlice({
                 list.entityStatus = action.payload.entityStatus
         },
         setAPIListsAndArrToTasksAC(state, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) {
-            return action.payload.lists.map(e => ({...e, filter: 'all', entityStatus:'idle'}))
+            return action.payload.lists.map(e => ({...e, filter: 'all', entityStatus: 'idle'}))
         },
         clearAllStateAC() {
             return []
@@ -57,85 +113,83 @@ export const {
 //  скрыл в setErrorTextDependingMessage
 
 // getListTC написал одинаковые типы в двух редьюсерах что бы раскинуть айди от только что полученых туду листов в таски
-export const getListTC = () => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    toDoListsAPI.getLists()
-        .then(r => {
-            const listsID = r.data.map((e: IncompleteListAPIType) => e.id)
-            dispatch(setAPIListsAndArrToTasksAC({lists: r.data, newListIDArr: listsID}))
-            return listsID
-        })
-        .then((r: string[]) => {
-            r.forEach((e) =>
-                tasksAPI.getTasks(e)
-                    .then(r => {
-                        dispatch(setAPITasksAC({listID: e, tasksArr: r.data.items}))
-                        dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-                    }))
-        })
-        //AxiosError<?> сюда вкладываем то что по документации должен вернуть бэк в респонсе ошибки
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-        })
-}
+// export const getListTC = () => (dispatch: Dispatch) => {
+//     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+//     toDoListsAPI.getLists()
+//         .then(r => {
+//             const listsID = r.data.map((e: IncompleteListAPIType) => e.id)
+//             dispatch(setAPIListsAndArrToTasksAC({lists: r.data, newListIDArr: listsID}))
+//             return listsID
+//         })
+//         .then((r: string[]) => {
+//             r.forEach((e) =>
+//                 tasksAPI.getTasks(e)
+//                     .then(r => {
+//                         dispatch(setAPITasksAC({listID: e, tasksArr: r.data.items}))
+//                         dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+//                     }))
+//         })
+//         //AxiosError<?> сюда вкладываем то что по документации должен вернуть бэк в респонсе ошибки
+//         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+//             runDefaultCatch(dispatch, err)
+//         })
+// }
+// export const addAPIListTC = (listTitle: string) => (dispatch: Dispatch) => {
+//     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+//     toDoListsAPI.postList(listTitle)
+//         .then(r => {
+//             if (r.resultCode === ResulAPICode.Ok) {
+//                 dispatch(addListCreateEmptyTasksAC({newList: r.data.item}))
+//                 dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+//             } else {
+//                 setErrorTextDependingMessage(dispatch, r)
+//             }
+//         })
+//         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+//             runDefaultCatch(dispatch, err)
+//         })
+// }
+// export const deleteAPIListTC = (listID: string) => (dispatch: Dispatch) => {
+//     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+//     dispatch(setEntityListStatusAC({listID, entityStatus: 'loading'}))
+//
+//     toDoListsAPI.deleteList(listID)
+//         .then((r) => {
+//             if (r.resultCode === ResulAPICode.Ok) {
+//                 dispatch(removeListAC({listID}))
+//                 dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+//             } else {
+//                 setErrorTextDependingMessage(dispatch, r)
+//                 dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+//             }
+//         })
+//         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+//             runDefaultCatch(dispatch, err)
+//             dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+//         })
+// }
+// export const addEditedListTitleTC = (listID: string, newValue: string) => (dispatch: Dispatch) => {
+//     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+//     dispatch(setEntityListStatusAC({listID, entityStatus: 'loading'}))
+//     toDoListsAPI.updateList(listID, newValue)
+//         //дописать спан в компоненте,сейчас там лок стейт, поэтому меняет состояние вне зависимости от результата
+//         .then(r => {
+//             if (r.resultCode === ResulAPICode.Ok) {
+//                 dispatch(addEditedListTitleAC({listID, title: newValue}))
+//                 dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+//                 dispatch(setEntityListStatusAC({listID, entityStatus: 'succeeded'}))
+//             } else {
+//                 setErrorTextDependingMessage(dispatch, r)
+//                 dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+//             }
+//         })
+//         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+//             runDefaultCatch(dispatch, err)
+//             dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+//         })
+// }
 
-export const addAPIListTC = (listTitle: string) => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    toDoListsAPI.postList(listTitle)
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(addListCreateEmptyTasksAC({newList: r.data.item}))
-                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-        })
-}
-
-export const deleteAPIListTC = (listID: string) => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(setEntityListStatusAC({listID, entityStatus: 'loading'}))
-
-    toDoListsAPI.deleteList(listID)
-        .then((r) => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(removeListAC({listID}))
-                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-            dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
-        })
-}
-
-export const addEditedListTitleTC = (listID: string, newValue: string) => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(setEntityListStatusAC({listID, entityStatus: 'loading'}))
-    toDoListsAPI.updateList(listID, newValue)
-        //дописать спан в компоненте,сейчас там лок стейт, поэтому меняет состояние вне зависимости от результата
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(addEditedListTitleAC({listID, title: newValue}))
-                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-                dispatch(setEntityListStatusAC({listID, entityStatus: 'succeeded'}))
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-            dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
-        })
-}
-
+// const initState: OneToDoListAPIType[] = []
 
 // export const listReducer = (state: OneToDoListAPIType[] = initState, action: GeneralListACType): OneToDoListAPIType[] => {
 //

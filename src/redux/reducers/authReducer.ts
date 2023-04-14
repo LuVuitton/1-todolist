@@ -1,4 +1,3 @@
-// import {GeneralAuthACType} from "../actionCreators/ActionCreators";
 import {setGlobalStatusAC, setIsInitializedAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {ErrorResponseDataAPI, ResulAPICode} from "../../Types";
