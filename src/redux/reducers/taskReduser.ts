@@ -9,12 +9,7 @@ import {RootStateType} from "../store";
 import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {AxiosError} from "axios";
-import {
-    addListCreateEmptyTasksAC,
-    removeListAC,
-    setAPIListsAndArrToTasksAC,
-    setEntityListStatusAC
-} from "./listReducers";
+import {listActions, listsThunk} from "./listReducers";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
@@ -26,7 +21,7 @@ const slice = createSlice({
     initialState: {} as AllTasksType,
     reducers: {
         addTaskAC(state, action: PayloadAction<{ newTask: IncompleteOneTaskAPIType }>) {
-            state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, entityStatus:'idle'})
+            state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, entityStatus: 'idle'})
         },
         removeTaskAC(state, action: PayloadAction<{ taskID: string, listID: string }>) {
             const i = state[action.payload.listID].findIndex(e => e.id === action.payload.taskID)
@@ -54,23 +49,24 @@ const slice = createSlice({
             if (task)
                 task.entityStatus = action.payload.entityStatus
         },
-        clearAllStateAC() {
-            return {}
-        }
     },
     extraReducers: (builder) => { // Дополнительные редьюсеры
-        builder.addCase(setAPIListsAndArrToTasksAC, (state, action) => {
-            let newObj: AllTasksType = {}
-            action.payload.newListIDArr.forEach(e => {
-                newObj[e] = []
+        builder
+            .addCase(listActions.setAPIListsAndArrToTasksAC, (state, action) => {
+                let newObj: AllTasksType = {}
+                action.payload.newListIDArr.forEach(e => {
+                    newObj[e] = []
+                })
+                return {...state, ...newObj}
             })
-            return {...state, ...newObj}
-        })
-            .addCase(addListCreateEmptyTasksAC, (state, action) => {
+            .addCase(listsThunk.addListAndEmptyTasks.fulfilled, (state, action) => {
                 state[action.payload.newList.id] = []
             })
-            .addCase(removeListAC,(state, action)=> {
+            .addCase(listsThunk.deleteAPIListTC.fulfilled, (state, action) => {
                 delete state[action.payload.listID] //удаляем такски удаленного массива
+            })
+            .addCase(listActions.clearAllStateAC, ()=>{
+                return {}
             })
     },
 })
@@ -108,21 +104,21 @@ export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Di
 
 export const addAPITaskTC = (listID: string, taskValue: string) => (dispatch: Dispatch) => {
     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(setEntityListStatusAC({listID, entityStatus: 'loading'}))
+    dispatch(listActions.setEntityListStatusAC({listID, entityStatus: 'loading'}))
     tasksAPI.postTask(listID, taskValue)
         .then(r => {
             if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
                 dispatch(addTaskAC({newTask: r.data.item}))
                 dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-                dispatch(setEntityListStatusAC({listID, entityStatus: 'succeeded'}))
+                dispatch(listActions.setEntityListStatusAC({listID, entityStatus: 'succeeded'}))
             } else {
                 setErrorTextDependingMessage(dispatch, r)
-                dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+                dispatch(listActions.setEntityListStatusAC({listID, entityStatus: 'failed'}))
             }
         })
         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
             runDefaultCatch(dispatch, err)
-            dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
+            dispatch(listActions.setEntityListStatusAC({listID, entityStatus: 'failed'}))
         })
 }
 

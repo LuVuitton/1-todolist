@@ -1,14 +1,9 @@
 import {setErrorMessageAC, setGlobalStatusAC} from "../redux/reducers/globalReducer";
 import {Dispatch} from "redux";
 import {ErrorResponseDataAPI, GeneralResponseType} from "../Types";
-import {AxiosError} from "axios";
+import axios, {AxiosError} from "axios";
 
 
-export const runDefaultCatch = (dispatch: Dispatch, error: AxiosError<ErrorResponseDataAPI>) => {
-   const errMessage = error.response ? error.response.data.message: error.message
-    dispatch(setGlobalStatusAC({globalStatus:'failed'}))
-    dispatch(setErrorMessageAC({errorMessage:errMessage}))
-}
 
 
 //с бэка придет массив строк, ошибок, но он может быть пустой, в этом случае сетаем свой текст
@@ -27,3 +22,21 @@ export const setErrorTextDependingMessage = <D>(dispatch: Dispatch, r:GeneralRes
     }
     dispatch(setGlobalStatusAC({globalStatus:'failed'}))
 }
+
+
+//так как трай кетч нам может вернуть ошибку связаную не только с аксиосом но и просто с нативным кодом,
+//мы должны обработать и ее перед логикой
+export const runDefaultCatch = (dispatch: Dispatch, err: unknown ) => {
+    const error = err as Error | AxiosError<ErrorResponseDataAPI>
+    if (axios.isAxiosError(error)) {
+    const errMessage = error.message?  error.message: 'some error has occurred'
+        dispatch(setErrorMessageAC({errorMessage: errMessage}))
+    } else {
+        dispatch(setErrorMessageAC({errorMessage: `Native Error ${error.message}`}))
+    }
+    dispatch(setGlobalStatusAC({globalStatus: 'failed'}))
+}
+
+
+
+

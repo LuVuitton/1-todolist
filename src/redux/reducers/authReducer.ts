@@ -5,7 +5,7 @@ import {authAPI, AuthDataType} from "../../DAL/AuthAPI";
 import {AxiosError} from "axios";
 import {Dispatch} from "redux";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {clearAllStateAC} from "./listReducers";
+import {listActions} from "./listReducers";
 
 export type AuthStateType = typeof initialState
 
@@ -75,7 +75,7 @@ export const logOutTC = () => (dispatch: Dispatch) => {
             if (r.resultCode === ResulAPICode.Ok) {
                 dispatch(setIsLoggedInAC({logValue: false}))
                 dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-                dispatch(clearAllStateAC())
+                dispatch(listActions.clearAllStateAC())
             } else {
                 setErrorTextDependingMessage(dispatch, r)
             }

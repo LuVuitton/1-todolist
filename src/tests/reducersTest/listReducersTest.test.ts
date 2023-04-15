@@ -1,10 +1,8 @@
 import {listStateForTest} from "../StateForTest";
 import {
+    listActions,
     listReducer,
-    addEditedListTitleAC,
-    removeListAC,
-    setEntityListStatusAC,
-    addListCreateEmptyTasksAC
+    listsThunk
 } from "../../redux/reducers/listReducers";
 import {IncompleteListAPIType} from "../../Types";
 
@@ -23,7 +21,7 @@ test('should add new list to array of toDoLists', () => {
         title: 'new for new list'
     }
     //на сервер постим
-    const action = addListCreateEmptyTasksAC({newList:newList})
+    const action = listsThunk.addListAndEmptyTasks.fulfilled({newList: newList}, 'requestID', newList.title )
 
     const endState = listReducer(startState, action)
 
@@ -34,7 +32,7 @@ test('should add new list to array of toDoLists', () => {
 
 test('should remove specific list by id', () => {
 
-    const action = removeListAC({listID: 'listID1'})
+    const action = listsThunk.deleteAPIListTC.fulfilled({listID: 'listID1'},'requestID', 'listID1' )
 
     const endState = listReducer(startState, action)
 
@@ -47,7 +45,7 @@ test('should remove specific list by id', () => {
 
 test('should to set a new name for the existing list', () => {
 
-    const action = addEditedListTitleAC({listID: 'listID1', title: 'new list name'})
+    const action = listsThunk.updateListTitle.fulfilled({listID: 'listID1', title: 'new list name'}, 'requestID', {listID: 'listID1', title: 'new list name'})
 
     const endState = listReducer(startState, action)
 
@@ -59,7 +57,7 @@ test('should to set a new name for the existing list', () => {
 
 test('should to change entity list status to loading', () => {
 
-    const action = setEntityListStatusAC({listID:'listID1', entityStatus:'loading'})
+    const action = listActions.setEntityListStatusAC({listID: 'listID1', entityStatus: 'loading'})
 
     const endState = listReducer(startState, action)
 

@@ -13,7 +13,7 @@ import {
     updateAPIEditableTaskTC,
     switchCheckAPITaskTC
 } from "../redux/reducers/taskReduser";
-import {addEditedListTitleTC} from "../redux/reducers/listReducers";
+import {listsThunk} from "../redux/reducers/listReducers";
 
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
@@ -51,8 +51,9 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
         dispatch(addAPITaskTC(props.toDoListID, inputValue))
     }, [])
 
-    const addEditedListTitle = useCallback((value: string) => {
-        dispatch(addEditedListTitleTC(props.toDoListID, value))
+    const addEditedListTitle = useCallback((title: string) => {
+        // dispatch(listsThunk.updateListTitle(props.toDoListID, value))
+        dispatch(listsThunk.updateListTitle({listID: props.toDoListID, title: title}))
     }, [])
 
 
