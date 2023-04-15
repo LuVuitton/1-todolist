@@ -57,7 +57,7 @@ test('should to set a new name for the existing list', () => {
 
 test('should to change entity list status to loading', () => {
 
-    const action = listActions.setEntityListStatusAC({listID: 'listID1', entityStatus: 'loading'})
+    const action = listActions.setListStatusAC({listID: 'listID1', entityStatus: 'loading'})
 
     const endState = listReducer(startState, action)
 

@@ -1,19 +1,12 @@
 import {tasksStateForTest} from "../StateForTest";
 import {CheckStatus} from "../../Types";
-import {
-    addEditedTaskAC,
-    addTaskAC,
-    removeTaskAC,
-    setEntityTaskStatusAC,
-    switchCheckboxAC,
-    taskReducer
-} from "../../redux/reducers/taskReduser";
+import {taskActions, taskReducer, taskThunk} from "../../redux/reducers/taskReduser";
 
 const startState = tasksStateForTest
 
 
 test('should to add new task to List', () => {
-    const action = addTaskAC({
+    const action = taskThunk.addTask.fulfilled({
         newTask:{
             id: 'taskID5',
             status: CheckStatus.New,
@@ -25,7 +18,7 @@ test('should to add new task to List', () => {
             description: 'to learn',
             priority: 1,
             startDate: '',}
-    })
+    },'requestID', {listID:'listID2',title:'NEW TASK'} )
 
     const endState = taskReducer(startState, action)
 
@@ -35,7 +28,7 @@ test('should to add new task to List', () => {
 
 test('should to remove the task from the list by id', () => {
 
-    const action = removeTaskAC({taskID: 'taskID4', listID: 'listID2'})
+    const action = taskThunk.removeTask.fulfilled({taskID: 'taskID4', listID: 'listID2'}, 'requestID', {taskID: 'taskID4', listID: 'listID2'})
 
     const endState = taskReducer(startState, action)
 
@@ -48,7 +41,7 @@ test('should to remove the task from the list by id', () => {
 
 test('should to switch checkbox in task by id', () => {
 
-    const action = switchCheckboxAC({taskID:'taskID2', listID: 'listID1', checked: CheckStatus.Completed})
+    const action = taskThunk.switchTaskCheck.fulfilled({listID:'listID1', taskID:'taskID2', check:CheckStatus.Completed}, 'requestID', {listID:'listID1', taskID:'taskID2', check:CheckStatus.Completed})
 
     const endState = taskReducer(startState, action)
 
@@ -59,7 +52,7 @@ test('should to switch checkbox in task by id', () => {
 
 test('should to set a new name for the existing task', () => {
 
-    const action = addEditedTaskAC({taskID:'taskID1', listID:'listID2',value:'new name for task' })
+    const action = taskThunk.updateTask.fulfilled({taskID:'taskID1', listID:'listID2',title:'new name for task' }, 'requestID', {taskID:'taskID1', listID:'listID2',title:'new name for task' })
 
     const endState = taskReducer(startState, action)
 
@@ -69,7 +62,7 @@ test('should to set a new name for the existing task', () => {
 
 test('should to change entity task status to loading', () => {
 
-    const action = setEntityTaskStatusAC({taskID: 'taskID1', listID:'listID1', entityStatus:'loading'})
+    const action = taskActions.setTaskStatusAC({taskID: 'taskID1', listID:'listID1', entityStatus:'loading'})
 
     const endState = taskReducer(startState, action)
 

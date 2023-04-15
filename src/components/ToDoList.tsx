@@ -7,12 +7,7 @@ import {Task} from "./Task";
 import {v1} from "uuid";
 import {useCustomSelector} from "../customHooks/CustomHooks";
 import {useCustomThunkDispatch} from "../redux/store";
-import {
-    deleteAPITaskTC,
-    addAPITaskTC,
-    updateAPIEditableTaskTC,
-    switchCheckAPITaskTC
-} from "../redux/reducers/taskReduser";
+import { taskThunk} from "../redux/reducers/taskReduser";
 import {listsThunk} from "../redux/reducers/listReducers";
 
 
@@ -47,8 +42,8 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
     const clickToRemoveList = useCallback(() => props.removeList(props.toDoListID), [])
 
-    const addTask = useCallback((inputValue: string) => {
-        dispatch(addAPITaskTC(props.toDoListID, inputValue))
+    const addTask = useCallback((title: string) => {
+        dispatch(taskThunk.addTask({listID:props.toDoListID, title}))
     }, [])
 
     const addEditedListTitle = useCallback((title: string) => {
@@ -69,10 +64,10 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
 
         return filteredTasks.map((e) => {
 
-            const onChangeHandler = (statusValue: CheckStatus) => dispatch(switchCheckAPITaskTC(props.toDoListID, e.id, statusValue))
+            const onChangeHandler = (check: CheckStatus) => dispatch(taskThunk.switchTaskCheck({taskID:e.id,listID:props.toDoListID,check}))
 
-            const removeTaskHandler = (taskID: string) => dispatch(deleteAPITaskTC(props.toDoListID, taskID))
-            const addEditedTask = (value: string) => dispatch(updateAPIEditableTaskTC(props.toDoListID, e.id, value))
+            const removeTaskHandler = (taskID: string) => dispatch(taskThunk.removeTask({listID:props.toDoListID, taskID}))
+            const addEditedTask = (title: string) => dispatch(taskThunk.updateTask({listID:props.toDoListID,title,taskID:e.id}))
 
             return (
                 <Task
@@ -109,7 +104,6 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     return (
         <div className="App">
             <div>
-
                 <h3>
                     <EditableSpan value={props.titleList} callback={addEditedListTitle}
                                   itemID={props.toDoListID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
