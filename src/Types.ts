@@ -1,4 +1,4 @@
-import {GlobalRequestStatusType} from "./redux/reducers/globalReducer";
+import {StatusType} from "./redux/reducers/appReducer";
 
 
 export type GeneralResponseType<D={}> = {
@@ -30,7 +30,7 @@ export type IncompleteListAPIType = {
 
 export type OneToDoListAPIType = IncompleteListAPIType & {
     filter: FilterType
-    entityStatus: GlobalRequestStatusType
+    listStatus: StatusType
 }
 
 
@@ -69,7 +69,7 @@ export type ToDoListPropsType = {
     filter: FilterType
     toDoListID: string
     removeList: (toDoListId: string) => void
-    entityStatus: GlobalRequestStatusType
+    entityStatus: StatusType
 
 
 }
@@ -93,7 +93,7 @@ export type TaskPropsType = {
     onChangeHandler: (statusValue:CheckStatus) => void
     coverAddEditedTask: (value: string) => void
     removeTaskHandler: (taskID: string) => void
-    entityStatus: GlobalRequestStatusType
+    entityStatus: StatusType
 }
 
 export type EditableSpanPropsType = {
@@ -123,5 +123,5 @@ export type IncompleteOneTaskAPIType = {
 }
 
 export type OneTaskType = IncompleteOneTaskAPIType & {
-    entityStatus: GlobalRequestStatusType
+    taskStatus: StatusType
 }

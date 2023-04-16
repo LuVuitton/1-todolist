@@ -5,7 +5,7 @@ import {ComponentStory, ComponentMeta} from '@storybook/react';
 import {ToDoList} from '../components/ToDoList';
 import {action} from "@storybook/addon-actions";
 import {FilterButtonDataType, FilterType} from "../Types";
-import {GlobalRequestStatusType} from "../redux/reducers/globalReducer";
+import {StatusType} from "../redux/reducers/appReducer";
 
 export default {
     title: 'ToDoList',
@@ -18,7 +18,7 @@ export type dataForListType = {
     filter: FilterType,
     toDoListID: string,
     filterButtonData: FilterButtonDataType[]
-    entityStatus: GlobalRequestStatusType
+    entityStatus: StatusType
 }
 
 const dataForList: dataForListType = {

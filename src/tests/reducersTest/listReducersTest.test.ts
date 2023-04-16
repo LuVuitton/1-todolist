@@ -57,12 +57,12 @@ test('should to set a new name for the existing list', () => {
 
 test('should to change entity list status to loading', () => {
 
-    const action = listActions.setListStatusAC({listID: 'listID1', entityStatus: 'loading'})
+    const action = listActions.setListStatusAC({listID: 'listID1', listStatus: 'loading'})
 
     const endState = listReducer(startState, action)
 
-    expect(endState[0].entityStatus).toBe('loading')
-    expect(endState[0].entityStatus).not.toEqual(startState[0].entityStatus)
+    expect(endState[0].listStatus).toBe('loading')
+    expect(endState[0].listStatus).not.toEqual(startState[0].listStatus)
 
 
 })

@@ -1,54 +1,52 @@
 import {AllTasksType, CheckStatus, IncompleteOneTaskAPIType, ResulAPICode,} from "../../Types";
 import {tasksAPI} from "../../DAL/TasksAPI";
-import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
+import {appActions, StatusType} from "./appReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
 import {listActions, listsThunk} from "./listReducers";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {createAsyncThunkWithTypes} from "../../utilities/createAsyncThunkWithTypes";
 
 // юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
-// const initState: AllTasksType = {}
-
 
 const removeTask = createAsyncThunkWithTypes<{ listID: string, taskID: string }, { listID: string, taskID: string }>('tasks/removeTask', async (arg, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'loading'}))
     try {
         const r = await tasksAPI.deleteTask(arg.listID, arg.taskID)
         if (r.resultCode === ResulAPICode.Ok) {
-            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'succeeded'}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
+            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'succeeded'}))
             return {listID: arg.listID, taskID: arg.taskID}
         } else {
             setErrorTextDependingMessage(dispatch, r)
-            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'failed'}))
+            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'failed'}))
             return rejectWithValue(null) //заглушка
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
-        dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'failed'}))
+        dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'failed'}))
         return rejectWithValue(null) //заглушка
     }
 })
 const addTask = createAsyncThunkWithTypes<{ newTask: IncompleteOneTaskAPIType }, { listID: string, title: string }>('tasks/addTask', async (arg, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'loading'}))
     try {
         const r = await tasksAPI.postTask(arg.listID, arg.title)
         if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
-            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-            dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'succeeded'}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
+            dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'succeeded'}))
             return {newTask: r.data.item}
         } else {
             setErrorTextDependingMessage(dispatch, r)
-            dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'failed'}))
+            dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'failed'}))
             return rejectWithValue(null)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
-        dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'failed'}))
+        dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'failed'}))
         return rejectWithValue(null)
 
     }
@@ -56,29 +54,29 @@ const addTask = createAsyncThunkWithTypes<{ newTask: IncompleteOneTaskAPIType },
 //надо убрать это чудовищные условия брат!!!!!!!!!!!!
 const updateTask = createAsyncThunkWithTypes<{ listID: string, taskID: string, title: string }, { listID: string, taskID: string, title: string }>('task/updateTask', async (arg, thunkAPI) => {
     const {dispatch, rejectWithValue, getState} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'loading'}))
     const task = getState().tasks[arg.listID].find(e => e.id === arg.taskID)
     if (task) {
         const updatedTask = {...task, title: arg.title}
         try {
             const r = await tasksAPI.updateTask(arg.listID, arg.taskID, updatedTask)
             if (r.resultCode === ResulAPICode.Ok && updatedTask) {
-                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
                 dispatch(taskActions.setTaskStatusAC({
                     taskID: arg.taskID,
                     listID: arg.listID,
-                    entityStatus: 'succeeded'
+                    taskStatus: 'succeeded'
                 }))
                 return {taskID: arg.taskID, listID: arg.listID, title: arg.title}
             } else {
                 setErrorTextDependingMessage(dispatch, r)
-                dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'failed'}))
+                dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'failed'}))
                 return rejectWithValue(null)
             }
         } catch (err) {
             runDefaultCatch(dispatch, err)
-            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'failed'}))
+            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'failed'}))
             return rejectWithValue(null)
         }
     } else {
@@ -87,8 +85,8 @@ const updateTask = createAsyncThunkWithTypes<{ listID: string, taskID: string, t
 })
 const switchTaskCheck = createAsyncThunkWithTypes<{ listID: string, taskID: string, check: CheckStatus }, { listID: string, taskID: string, check: CheckStatus }>('tasks/switchTaskCheck', async (arg, thunkAPI) => {
     const {dispatch, rejectWithValue, getState} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'loading'}))
     const task = getState().tasks[arg.listID].find(e => e.id === arg.taskID)
     if (task) {
         try {
@@ -98,18 +96,18 @@ const switchTaskCheck = createAsyncThunkWithTypes<{ listID: string, taskID: stri
                 dispatch(taskActions.setTaskStatusAC({
                     taskID: arg.taskID,
                     listID: arg.listID,
-                    entityStatus: 'succeeded'
+                    taskStatus: 'succeeded'
                 }))
-                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+                dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
                 return {taskID: arg.taskID, listID: arg.listID, check: arg.check}
             } else {
                 setErrorTextDependingMessage(dispatch, r)
-                dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'failed'}))
+                dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'failed'}))
                 return rejectWithValue(null)
             }
         } catch (err) {
             runDefaultCatch(dispatch, err)
-            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, entityStatus: 'failed'}))
+            dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskStatus: 'failed'}))
             return rejectWithValue(null)
         }
     } else {
@@ -125,14 +123,14 @@ const slice = createSlice({
         setAPITasksAC(state, action: PayloadAction<{ tasksArr: IncompleteOneTaskAPIType[], listID: string }>) {
             const mappedTasks = action.payload.tasksArr.map(e => ({
                 ...e,
-                entityStatus: 'idle' as GlobalRequestStatusType
+                taskStatus: 'idle' as StatusType
             }))
             state[action.payload.listID] = [...mappedTasks]
         },
-        setTaskStatusAC(state, action: PayloadAction<{ taskID: string, listID: string, entityStatus: GlobalRequestStatusType }>) {
+        setTaskStatusAC(state, action: PayloadAction<{ taskID: string, listID: string, taskStatus: StatusType }>) {
             const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
             if (task)
-                task.entityStatus = action.payload.entityStatus
+                task.taskStatus = action.payload.taskStatus
         },
     },
     extraReducers: (builder) => { // Дополнительные редьюсеры
@@ -156,7 +154,7 @@ const slice = createSlice({
                 state[action.payload.listID].splice(i, 1)
             })
             .addCase(addTask.fulfilled, (state, action) => {
-                state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, entityStatus: 'idle'})
+                state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, taskStatus: 'idle'})
             })
             .addCase(updateTask.fulfilled, (state, action) => {
                 const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
@@ -175,6 +173,30 @@ const slice = createSlice({
 export const taskReducer = slice.reducer
 export const taskActions = slice.actions
 export const taskThunk = {removeTask, addTask, updateTask,switchTaskCheck}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch) => {
 //     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))

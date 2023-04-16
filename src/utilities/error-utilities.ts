@@ -1,7 +1,7 @@
-import {setErrorMessageAC, setGlobalStatusAC} from "../redux/reducers/globalReducer";
 import {Dispatch} from "redux";
 import {ErrorResponseDataAPI, GeneralResponseType} from "../Types";
 import axios, {AxiosError} from "axios";
+import {appActions} from "../redux/reducers/appReducer";
 
 
 
@@ -16,11 +16,11 @@ import axios, {AxiosError} from "axios";
 //<D> - это не тип входящего обьекта!
 export const setErrorTextDependingMessage = <D>(dispatch: Dispatch, r:GeneralResponseType<D>):void => {
     if (r.messages.length) { // проверяем есть ли какое то описание ошибки или массив пустой
-        dispatch(setErrorMessageAC({errorMessage:r.messages[0]})) //ошибки находятся в массиве строк[]
+        dispatch(appActions.setErrorMessage({errorMessage:r.messages[0]})) //ошибки находятся в массиве строк[]
     } else {
-        dispatch(setErrorMessageAC({errorMessage:'some error has occurred'})) // если масс пустой в текст ошибки сетаем это
+        dispatch(appActions.setErrorMessage({errorMessage:'some error has occurred'})) // если масс пустой в текст ошибки сетаем это
     }
-    dispatch(setGlobalStatusAC({globalStatus:'failed'}))
+    dispatch(appActions.setAppStatus({appStatus:'failed'}))
 }
 
 
@@ -30,11 +30,11 @@ export const runDefaultCatch = (dispatch: Dispatch, err: unknown ) => {
     const error = err as Error | AxiosError<ErrorResponseDataAPI>
     if (axios.isAxiosError(error)) {
     const errMessage = error.message?  error.message: 'some error has occurred'
-        dispatch(setErrorMessageAC({errorMessage: errMessage}))
+        dispatch(appActions.setErrorMessage({errorMessage: errMessage}))
     } else {
-        dispatch(setErrorMessageAC({errorMessage: `Native Error ${error.message}`}))
+        dispatch(appActions.setErrorMessage({errorMessage: `Native Error ${error.message}`}))
     }
-    dispatch(setGlobalStatusAC({globalStatus: 'failed'}))
+    dispatch(appActions.setAppStatus({appStatus: 'failed'}))
 }
 
 

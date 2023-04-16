@@ -1,5 +1,5 @@
 export {}
-// import {setErrorMessageAC, setGlobalStatusAC, setIsInitializedAC} from "../reducers/globalReducer";
+// import {setErrorMessageAC, setGlobalStatusAC, setIsInitializedAC} from "../reducers/appReducer";
 // import {setIsLoggedInAC} from "../reducers/authReducer";
 // import {
 //     removeListAC,

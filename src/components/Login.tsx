@@ -8,11 +8,11 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {useFormik} from "formik";
-import {logInTC} from "../redux/reducers/authReducer";
 import {useCustomThunkDispatch} from "../redux/store";
 import {useCustomSelector} from "../customHooks/CustomHooks";
 import {Navigate} from "react-router-dom";
 import {selectIsLoading} from "../redux/selectors/auth.selectors";
+import {authThunk} from "../redux/reducers/authReducer";
 
 type FormikErrorType = {
     email?: string
@@ -49,7 +49,7 @@ export const Login = () => {
         },
         onSubmit: (values:FormikValuesType) => {
                formik.resetForm()
-               dispatch(logInTC(values))
+               dispatch(authThunk.login({data:values}))
            },
     })
 

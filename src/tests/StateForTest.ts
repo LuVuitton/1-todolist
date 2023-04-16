@@ -1,5 +1,5 @@
 import {AllTasksType, OneToDoListAPIType, PrioritiesForTask, CheckStatus} from "../Types";
-import {GlobalStateType} from "../redux/reducers/globalReducer";
+import {AppStateType} from "../redux/reducers/appReducer";
 import {AuthStateType} from "../redux/reducers/authReducer";
 
 
@@ -10,7 +10,7 @@ export const listStateForTest: OneToDoListAPIType[] = [
         filter: 'all',
         addedDate: '',
         order: 1,
-        entityStatus: 'idle'
+        listStatus: 'idle'
     },
     {
         id: 'listID2',
@@ -18,7 +18,7 @@ export const listStateForTest: OneToDoListAPIType[] = [
         filter: 'all',
         addedDate: '',
         order: 1,
-        entityStatus: 'idle'
+        listStatus: 'idle'
     }
 ]
 
@@ -36,7 +36,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
         }, {
             id:'taskID2',
             title: 'MongoDB',
@@ -48,7 +48,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
 
         }, {
             id: 'taskID3',
@@ -61,7 +61,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
         }, {
             id: 'taskID4',
             title: 'JS',
@@ -73,7 +73,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
         },
     ],
     ['listID2']: [
@@ -88,7 +88,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
         }, {
             id: 'taskID2',
             title: 'Context this',
@@ -100,7 +100,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
         }, {
             id: 'taskID3',
             title: 'Event Loop',
@@ -112,7 +112,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
         }, {
             id: 'taskID4',
             title: 'Promises',
@@ -124,13 +124,13 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            entityStatus: 'idle'
+            taskStatus: 'idle'
         },
     ]
 }
 
-export const globalStateForTests: GlobalStateType = {
-    globalStatus: 'idle',
+export const globalStateForTests: AppStateType = {
+    appStatus: 'idle',
     errorMessage: null,
     isInitialized:false
 }

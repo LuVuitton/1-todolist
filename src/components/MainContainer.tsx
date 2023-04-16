@@ -5,9 +5,9 @@ import {useCustomSelector} from "../customHooks/CustomHooks";
 import {listsThunk} from "../redux/reducers/listReducers";
 import {ToDoList} from "./ToDoList";
 import {Navigate} from "react-router-dom";
-import {logOutTC} from "../redux/reducers/authReducer";
 import {selectLists} from "../redux/selectors/lists.selectors";
 import {selectIsLoading} from "../redux/selectors/auth.selectors";
+import {authThunk} from "../redux/reducers/authReducer";
 
 
 export const MainContainer = () => {
@@ -34,7 +34,7 @@ export const MainContainer = () => {
     }, [])// можно еще добавить delete
 
     const exitHandler = () => {
-       dispatch(logOutTC())
+       dispatch(authThunk.logout())
     }
 
 
@@ -46,7 +46,7 @@ export const MainContainer = () => {
                 filter={tl.filter}
                 toDoListID={tl.id}
                 removeList={removeList}
-                entityStatus={tl.entityStatus}
+                entityStatus={tl.listStatus}
             />
         )
     })

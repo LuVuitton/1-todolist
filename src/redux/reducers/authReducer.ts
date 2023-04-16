@@ -1,14 +1,64 @@
-import {setGlobalStatusAC, setIsInitializedAC} from "./globalReducer";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
-import {ErrorResponseDataAPI, ResulAPICode} from "../../Types";
-import {authAPI, AuthDataType} from "../../DAL/AuthAPI";
-import {AxiosError} from "axios";
-import {Dispatch} from "redux";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createAsyncThunkWithTypes} from "../../utilities/createAsyncThunkWithTypes";
 import {listActions} from "./listReducers";
+import {authAPI, AuthDataType} from "../../DAL/AuthAPI";
+import {ResulAPICode} from "../../Types";
+import {appActions} from "./appReducer";
+
+const login = createAsyncThunkWithTypes<void, { data: AuthDataType }>('auth/logInTC', async (arg, thunkAPI) => {
+    const {dispatch} = thunkAPI
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    try {
+        const r = await authAPI.login(arg.data)
+        if (r.resultCode === ResulAPICode.Ok) {
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
+            dispatch(authActions.setIsLoggedInAC({logValue: true}))
+        } else {
+            setErrorTextDependingMessage(dispatch, r)
+        }
+    } catch (err) {
+        runDefaultCatch(dispatch, err)
+    }
+})
+
+const checkMe = createAsyncThunkWithTypes<void>('auth/checkMe', async (arg, thunkAPI) => {
+    const {dispatch} = thunkAPI
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    try {
+        const r = await authAPI.checkMe()
+        if (r.resultCode === ResulAPICode.Ok) {
+            dispatch(authActions.setIsLoggedInAC({logValue: true}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
+        } else {
+            setErrorTextDependingMessage(dispatch, r)
+        }
+    } catch (err) {
+        runDefaultCatch(dispatch, err)
+    } finally {
+        dispatch(appActions.setIsInitialized({isInitialized: true}))
+    }
+})
+
+const logout = createAsyncThunkWithTypes<void>('auth/logout', async (arg, thunkAPI) => {
+    const {dispatch} = thunkAPI
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    try {
+        const r = await authAPI.logout()
+        if (r.resultCode === ResulAPICode.Ok) {
+            dispatch(authActions.setIsLoggedInAC({logValue: false}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
+            dispatch(listActions.clearAllStateAC())
+        } else {
+            setErrorTextDependingMessage(dispatch, r)
+        }
+    } catch (err) {
+        runDefaultCatch(dispatch, err)
+    }
+})
+
 
 export type AuthStateType = typeof initialState
-
 const initialState = {
     isLoggedIn: false
 }
@@ -23,70 +73,46 @@ const slice = createSlice({
     }
 })
 export const authReducer = slice.reducer
-export const {setIsLoggedInAC} = slice.actions
-// export const authActions = slice.actions //или так тогда обращаемся через обьект
+export const authActions = slice.actions
+export const authThunk = {login, logout, checkMe,}
 
 
-
-export const logInTC = (data: AuthDataType) =>
-    (dispatch: Dispatch) => {
-
-        dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-
-        authAPI.login(data)
-            .then(r => {
-                if (r.resultCode === ResulAPICode.Ok) {
-                    dispatch(setIsLoggedInAC({logValue: true}))
-                    dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-                } else {
-                    setErrorTextDependingMessage(dispatch, r)
-                }
-            })
-            .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-                runDefaultCatch(dispatch, err)
-            })
-    }
-
-
-export const checkLoginTC = () => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    authAPI.checkLogin()
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(setIsLoggedInAC({logValue:true}))
-                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-        })
-        .finally(() => {
-            dispatch(setIsInitializedAC({isInitialized:true}))
-        })
-}
-
-export const logOutTC = () => (dispatch: Dispatch) => {
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-
-    authAPI.logout()
-        .then(r => {
-            if (r.resultCode === ResulAPICode.Ok) {
-                dispatch(setIsLoggedInAC({logValue: false}))
-                dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-                dispatch(listActions.clearAllStateAC())
-            } else {
-                setErrorTextDependingMessage(dispatch, r)
-            }
-        })
-        .catch((err: AxiosError<ErrorResponseDataAPI>) => {
-            runDefaultCatch(dispatch, err)
-        })
-}
-
-
-
+// export const checkLoginTC = () => (dispatch: Dispatch) => {
+//     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+//     authAPI.checkMe()
+//         .then(r => {
+//             if (r.resultCode === ResulAPICode.Ok) {
+//                 dispatch(authActions.setIsLoggedInAC({logValue: true}))
+//                 dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+//             } else {
+//                 setErrorTextDependingMessage(dispatch, r)
+//             }
+//         })
+//         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+//             runDefaultCatch(dispatch, err)
+//         })
+//         .finally(() => {
+//             dispatch(setIsInitializedAC({isInitialized: true}))
+//         })
+// }
+// export const logOutTC = () => (dispatch: Dispatch) => {
+//     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+//
+//     authAPI.logout()
+//         .then(r => {
+//             if (r.resultCode === ResulAPICode.Ok) {
+//                 dispatch(authActions.setIsLoggedInAC({logValue: false}))
+//                 dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+//                 dispatch(listActions.clearAllStateAC())
+//             } else {
+//                 setErrorTextDependingMessage(dispatch, r)
+//             }
+//         })
+//         .catch((err: AxiosError<ErrorResponseDataAPI>) => {
+//             runDefaultCatch(dispatch, err)
+//         })
+// }
+//
 // export const authReducer = (state: AuthStateType = initialState, action: GeneralAuthACType) => {
 //     switch (action.type) {
 //         case "login/SET-IS-LOGGED-IN":

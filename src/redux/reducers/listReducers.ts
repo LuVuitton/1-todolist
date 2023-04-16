@@ -1,6 +1,6 @@
 import {IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
 import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
-import {GlobalRequestStatusType, setGlobalStatusAC} from "./globalReducer";
+import {appActions, StatusType} from "./appReducer";
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {toDoListsAPI} from "../../DAL/ToDoListsAPI";
 import {tasksAPI} from "../../DAL/TasksAPI";
@@ -8,11 +8,12 @@ import {createAsyncThunkWithTypes} from "../../utilities/createAsyncThunkWithTyp
 import {taskActions} from "./taskReduser";
 
 
+// т.к. на бэке некоторые ошибки возвращаются с успешным статусом, мы их не можем отловить через кэч
+// но в ответе есть поле РезалКод, которое имеет статусы (ошибка все что не есть 0), поэтому проверяем в then через условие
+//  скрыл в setErrorTextDependingMessage
+
 //state  в консоль в подредьюсере можно через console.log(current(state))
-
-
 //типизация санок <то что санка возвращает, то что приходит как пейлоад, то что санка вернет в ошибке rejectWithValue(тут)>
-
 
 //то что вернет try в санке попадет в екстра редьюсер под именем ИМЯСАНКИ.fulfilled
 //таким образом избавляемся от лишнего имени?
@@ -21,14 +22,14 @@ import {taskActions} from "./taskReduser";
 //так мы связываем санку и редьюсер вместе, все запросы после которых выполняется какаято логика делать так
 const getListTC = createAsyncThunk('list/getList', async (arg, thunkAPI) => {
     const {dispatch} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
     try {
         const r = await toDoListsAPI.getLists()
         const listsID = r.data.map((e: IncompleteListAPIType) => e.id)
 
         listsID.forEach(async e => {
             const tasks = await tasksAPI.getTasks(e)
-            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
             dispatch(taskActions.setAPITasksAC({listID: e, tasksArr: tasks.data.items}))
         })//следующая итерация цикла не будет ждать пока вернется промис,
         // в этом случает нам этом подходит поэтому оставляю так
@@ -42,11 +43,11 @@ const getListTC = createAsyncThunk('list/getList', async (arg, thunkAPI) => {
 
 const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteListAPIType }, string>('list/addLis', async (listTitle, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
     try {
         const r = await toDoListsAPI.postList(listTitle)
         if (r.resultCode === ResulAPICode.Ok) {
-            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
             // dispatch(addListCreateEmptyTasksAC({newList: r.data.item}))
             return ({newList: r.data.item})
         } else {
@@ -61,49 +62,48 @@ const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteList
 })
 const deleteAPIListTC = createAsyncThunkWithTypes<{ listID: string }, string>('list/deleteAPIList', async (listID, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(listActions.setListStatusAC({listID, entityStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    dispatch(listActions.setListStatusAC({listID, listStatus: 'loading'}))
     try {
         const r = await toDoListsAPI.deleteList(listID)
         if (r.resultCode === ResulAPICode.Ok) {
-            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
             // dispatch(removeListAC({listID}))
             return {listID}
         } else {
-            dispatch(listActions.setListStatusAC({listID, entityStatus: 'failed'}))
+            dispatch(listActions.setListStatusAC({listID, listStatus: 'failed'}))
             setErrorTextDependingMessage(dispatch, r)
             return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
-        dispatch(listActions.setListStatusAC({listID, entityStatus: 'failed'}))
+        dispatch(listActions.setListStatusAC({listID, listStatus: 'failed'}))
         return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
     }
 })
 const updateListTitle = createAsyncThunkWithTypes<{ listID: string, title: string }, { listID: string, title: string }>('list/updateListTitle', async (arg, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
-    dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
-    dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'loading'}))
+    dispatch(appActions.setAppStatus({appStatus: 'loading'}))
+    dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'loading'}))
     try {
         const r = await toDoListsAPI.updateList(arg.listID, arg.title)
         if (r.resultCode === ResulAPICode.Ok) {
-            dispatch(setGlobalStatusAC({globalStatus: 'succeeded'}))
-            dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'succeeded'}))
+            dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
+            dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'succeeded'}))
             return {listID: arg.listID, title: arg.title}
         } else {
             setErrorTextDependingMessage(dispatch, r)
-            dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'failed'}))
+            dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'failed'}))
             return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
-        dispatch(listActions.setListStatusAC({listID: arg.listID, entityStatus: 'failed'}))
+        dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'failed'}))
         return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
     }
 })
 
 
-export const listsThunk = {addListAndEmptyTasks, getListTC, deleteAPIListTC, updateListTitle}
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -113,25 +113,13 @@ const slice = createSlice({
     name: 'list',
     initialState: [] as OneToDoListAPIType[],
     reducers: {
-        // addListCreateEmptyTasksAC(state, action: PayloadAction<{ newList: IncompleteListAPIType }>) {
-        //     state.unshift({...action.payload.newList, filter: 'all', entityStatus: 'idle'})
-        // },
-        // removeListAC(state, action: PayloadAction<{ listID: string }>) {
-        //     const i = state.findIndex(e => e.id === action.payload.listID)
-        //     state.splice(i, 1)
-        // },
-        // addEditedListTitleAC(state, action: PayloadAction<{ title: string, listID: string }>) {
-        //     const list = state.find(e => e.id === action.payload.listID)
-        //     if (list)
-        //         list.title = action.payload.title
-        // },
         setAPIListsAndArrToTasksAC(state, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) {
-            return action.payload.lists.map(e => ({...e, filter: 'all', entityStatus: 'idle'}))
+            return action.payload.lists.map(e => ({...e, filter: 'all', listStatus: 'idle'}))
         },
-        setListStatusAC(state, action: PayloadAction<{ listID: string, entityStatus: GlobalRequestStatusType }>) {
+        setListStatusAC(state, action: PayloadAction<{ listID: string, listStatus: StatusType }>) {
             const list = state.find(e => e.id === action.payload.listID)
             if (list)
-                list.entityStatus = action.payload.entityStatus
+                list.listStatus = action.payload.listStatus
         },
         clearAllStateAC() {
             return []
@@ -144,7 +132,7 @@ const slice = createSlice({
                 state.splice(i, 1)
             })
             .addCase(addListAndEmptyTasks.fulfilled, (state, action) => {
-                state.unshift({...action.payload.newList, filter: 'all', entityStatus: 'idle'})
+                state.unshift({...action.payload.newList, filter: 'all', listStatus: 'idle'})
             })
             .addCase(updateListTitle.fulfilled, (state, action) => {
                 const list = state.find(e => e.id === action.payload.listID)
@@ -157,14 +145,13 @@ const slice = createSlice({
 
 export const listReducer = slice.reducer
 export const listActions = slice.actions
+export const listsThunk = {addListAndEmptyTasks, getListTC, deleteAPIListTC, updateListTitle}
 
 
 //////////////////////////////////////////////
 
 
-// т.к. на бэке некоторые ошибки возвращаются с успешным статусом, мы их не можем отловить через кэч
-// но в ответе есть поле РезалКод, которое имеет статусы (ошибка все что не есть 0), поэтому проверяем в then через условие
-//  скрыл в setErrorTextDependingMessage
+
 
 // getListTC написал одинаковые типы в двух редьюсерах что бы раскинуть айди от только что полученых туду листов в таски
 // export const getListTC = () => (dispatch: Dispatch) => {

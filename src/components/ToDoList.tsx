@@ -79,7 +79,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                     onChangeHandler={onChangeHandler}
                     coverAddEditedTask={addEditedTask}
                     removeTaskHandler={removeTaskHandler}
-                    entityStatus={e.entityStatus}
+                    entityStatus={e.taskStatus}
                 />)
         })
     }, [filteredTasks])

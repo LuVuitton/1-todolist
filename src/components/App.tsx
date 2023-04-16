@@ -6,8 +6,8 @@ import {Login} from "./Login";
 import {Navigate, Route, Routes} from "react-router-dom";
 import {MainContainer} from "./MainContainer";
 import {useCustomThunkDispatch} from "../redux/store";
-import {checkLoginTC} from "../redux/reducers/authReducer";
-import {selectGlobalEntityStatus, selectIsInitialized} from "../redux/selectors/global.selectors";
+import {selectGlobalEntityStatus, selectIsInitialized} from "../redux/selectors/app.selectors";
+import {authThunk} from "../redux/reducers/authReducer";
 
 
 //убрать юз колбэки / реакт мемо / юз мемо там где они не нужны
@@ -21,7 +21,7 @@ const App = () => {
 
     useEffect(() => {
         //преверяем залогиген или нет, если да меняем стейт
-        dispatch(checkLoginTC())
+        dispatch(authThunk.checkMe())
     }, [])
 
 

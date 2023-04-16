@@ -2,12 +2,9 @@ import React from 'react'
 import Snackbar from '@mui/material/Snackbar/Snackbar'
 import MuiAlert, { AlertProps }  from '@mui/material/Alert/Alert'
 import {useCustomSelector} from "../customHooks/CustomHooks";
-import {
-    setErrorMessageAC,
-    setGlobalStatusAC
-} from "../redux/reducers/globalReducer";
 import {useDispatch} from "react-redux";
-import {selectErrorMessage, selectGlobalEntityStatus} from "../redux/selectors/global.selectors";
+import {selectErrorMessage, selectGlobalEntityStatus} from "../redux/selectors/app.selectors";
+import {appActions} from "../redux/reducers/appReducer";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props, ref) {
@@ -26,8 +23,8 @@ export function ErrorSnackbar() {
             return
         }
         // setOpen(false)
-        dispatch(setGlobalStatusAC({globalStatus:"idle"}))
-        setTimeout(()=>{dispatch(setErrorMessageAC({errorMessage:null}))}, 1000)
+        dispatch(appActions.setAppStatus({appStatus:"idle"}))
+        setTimeout(()=>{dispatch(appActions.setErrorMessage({errorMessage:null}))}, 1000)
     }
 
 

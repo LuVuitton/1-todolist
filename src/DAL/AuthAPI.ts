@@ -26,7 +26,7 @@ export const authAPI = {
             .then(r => r.data)
     },
 
-    checkLogin() {
+    checkMe() {
         return instance.get<GeneralResponseType<GetAuthResponseDataType>>('/auth/me')
             .then(r=>r.data)
     },
