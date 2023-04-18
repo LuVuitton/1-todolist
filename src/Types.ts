@@ -1,10 +1,13 @@
-import {StatusType} from "./redux/reducers/appReducer";
 
+type FieldsErrorType = {
+    error: string
+    field:string
+}
 
 export type GeneralResponseType<D={}> = {
     resultCode: number
     messages: string[],
-    fieldsErrors: []
+    fieldsErrors: FieldsErrorType[]
     data: D
 }
 
@@ -30,7 +33,7 @@ export type IncompleteListAPIType = {
 
 export type OneToDoListAPIType = IncompleteListAPIType & {
     filter: FilterType
-    listStatus: StatusType
+    listIsLoading: boolean
 }
 
 
@@ -42,6 +45,7 @@ export type AllTasksType = {
 
 //тип перечисления, задаем какой либо статус в цифрах(значения)
 // и описываем его именем свойства, что бы было понятно как с ним работать
+//оказалось что енум это функция, больше без енума, прост неперезаписуемый боьект
 export enum CheckStatus {
     New,
     InProgress,
@@ -58,18 +62,18 @@ export enum PrioritiesForTask {
     Later
 }
 
-export enum ResulAPICode {
-    Ok,
-    Error,
-    Captcha = 10,
-}
+export const ResulAPICode = {
+    Ok:0,
+    Error:1,
+    Captcha: 10,
+} as const
 
 export type ToDoListPropsType = {
     titleList: string,
     filter: FilterType
     toDoListID: string
     removeList: (toDoListId: string) => void
-    entityStatus: StatusType
+    listIsLoading: boolean
 
 
 }
@@ -93,7 +97,7 @@ export type TaskPropsType = {
     onChangeHandler: (statusValue:CheckStatus) => void
     coverAddEditedTask: (value: string) => void
     removeTaskHandler: (taskID: string) => void
-    entityStatus: StatusType
+    taskIsLoading: boolean
 }
 
 export type EditableSpanPropsType = {
@@ -123,5 +127,5 @@ export type IncompleteOneTaskAPIType = {
 }
 
 export type OneTaskType = IncompleteOneTaskAPIType & {
-    taskStatus: StatusType
+    taskIsLoading: boolean
 }

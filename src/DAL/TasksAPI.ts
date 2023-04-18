@@ -2,8 +2,6 @@ import {instance} from "./ToDoListsAPI";
 import {GeneralResponseType, IncompleteOneTaskAPIType, OneTaskType, ResponseTasksType} from "../Types";
 
 
-
-
 export const tasksAPI = {
     //axios заменил на созданый instance, как он работает описал в листАПИ
 

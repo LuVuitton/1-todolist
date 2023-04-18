@@ -8,6 +8,7 @@ import {IncompleteListAPIType} from "../../Types";
 
 
 //beforeEach(()=>{}) сработает перед началом каждого теста
+// тест санко параметры => то что возвращает санка, айди который генерит бэк(ставил заглушку), то что принимает санка
 
 const startState = listStateForTest
 
@@ -57,12 +58,12 @@ test('should to set a new name for the existing list', () => {
 
 test('should to change entity list status to loading', () => {
 
-    const action = listActions.setListStatusAC({listID: 'listID1', listStatus: 'loading'})
+    const action = listActions.setListStatusAC({listID: 'listID1', listIsLoading: false})
 
     const endState = listReducer(startState, action)
 
-    expect(endState[0].listStatus).toBe('loading')
-    expect(endState[0].listStatus).not.toEqual(startState[0].listStatus)
+    expect(endState[0].listIsLoading).toBe(false)
+    expect(endState[0].listIsLoading).not.toEqual(startState[0].listIsLoading)
 
 
 })

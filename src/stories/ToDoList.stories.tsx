@@ -1,11 +1,10 @@
 import React from 'react';
 
-import {ComponentStory, ComponentMeta} from '@storybook/react';
+import {ComponentMeta, ComponentStory} from '@storybook/react';
 
 import {ToDoList} from '../components/ToDoList';
 import {action} from "@storybook/addon-actions";
 import {FilterButtonDataType, FilterType} from "../Types";
-import {StatusType} from "../redux/reducers/appReducer";
 
 export default {
     title: 'ToDoList',
@@ -18,11 +17,11 @@ export type dataForListType = {
     filter: FilterType,
     toDoListID: string,
     filterButtonData: FilterButtonDataType[]
-    entityStatus: StatusType
+    listIsLoading: boolean
 }
 
 const dataForList: dataForListType = {
-    entityStatus: 'idle',
+    listIsLoading: true,
     titleList: 'list name',
     tasks: [],
     filter: 'all',

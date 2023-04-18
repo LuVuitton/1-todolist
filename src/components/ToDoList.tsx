@@ -79,7 +79,7 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                     onChangeHandler={onChangeHandler}
                     coverAddEditedTask={addEditedTask}
                     removeTaskHandler={removeTaskHandler}
-                    entityStatus={e.taskStatus}
+                    taskIsLoading={e.taskIsLoading}
                 />)
         })
     }, [filteredTasks])
@@ -107,10 +107,10 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
                 <h3>
                     <EditableSpan value={props.titleList} callback={addEditedListTitle}
                                   itemID={props.toDoListID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
-                    <button disabled={props.entityStatus === 'loading'} onClick={clickToRemoveList}>x</button>
+                    <button disabled={!props.listIsLoading} onClick={clickToRemoveList}>x</button>
                 </h3>
 
-                <InputAdd clickToAddTask={addTask} disabled={props.entityStatus==='loading'}/>
+                <InputAdd clickToAddTask={addTask} disabled={!props.listIsLoading}/>
 
                 <ul>{tasksList}</ul>
 

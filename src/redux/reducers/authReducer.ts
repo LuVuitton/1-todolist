@@ -1,4 +1,4 @@
-import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
+import {runDefaultCatch, setServerError} from "../../utilities/error-utilities";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {createAsyncThunkWithTypes} from "../../utilities/createAsyncThunkWithTypes";
 import {listActions} from "./listReducers";
@@ -15,7 +15,7 @@ const login = createAsyncThunkWithTypes<void, { data: AuthDataType }>('auth/logI
             dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
             dispatch(authActions.setIsLoggedInAC({logValue: true}))
         } else {
-            setErrorTextDependingMessage(dispatch, r)
+            setServerError(dispatch, r)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
@@ -31,7 +31,7 @@ const checkMe = createAsyncThunkWithTypes<void>('auth/checkMe', async (arg, thun
             dispatch(authActions.setIsLoggedInAC({logValue: true}))
             dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
         } else {
-            setErrorTextDependingMessage(dispatch, r)
+            setServerError(dispatch, r, false)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
@@ -50,7 +50,7 @@ const logout = createAsyncThunkWithTypes<void>('auth/logout', async (arg, thunkA
             dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
             dispatch(listActions.clearAllStateAC())
         } else {
-            setErrorTextDependingMessage(dispatch, r)
+            setServerError(dispatch, r)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
@@ -59,6 +59,7 @@ const logout = createAsyncThunkWithTypes<void>('auth/logout', async (arg, thunkA
 
 
 export type AuthStateType = typeof initialState
+
 const initialState = {
     isLoggedIn: false
 }
@@ -74,7 +75,7 @@ const slice = createSlice({
 })
 export const authReducer = slice.reducer
 export const authActions = slice.actions
-export const authThunk = {login, logout, checkMe,}
+export const authThunk = {login, logout,checkMe}
 
 
 // export const checkLoginTC = () => (dispatch: Dispatch) => {

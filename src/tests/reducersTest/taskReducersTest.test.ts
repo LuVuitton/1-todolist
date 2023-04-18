@@ -60,14 +60,14 @@ test('should to set a new name for the existing task', () => {
     expect(endState['listID1'][0].title).toBe('HTML&CSS')
 })
 
-test('should to change entity task status to loading', () => {
+test('should to change entity task status to false', () => {
 
-    const action = taskActions.setTaskStatusAC({taskID: 'taskID1', listID:'listID1', taskStatus:'loading'})
+    const action = taskActions.setTaskStatusAC({taskID: 'taskID1', listID:'listID1', taskIsLoading:false})
 
     const endState = taskReducer(startState, action)
 
-    expect(endState['listID1'][0].taskStatus).toBe('loading')
-    expect(endState['listID1'][0].taskStatus).not.toEqual(startState['listID1'][0].taskStatus)
+    expect(endState['listID1'][0].taskIsLoading).toBe(false)
+    expect(endState['listID1'][0].taskIsLoading).not.toEqual(startState['listID1'][0].taskIsLoading)
 
 
 })

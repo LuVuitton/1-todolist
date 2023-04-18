@@ -16,7 +16,7 @@ export const Task = React.memo((props: TaskPropsType) => {
         <EditableSpan value={props.taskValue} callback={props.coverAddEditedTask}
                       itemID={props.taskID}/> {/*//передаем туда такс айди что бы он мог его вернуть назад*/}
         <button
-            disabled={props.entityStatus==="loading"}
+            disabled={props.taskIsLoading}
             onClick={() => props.removeTaskHandler(props.taskID)}> x
         </button>
     </div>

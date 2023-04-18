@@ -10,7 +10,7 @@ export const listStateForTest: OneToDoListAPIType[] = [
         filter: 'all',
         addedDate: '',
         order: 1,
-        listStatus: 'idle'
+        listIsLoading: true
     },
     {
         id: 'listID2',
@@ -18,7 +18,7 @@ export const listStateForTest: OneToDoListAPIType[] = [
         filter: 'all',
         addedDate: '',
         order: 1,
-        listStatus: 'idle'
+        listIsLoading: true
     }
 ]
 
@@ -36,7 +36,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
         }, {
             id:'taskID2',
             title: 'MongoDB',
@@ -48,7 +48,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
 
         }, {
             id: 'taskID3',
@@ -61,7 +61,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
         }, {
             id: 'taskID4',
             title: 'JS',
@@ -73,7 +73,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
         },
     ],
     ['listID2']: [
@@ -88,7 +88,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
         }, {
             id: 'taskID2',
             title: 'Context this',
@@ -100,7 +100,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
         }, {
             id: 'taskID3',
             title: 'Event Loop',
@@ -112,7 +112,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
         }, {
             id: 'taskID4',
             title: 'Promises',
@@ -124,7 +124,7 @@ export const tasksStateForTest: AllTasksType = {
             startDate: '',
             deadline: '',
             addedDate: '',
-            taskStatus: 'idle'
+            taskIsLoading: true
         },
     ]
 }

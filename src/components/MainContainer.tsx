@@ -46,7 +46,7 @@ export const MainContainer = () => {
                 filter={tl.filter}
                 toDoListID={tl.id}
                 removeList={removeList}
-                entityStatus={tl.listStatus}
+                listIsLoading={tl.listIsLoading}
             />
         )
     })

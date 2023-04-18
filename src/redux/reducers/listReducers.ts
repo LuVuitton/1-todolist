@@ -1,12 +1,13 @@
 import {IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
-import {runDefaultCatch, setErrorTextDependingMessage} from "../../utilities/error-utilities";
-import {appActions, StatusType} from "./appReducer";
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {runDefaultCatch, setServerError} from "../../utilities/error-utilities";
+import {appActions} from "./appReducer";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {toDoListsAPI} from "../../DAL/ToDoListsAPI";
 import {tasksAPI} from "../../DAL/TasksAPI";
 import {createAsyncThunkWithTypes} from "../../utilities/createAsyncThunkWithTypes";
 import {taskActions} from "./taskReduser";
 
+export type updateListArgType = { listID: string, title: string }
 
 // т.к. на бэке некоторые ошибки возвращаются с успешным статусом, мы их не можем отловить через кэч
 // но в ответе есть поле РезалКод, которое имеет статусы (ошибка все что не есть 0), поэтому проверяем в then через условие
@@ -20,7 +21,8 @@ import {taskActions} from "./taskReduser";
 //до этого мы делали логику в санке и диспатчили результаты в редьюсер, теперь тоже самое только
 //возвращеаем данный из санки и они попадут в экстра редьюсер с таким же именем только.fulfilled
 //так мы связываем санку и редьюсер вместе, все запросы после которых выполняется какаято логика делать так
-const getListTC = createAsyncThunk('list/getList', async (arg, thunkAPI) => {
+
+const getListTC = createAsyncThunkWithTypes<void>('list/getList', async (arg, thunkAPI) => {
     const {dispatch} = thunkAPI
     dispatch(appActions.setAppStatus({appStatus: 'loading'}))
     try {
@@ -48,22 +50,21 @@ const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteList
         const r = await toDoListsAPI.postList(listTitle)
         if (r.resultCode === ResulAPICode.Ok) {
             dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
-            // dispatch(addListCreateEmptyTasksAC({newList: r.data.item}))
             return ({newList: r.data.item})
         } else {
-            setErrorTextDependingMessage(dispatch, r)
+            setServerError(dispatch, r)
             return rejectWithValue(null)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
         return rejectWithValue(null)
-
     }
 })
+
 const deleteAPIListTC = createAsyncThunkWithTypes<{ listID: string }, string>('list/deleteAPIList', async (listID, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
     dispatch(appActions.setAppStatus({appStatus: 'loading'}))
-    dispatch(listActions.setListStatusAC({listID, listStatus: 'loading'}))
+    dispatch(listActions.setListStatusAC({listID, listIsLoading: true}))
     try {
         const r = await toDoListsAPI.deleteList(listID)
         if (r.resultCode === ResulAPICode.Ok) {
@@ -71,35 +72,37 @@ const deleteAPIListTC = createAsyncThunkWithTypes<{ listID: string }, string>('l
             // dispatch(removeListAC({listID}))
             return {listID}
         } else {
-            dispatch(listActions.setListStatusAC({listID, listStatus: 'failed'}))
-            setErrorTextDependingMessage(dispatch, r)
+            setServerError(dispatch, r)
             return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
-        dispatch(listActions.setListStatusAC({listID, listStatus: 'failed'}))
         return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
     }
+    finally {
+        dispatch(listActions.setListStatusAC({listID, listIsLoading: false}))
+    }
 })
-const updateListTitle = createAsyncThunkWithTypes<{ listID: string, title: string }, { listID: string, title: string }>('list/updateListTitle', async (arg, thunkAPI) => {
+
+const updateList = createAsyncThunkWithTypes<updateListArgType, updateListArgType>('list/updateListTitle', async (arg, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
     dispatch(appActions.setAppStatus({appStatus: 'loading'}))
-    dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'loading'}))
+    dispatch(listActions.setListStatusAC({listID: arg.listID, listIsLoading: true}))
     try {
         const r = await toDoListsAPI.updateList(arg.listID, arg.title)
         if (r.resultCode === ResulAPICode.Ok) {
             dispatch(appActions.setAppStatus({appStatus: 'succeeded'}))
-            dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'succeeded'}))
-            return {listID: arg.listID, title: arg.title}
+            return arg
         } else {
-            setErrorTextDependingMessage(dispatch, r)
-            dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'failed'}))
+            setServerError(dispatch, r)
             return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
-        dispatch(listActions.setListStatusAC({listID: arg.listID, listStatus: 'failed'}))
         return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
+    }
+    finally {
+        dispatch(listActions.setListStatusAC({listID: arg.listID, listIsLoading: false}))
     }
 })
 
@@ -114,12 +117,12 @@ const slice = createSlice({
     initialState: [] as OneToDoListAPIType[],
     reducers: {
         setAPIListsAndArrToTasksAC(state, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) {
-            return action.payload.lists.map(e => ({...e, filter: 'all', listStatus: 'idle'}))
+            return action.payload.lists.map(e => ({...e, filter: 'all', listIsLoading: true}))
         },
-        setListStatusAC(state, action: PayloadAction<{ listID: string, listStatus: StatusType }>) {
+        setListStatusAC(state, action: PayloadAction<{ listID: string, listIsLoading: boolean }>) {
             const list = state.find(e => e.id === action.payload.listID)
             if (list)
-                list.listStatus = action.payload.listStatus
+                list.listIsLoading = action.payload.listIsLoading
         },
         clearAllStateAC() {
             return []
@@ -132,9 +135,9 @@ const slice = createSlice({
                 state.splice(i, 1)
             })
             .addCase(addListAndEmptyTasks.fulfilled, (state, action) => {
-                state.unshift({...action.payload.newList, filter: 'all', listStatus: 'idle'})
+                state.unshift({...action.payload.newList, filter: 'all', listIsLoading: true})
             })
-            .addCase(updateListTitle.fulfilled, (state, action) => {
+            .addCase(updateList.fulfilled, (state, action) => {
                 const list = state.find(e => e.id === action.payload.listID)
                 if (list)
                     list.title = action.payload.title
@@ -145,14 +148,25 @@ const slice = createSlice({
 
 export const listReducer = slice.reducer
 export const listActions = slice.actions
-export const listsThunk = {addListAndEmptyTasks, getListTC, deleteAPIListTC, updateListTitle}
+export const listsThunk = { addListAndEmptyTasks, getListTC, deleteAPIListTC, updateListTitle: updateList}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //////////////////////////////////////////////
 
-
-
-
+// const initState: OneToDoListAPIType[] = []
 // getListTC написал одинаковые типы в двух редьюсерах что бы раскинуть айди от только что полученых туду листов в таски
 // export const getListTC = () => (dispatch: Dispatch) => {
 //     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))
@@ -229,9 +243,6 @@ export const listsThunk = {addListAndEmptyTasks, getListTC, deleteAPIListTC, upd
 //             dispatch(setEntityListStatusAC({listID, entityStatus: 'failed'}))
 //         })
 // }
-
-// const initState: OneToDoListAPIType[] = []
-
 // export const listReducer = (state: OneToDoListAPIType[] = initState, action: GeneralListACType): OneToDoListAPIType[] => {
 //
 //     switch (action.type) {
@@ -255,6 +266,5 @@ export const listsThunk = {addListAndEmptyTasks, getListTC, deleteAPIListTC, upd
 //     }
 //
 // }
-
 // export const idToDoList1 = v1(); //значение свойства toDoListID с айди в тудулисте и ключ листа в массиве тасок
 // export const idToDoList2 = v1(); //это не одна и таже строка, она просто совпадает по знаечению

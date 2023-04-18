@@ -4,8 +4,6 @@ import axios, {AxiosError} from "axios";
 import {appActions} from "../redux/reducers/appReducer";
 
 
-
-
 //с бэка придет массив строк, ошибок, но он может быть пустой, в этом случае сетаем свой текст
 // в конце засетал глобальный статус на фейлед потому как везде повторялось
 //дженерик <D> перед скобками показывает на то что в момент вызова эта функция собирается
@@ -14,22 +12,28 @@ import {appActions} from "../redux/reducers/appReducer";
 // в функцию
 //в общем мы явно указываем на то что D внутри GeneralResponseType будет динамическим
 //<D> - это не тип входящего обьекта!
-export const setErrorTextDependingMessage = <D>(dispatch: Dispatch, r:GeneralResponseType<D>):void => {
-    if (r.messages.length) { // проверяем есть ли какое то описание ошибки или массив пустой
-        dispatch(appActions.setErrorMessage({errorMessage:r.messages[0]})) //ошибки находятся в массиве строк[]
-    } else {
-        dispatch(appActions.setErrorMessage({errorMessage:'some error has occurred'})) // если масс пустой в текст ошибки сетаем это
+/**
+ * ТА ТЫ ШО
+ * @param dispatch переписать коменты под эту штуку
+ * @param r 2
+ * @param showError 3
+ */
+export const setServerError = <D>(dispatch: Dispatch, r: GeneralResponseType<D>, showError: boolean = true): void => {
+    if (showError) {
+        dispatch(appActions.setErrorMessage(r.messages.length
+            ? {errorMessage: r.messages[0]}
+            : {errorMessage: 'some error has occurred'}))
+        dispatch(appActions.setAppStatus({appStatus: 'failed'}))
     }
-    dispatch(appActions.setAppStatus({appStatus:'failed'}))
 }
 
 
 //так как трай кетч нам может вернуть ошибку связаную не только с аксиосом но и просто с нативным кодом,
 //мы должны обработать и ее перед логикой
-export const runDefaultCatch = (dispatch: Dispatch, err: unknown ) => {
+export const runDefaultCatch = (dispatch: Dispatch, err: unknown) => {
     const error = err as Error | AxiosError<ErrorResponseDataAPI>
     if (axios.isAxiosError(error)) {
-    const errMessage = error.message?  error.message: 'some error has occurred'
+        const errMessage = error.message ? error.message : 'some error has occurred'
         dispatch(appActions.setErrorMessage({errorMessage: errMessage}))
     } else {
         dispatch(appActions.setErrorMessage({errorMessage: `Native Error ${error.message}`}))
