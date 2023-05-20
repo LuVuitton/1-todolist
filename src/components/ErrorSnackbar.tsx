@@ -1,10 +1,8 @@
 import React from 'react'
 import Snackbar from '@mui/material/Snackbar/Snackbar'
-import MuiAlert, { AlertProps }  from '@mui/material/Alert/Alert'
-import {useCustomSelector} from "../customHooks/CustomHooks";
-import {useDispatch} from "react-redux";
-import {selectErrorMessage, selectGlobalEntityStatus} from "../redux/selectors/app.selectors";
-import {appActions} from "../redux/reducers/appReducer";
+import MuiAlert, {AlertProps} from '@mui/material/Alert/Alert'
+import {useCustomSelector, useBoundDispatch} from "../customHooks";
+import {appActionsGroup, appSelectors} from "../features/app";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props, ref) {
@@ -12,19 +10,18 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 })
 
 export function ErrorSnackbar() {
-    const globalEntityStatus = useCustomSelector(selectGlobalEntityStatus)
-    const errorMessage = useCustomSelector(selectErrorMessage)
-    const dispatch = useDispatch()
+    const globalEntityStatus = useCustomSelector(appSelectors.selectGlobalEntityStatus)
+    const errorMessage = useCustomSelector(appSelectors.selectErrorMessage)
+    const {setAppStatus,setErrorMessage} = useBoundDispatch(appActionsGroup)
 
-    // const [open, setOpen] = useState(true)
 
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return
         }
         // setOpen(false)
-        dispatch(appActions.setAppStatus({appStatus:"idle"}))
-        setTimeout(()=>{dispatch(appActions.setErrorMessage({errorMessage:null}))}, 1000)
+        setAppStatus({appStatus:"idle"})
+        setTimeout(()=>{setErrorMessage({errorMessage:null})}, 1000)
     }
 
 

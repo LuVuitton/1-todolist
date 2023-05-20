@@ -1,4 +1,4 @@
-import {appActions} from "../redux/reducers/appReducer";
+import {appActions} from "../features/app/appReducer";
 import {runDefaultCatch} from "./error-utilities";
 
 

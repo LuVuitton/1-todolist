@@ -1,7 +1,7 @@
 import {Dispatch} from "redux";
 import {ErrorResponseDataAPI, GeneralResponseType} from "../Types";
 import axios, {AxiosError} from "axios";
-import {appActions} from "../redux/reducers/appReducer";
+import {appActionsGroup} from "../features/app";
 
 
 //с бэка придет массив строк, ошибок, но он может быть пустой, в этом случае сетаем свой текст
@@ -20,10 +20,10 @@ import {appActions} from "../redux/reducers/appReducer";
  */
 export const setServerError = <D>(dispatch: Dispatch, r: GeneralResponseType<D>, showError: boolean = true): void => {
     if (showError) {
-        dispatch(appActions.setErrorMessage(r.messages.length
+        dispatch(appActionsGroup.setErrorMessage(r.messages.length
             ? {errorMessage: r.messages[0]}
             : {errorMessage: 'some error has occurred'}))
-        dispatch(appActions.setAppStatus({appStatus: 'failed'}))
+        dispatch(appActionsGroup.setAppStatus({appStatus: 'failed'}))
     }
 }
 
@@ -34,11 +34,11 @@ export const runDefaultCatch = (dispatch: Dispatch, err: unknown) => {
     const error = err as Error | AxiosError<ErrorResponseDataAPI>
     if (axios.isAxiosError(error)) {
         const errMessage = error.message ? error.message : 'some error has occurred'
-        dispatch(appActions.setErrorMessage({errorMessage: errMessage}))
+        dispatch(appActionsGroup.setErrorMessage({errorMessage: errMessage}))
     } else {
-        dispatch(appActions.setErrorMessage({errorMessage: `Native Error ${error.message}`}))
+        dispatch(appActionsGroup.setErrorMessage({errorMessage: `Native Error ${error.message}`}))
     }
-    dispatch(appActions.setAppStatus({appStatus: 'failed'}))
+    dispatch(appActionsGroup.setAppStatus({appStatus: 'failed'}))
 }
 
 

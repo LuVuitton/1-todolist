@@ -1,10 +1,10 @@
 import {AnyAction, combineReducers} from 'redux'
 import thunk, {ThunkDispatch} from 'redux-thunk';
-import {listReducer} from "./reducers/listReducers";
-import {taskReducer} from "./reducers/taskReduser";
+import {listReducer} from "../features/list";
+import {taskReducer} from "../features/task";
 import {useDispatch} from "react-redux";
-import {appReducer} from "./reducers/appReducer";
-import {authReducer} from "./reducers/authReducer";
+import {appReducer} from "../features/app";
+import {authReducer} from "../features/auth";
 import {configureStore} from '@reduxjs/toolkit';
 
 
