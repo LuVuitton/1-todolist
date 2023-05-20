@@ -15,7 +15,7 @@ import {appActionsGroup} from "../app";
 //state  в консоль в подредьюсере можно через console.log(current(state))
 //типизация санок <то что санка возвращает, то что приходит как пейлоад, то что санка вернет в ошибке rejectWithValue(тут)>
 
-//то что вернет try в санке попадет в екстра редьюсер под именем ИМЯСАНКИ.fulfilled
+//!!! то что вернет try в санке попадет в екстра редьюсер под именем ИМЯСАНКИ.fulfilled !!!
 //таким образом избавляемся от лишнего имени?
 //до этого мы делали логику в санке и диспатчили результаты в редьюсер, теперь тоже самое только
 //возвращеаем данный из санки и они попадут в экстра редьюсер с таким же именем только.fulfilled
@@ -60,7 +60,7 @@ const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteList
     }
 })
 
-const deleteAPIListTC = createAsyncThunkWithTypes<{ listID: string }, string>('list/deleteAPIList', async (listID, thunkAPI) => {
+const removeList = createAsyncThunkWithTypes<{ listID: string }, string>('list/deleteAPIList', async (listID, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
     dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
     dispatch(listActions.setListStatusAC({listID, listIsLoading: true}))
@@ -113,7 +113,7 @@ const slice = createSlice({
     initialState: [] as OneToDoListAPIType[],
     reducers: {
         setAPIListsAndArrToTasksAC(state, action: PayloadAction<{ lists: IncompleteListAPIType[], newListIDArr: string[] }>) {
-            return action.payload.lists.map(e => ({...e, filter: 'all', listIsLoading: true}))
+            return action.payload.lists.map(e => ({...e, filter: 'all', listIsLoading: false}))
         },
         setListStatusAC(state, action: PayloadAction<{ listID: string, listIsLoading: boolean }>) {
             const list = state.find(e => e.id === action.payload.listID)
@@ -126,12 +126,12 @@ const slice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(deleteAPIListTC.fulfilled, (state, action) => {
+            .addCase(removeList.fulfilled, (state, action) => {
                 const i = state.findIndex(e => e.id === action.payload.listID)
                 state.splice(i, 1)
             })
             .addCase(addListAndEmptyTasks.fulfilled, (state, action) => {
-                state.unshift({...action.payload.newList, filter: 'all', listIsLoading: true})
+                state.unshift({...action.payload.newList, filter: 'all', listIsLoading: false})
             })
             .addCase(updateList.fulfilled, (state, action) => {
                 const list = state.find(e => e.id === action.payload.listID)
@@ -143,7 +143,7 @@ const slice = createSlice({
 
 export const listActions = slice.actions
 export const listReducer = slice.reducer
-export const listsThunk = { addListAndEmptyTasks, getListTC, deleteAPIListTC, updateListTitle: updateList}
+export const listsThunk = { addListAndEmptyTasks, getListTC, deleteAPIListTC: removeList, updateListTitle: updateList}
 
 
 

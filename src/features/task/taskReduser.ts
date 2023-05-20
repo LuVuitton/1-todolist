@@ -11,29 +11,9 @@ export type updateTaskArgType = { listID: string, taskID: string, title: string 
 export type removeTaskArgType = { listID: string, taskID: string }
 
 
-// юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
 
-const _removeTask = createAsyncThunkWithTypes<removeTaskArgType, removeTaskArgType>
-('tasks/removeTask', async (arg, thunkAPI) => {
-    const {dispatch, rejectWithValue} = thunkAPI
-    dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
-    dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskIsLoading: true}))
-    try {
-        const r = await tasksAPI.deleteTask(arg.listID, arg.taskID)
-        if (r.resultCode === ResulAPICode.Ok) {
-            dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
-            return {listID: arg.listID, taskID: arg.taskID}
-        } else {
-            setServerError(dispatch, r)
-            return rejectWithValue(null) //заглушка
-        }
-    } catch (err) {
-        runDefaultCatch(dispatch, err)
-        return rejectWithValue(null) //заглушка
-    } finally {
-        dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskIsLoading: false}))
-    }
-})
+
+
 const removeTask = createAsyncThunkWithTypes<removeTaskArgType, removeTaskArgType>('tasks/removeTask', async (arg, thunkAPI) => {
     thunkAPI.dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskIsLoading: true}))
     return thunkTryCatch(thunkAPI, async () => {
@@ -54,6 +34,7 @@ const addTask = createAsyncThunkWithTypes<{ newTask: IncompleteOneTaskAPIType },
     const {dispatch, rejectWithValue} = thunkAPI
     dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
     dispatch(listActionsGroup.setListStatusAC({listID: arg.listID, listIsLoading: true}))
+
     try {
         const r = await tasksAPI.postTask(arg.listID, arg.title)
         if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
@@ -162,7 +143,7 @@ const slice = createSlice({
                 state[action.payload.listID].splice(i, 1)
             })
             .addCase(addTask.fulfilled, (state, action) => {
-                state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, taskIsLoading: true})
+                state[action.payload.newTask.todoListId].unshift({...action.payload.newTask, taskIsLoading: false})
             })
             .addCase(updateTask.fulfilled, (state, action) => {
                 const task = state[action.payload.listID].find(e => e.id === action.payload.taskID)
@@ -183,6 +164,30 @@ export const taskActions = slice.actions
 export const taskThunk = {removeTask, addTask, updateTask, switchTaskCheck: switchCheck}
 
 
+// юзРедьюсер(юзали до редакса) принимает нужный редьюсер и начальное значение
+
+
+// const _removeTask = createAsyncThunkWithTypes<removeTaskArgType, removeTaskArgType>
+// ('tasks/removeTask', async (arg, thunkAPI) => {
+//     const {dispatch, rejectWithValue} = thunkAPI
+//     dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
+//     dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskIsLoading: true}))
+//     try {
+//         const r = await tasksAPI.deleteTask(arg.listID, arg.taskID)
+//         if (r.resultCode === ResulAPICode.Ok) {
+//             dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
+//             return {listID: arg.listID, taskID: arg.taskID}
+//         } else {
+//             setServerError(dispatch, r)
+//             return rejectWithValue(null) //заглушка
+//         }
+//     } catch (err) {
+//         runDefaultCatch(dispatch, err)
+//         return rejectWithValue(null) //заглушка
+//     } finally {
+//         dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskIsLoading: false}))
+//     }
+// })
 
 // export const deleteAPITaskTC = (listID: string, taskID: string) => (dispatch: Dispatch) => {
 //     dispatch(setGlobalStatusAC({globalStatus: 'loading'}))

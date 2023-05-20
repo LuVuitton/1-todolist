@@ -1,10 +1,13 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
-import {InputAddPropsType} from "../../../Types";
+import React, {ChangeEvent, FC, KeyboardEvent, memo, useState} from 'react';
 
 
+type PropsType = {
+    clickToAddTask: (inputValue: string) => void
+    disabled?:boolean
+}
 
 
-export const InputAdd = React.memo( (props:InputAddPropsType) => {
+export const InputAdd: FC<PropsType> = memo( ({clickToAddTask,disabled}) => {
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState<boolean>(false)
 
@@ -19,13 +22,13 @@ export const InputAdd = React.memo( (props:InputAddPropsType) => {
             setError(true)
             return
         }
-        props.clickToAddTask(inputValue)
+        clickToAddTask(inputValue)
         setInputValue('')
     }
 
     const pressEnterToAddTask = (e: KeyboardEvent<HTMLInputElement>)=> {
         if (e.charCode === 13 && inputValue.trim() !== '') {
-            props.clickToAddTask(inputValue)
+            clickToAddTask(inputValue)
             setInputValue('')
         } else if (e.charCode === 13 && inputValue.trim() === '') {
             setInputValue('')
@@ -43,11 +46,11 @@ export const InputAdd = React.memo( (props:InputAddPropsType) => {
                 value={inputValue}
                 onChange={onChangeHandler}
                 onKeyPress={pressEnterToAddTask}
-                disabled={props.disabled}
+                disabled={disabled}
             />
             <button
                 onClick={clickOnButton}
-            disabled={props.disabled}
+            disabled={disabled}
             >
                 +
             </button>

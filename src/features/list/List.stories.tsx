@@ -32,13 +32,13 @@ const dataForList: dataForListType = {
     }]
 }
 
-
-const removeList = action('removeList')
-
-export const ResponseToActionToDoList: ComponentStory<typeof List> = () => <List
-    {...dataForList}
-
-    removeList={removeList}
-
-
-></List>;
+//
+// const removeList = action('removeList')
+//
+// export const ResponseToActionToDoList: ComponentStory<typeof List> = () => <List
+//     {...dataForList}
+//
+//     // removeList={removeList}
+//
+//
+// ></List>;

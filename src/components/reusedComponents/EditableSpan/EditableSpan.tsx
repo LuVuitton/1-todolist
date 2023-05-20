@@ -1,11 +1,15 @@
-import React, {ChangeEvent, useState} from "react";
-import {EditableSpanPropsType} from "../../../Types";
+import React, {ChangeEvent, FC, useState} from "react";
+
+ type PropsType = {
+    value: string
+    callback:(value:string)=>void
+    itemID: string
+}
 
 
-
-export const EditableSpan = React.memo((props:EditableSpanPropsType) =>{
+export const EditableSpan: FC<PropsType> = React.memo(({value,callback}) =>{
     const [spanState, setSpanState] = useState(true)
-    const [newValue, setNewValue] = useState(props.value)
+    const [newValue, setNewValue] = useState(value)
 
     const switchDoubleClick = () => {
         setSpanState(!spanState)
@@ -14,7 +18,7 @@ export const EditableSpan = React.memo((props:EditableSpanPropsType) =>{
         setNewValue(e.currentTarget.value)
     }
     const onBlurHandler = ()=>{
-        props.callback(newValue)
+        callback(newValue)
         setSpanState(!spanState)
     }
 
@@ -24,7 +28,7 @@ export const EditableSpan = React.memo((props:EditableSpanPropsType) =>{
     return (
         <>
         {spanState                                                                      //условие в жсх
-            ? <span onDoubleClick={switchDoubleClick}>{props.value}</span>
+            ? <span onDoubleClick={switchDoubleClick}>{value}</span>
             : <input value={newValue} onChange={onChangeHandler} onBlur={onBlurHandler} autoFocus/>
         }
         </>

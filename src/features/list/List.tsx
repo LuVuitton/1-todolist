@@ -1,19 +1,21 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {FC, memo, useCallback, useMemo, useState} from 'react';
 import {InputAdd} from "../../components/reusedComponents/inputAdd/InputAdd";
 import {EditableSpan} from "../../components/reusedComponents/EditableSpan/EditableSpan";
-import {CheckStatus, FilterButtonDataType, FilterType, OneTaskType, ToDoListPropsType} from "../../Types";
+import {CheckStatus, FilterButtonDataType, FilterType, OneTaskType} from "../../Types";
 import {FilterButton} from "../../components/FilterButton";
 import {Task, taskActionsGroup, taskSelectors} from "../task";
 import {v1} from "uuid";
 import {useCustomSelector, useActions} from "../../customHooks";
 import {listActionsGroup} from "./";
+import s from './style.module.css'
 
 
-export const List = React.memo((props: ToDoListPropsType) => {
-    const {addTask, switchTaskCheck, removeTask, updateTask} = useActions(taskActionsGroup)
-    const {updateListTitle} = useActions(listActionsGroup)
+
+export const List: FC<PropsType> = memo(({listID, listTitle, listIsLoading, }) => {
+    const {addTask} = useActions(taskActionsGroup)
+    const {updateListTitle, deleteAPIListTC} = useActions(listActionsGroup)
     // const tasks = useCustomSelector<OneTaskType[]>(state => state.tasks[props.toDoListID])
-    const tasks = useCustomSelector(taskSelectors.selectAllTasks(props.toDoListID))
+    const tasks = useCustomSelector(taskSelectors.selectAllTasks(listID))
 
     const [filter, setFilter] = useState<FilterType>('all')
 
@@ -22,7 +24,7 @@ export const List = React.memo((props: ToDoListPropsType) => {
         {id: v1(), title: 'active'},
         {id: v1(), title: 'completed'},
     ]
-    const filterBtn = (filter:FilterType)=> setFilter(filter)
+    const filterBtn = (filter: FilterType) => setFilter(filter)
 
 
     let filteredTasks: OneTaskType[] = tasks;
@@ -35,14 +37,14 @@ export const List = React.memo((props: ToDoListPropsType) => {
     }
 
 
-    const clickToRemoveList = useCallback(() => props.removeList(props.toDoListID), [])
+    const removeListHandler = useCallback(() => deleteAPIListTC(listID), [])
 
     const addTaskHandler = useCallback((title: string) => {
-        addTask({listID: props.toDoListID, title})
+        addTask({listID: listID, title})
     }, [])
 
     const addEditedListTitle = useCallback((title: string) => {
-        updateListTitle({listID: props.toDoListID, title: title})
+        updateListTitle({listID: listID, title: title})
     }, [])
 
 
@@ -55,26 +57,7 @@ export const List = React.memo((props: ToDoListPropsType) => {
     // вложеные массивы не копируются и при сравнении юзМемо видит тот же массив(массив который не меняли), а на место старого мы вернули копию через метод
 
     const tasksList = useMemo(() => {
-
         return filteredTasks.map((e) => {
-
-            const onChangeHandler = (check: CheckStatus) => switchTaskCheck({
-                taskID: e.id,
-                listID: props.toDoListID,
-                check
-            })
-
-            const removeTaskHandler = (taskID: string) => removeTask({
-                listID: props.toDoListID,
-                taskID
-            })
-            const addEditedTask = (title: string) => updateTask({
-                listID: props.toDoListID,
-                title,
-                taskID: e.id
-            })
-
-
 
             return (
                 <Task
@@ -83,10 +66,8 @@ export const List = React.memo((props: ToDoListPropsType) => {
                     checked={e.status} // передаьб статус
                     taskValue={e.title}
                     taskID={e.id}
-                    onChangeHandler={onChangeHandler}
-                    coverAddEditedTask={addEditedTask}
-                    removeTaskHandler={removeTaskHandler}
                     taskIsLoading={e.taskIsLoading}
+                    listID={e.todoListId}
                 />)
         })
     }, [filteredTasks])
@@ -101,8 +82,8 @@ export const List = React.memo((props: ToDoListPropsType) => {
             return <FilterButton
                 key={e.id}
                 title={e.title}
-                callback={()=>filterBtn(e.title)}
-                cssClass={filter === e.title ? 'filterButton' : ''}
+                callback={() => filterBtn(e.title)}
+                cssClass={filter === e.title ? s.btnFilter : ''}
             />
         })
     }, [filter])
@@ -112,12 +93,12 @@ export const List = React.memo((props: ToDoListPropsType) => {
         <div className="App">
             <div>
                 <h3>
-                    <EditableSpan value={props.titleList} callback={addEditedListTitle}
-                                  itemID={props.toDoListID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
-                    <button disabled={!props.listIsLoading} onClick={clickToRemoveList}>x</button>
+                    <EditableSpan value={listTitle} callback={addEditedListTitle}
+                                  itemID={listID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
+                    <button disabled={listIsLoading} onClick={removeListHandler}>x</button>
                 </h3>
 
-                <InputAdd clickToAddTask={addTaskHandler} disabled={!props.listIsLoading} />
+                <InputAdd clickToAddTask={addTaskHandler} disabled={listIsLoading}/>
 
                 <ul>{tasksList}</ul>
 
@@ -126,3 +107,11 @@ export const List = React.memo((props: ToDoListPropsType) => {
         </div>
     );
 })
+
+
+
+type PropsType = {
+    listTitle: string,
+    listID: string
+    listIsLoading: boolean
+}

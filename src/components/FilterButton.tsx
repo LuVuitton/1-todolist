@@ -1,12 +1,18 @@
-import React from 'react';
-
-import {FilterButtonPropsType} from "../Types";
+import React, {FC, memo} from 'react';
 
 
-export const FilterButton = React.memo((props: FilterButtonPropsType) => {
+type PropsType = {
+    title: string
+    callback: () => void
+    cssClass: string
+}
 
 
-    const onCLickHandler = () => props.callback()
 
-    return <button onClick={onCLickHandler} className={props.cssClass}> {props.title} </button>
+export const FilterButton: FC<PropsType> = memo(({title,callback, cssClass}) => {
+
+
+    const onCLickHandler = () => callback()
+
+    return <button onClick={onCLickHandler} className={cssClass}> {title} </button>
 })

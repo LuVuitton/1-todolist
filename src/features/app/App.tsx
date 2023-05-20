@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
-import './App.css';
+import s from './style.module.css';
 import {ErrorSnackbar} from "../../components/ErrorSnackbar";
 import {Login} from "../auth/Login";
 import {Navigate, Route, Routes} from "react-router-dom";
-import {MainContainer} from "../../components/MainContainer";
+import {MainContainer} from "../../components/MainContainer/MainContainer";
 import {appSelectors} from './'
 import {authActionsGroup} from "../auth";
 import {useCustomSelector, useActions} from "../../customHooks";
@@ -24,7 +24,7 @@ export const App = () => {
 
 
     if (!isInitialized) {
-        return <div className='firstLoading'><span>LOADING...</span></div>
+        return <div className={s.firstLoading}><span>LOADING...</span></div>
     }
 
     return (

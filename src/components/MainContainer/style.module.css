@@ -1,0 +1,15 @@
+.mainWrapper {
+    padding: 30px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.btnExitWrapper {
+    padding: 0 10px 0 0;
+    display: flex;
+    justify-content: end;
+}
+
+.btnFilter{
+    background-color: green;
+}

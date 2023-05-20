@@ -26,6 +26,7 @@ const {login} = useActions(authActionsGroup)
             rememberMe: false
         },
         validate: (values) => {
+            //Partial<someType> говорим ято обьект будет типа  someType, но у которого все поля не обязательные
             const errors: FormikErrorType = {}
             if (!values.email && !formik.touched) {
                 errors.email = 'Required'
@@ -35,8 +36,9 @@ const {login} = useActions(authActionsGroup)
             return errors
         },
         onSubmit:  (values:FormikValuesType) => {
-               login({data:values})
-               // formik.resetForm()
+                login({data:values})
+
+                   // formik.resetForm()
            },
     })
 
@@ -99,15 +101,10 @@ const {login} = useActions(authActionsGroup)
 }
 
 
-
-type FormikErrorType = {
-    email?: string
-    password?: string
-    rememberMe?: boolean
-}
-
 type FormikValuesType = {
     email: string
     password: string
     rememberMe: boolean
 }
+
+type FormikErrorType = Partial<FormikValuesType>

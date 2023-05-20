@@ -1,24 +1,49 @@
-import React from 'react';
+import React, {FC, memo} from 'react';
 import {EditableSpan} from "../../components/reusedComponents/EditableSpan/EditableSpan";
-import {CheckStatus, TaskPropsType} from "../../Types";
+import {CheckStatus} from "../../Types";
+import {useActions} from "../../customHooks";
+import {taskActionsGroup} from "./index";
+import s from './style.module.css'
 
 
-export const Task = React.memo((props: TaskPropsType) => {
+export const Task: FC<PropsType> = memo(({taskID, type, taskIsLoading, taskValue, listID, checked}) => {
 
-    return <div className={props.checked === CheckStatus.Completed ? 'isDone': ''} key={props.taskID}>
+    const {removeTask, switchTaskCheck, updateTask} = useActions(taskActionsGroup)
+
+    const IDs = {
+        listID: listID,
+        taskID: taskID,
+    }
+
+    const removeTaskHandler = () => removeTask({...IDs})
+
+    const onChangeHandler = (check: CheckStatus) => switchTaskCheck({...IDs, check})
+
+    const addEditedTask = (title: string) => updateTask({...IDs, title,})
+
+
+    return <div className={checked === CheckStatus.Completed ? s.isDone : ''} key={taskID}>
         <input
-            type={props.type}
+            type={type}
             //костыли пока чекбокс заточен под булево значение
-            checked={props.checked === CheckStatus.Completed}
-            onChange={()=>props.onChangeHandler(props.checked === CheckStatus.Completed ? CheckStatus.New: CheckStatus.Completed)}
-            key={props.taskID}
+            checked={checked === CheckStatus.Completed}
+            onChange={() => onChangeHandler(checked === CheckStatus.Completed ? CheckStatus.New : CheckStatus.Completed)}
+            key={taskID}
         />
-        <EditableSpan value={props.taskValue} callback={props.coverAddEditedTask}
-                      itemID={props.taskID}/> {/*//передаем туда такс айди что бы он мог его вернуть назад*/}
+        <EditableSpan value={taskValue} callback={addEditedTask}
+                      itemID={taskID}/> {/*//передаем туда такс айди что бы он мог его вернуть назад*/}
         <button
-            disabled={props.taskIsLoading}
-            onClick={() => props.removeTaskHandler(props.taskID)}> x
+            disabled={taskIsLoading}
+            onClick={removeTaskHandler}> x
         </button>
     </div>
 })
 
+type PropsType = {
+    type: string
+    checked: CheckStatus
+    taskValue: string
+    taskID: string
+    taskIsLoading: boolean
+    listID: string
+}

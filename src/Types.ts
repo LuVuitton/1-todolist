@@ -17,10 +17,6 @@ export type ErrorResponseDataAPI = {
     message:string
 }
 
-export type InputAddPropsType = {
-    clickToAddTask: (inputValue: string) => void
-    disabled?:boolean
-}
 
 export type FilterType = 'all' | 'completed' | 'active';
 
@@ -68,43 +64,15 @@ export const ResulAPICode = {
     Captcha: 10,
 } as const
 
-export type ToDoListPropsType = {
-    titleList: string,
-    filter: FilterType
-    toDoListID: string
-    removeList: (toDoListId: string) => void
-    listIsLoading: boolean
 
-
-}
-
-export type FilterButtonPropsType = {
-    title: string
-    callback: () => void
-    cssClass: string
-}
 
 export type FilterButtonDataType = {
     id: string
     title: FilterType
 }
 
-export type TaskPropsType = {
-    type: string
-    checked: CheckStatus
-    taskValue: string
-    taskID: string
-    onChangeHandler: (statusValue:CheckStatus) => void
-    coverAddEditedTask: (value: string) => void
-    removeTaskHandler: (taskID: string) => void
-    taskIsLoading: boolean
-}
 
-export type EditableSpanPropsType = {
-    value: string
-    callback:(value:string)=>void
-    itemID: string
-}
+
 
 export type ResponseTasksType = {
     error: null | string
