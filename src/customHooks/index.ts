@@ -1,9 +1,9 @@
-import {useBoundDispatch} from './useBoundDispatch'
+import {useActions} from './useActions'
 import {useCustomSelector} from './slectorWithTypes'
 
 
 
 export {
-    useBoundDispatch,
+    useActions,
     useCustomSelector
 }

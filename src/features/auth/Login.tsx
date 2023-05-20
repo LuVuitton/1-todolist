@@ -10,13 +10,13 @@ import Button from '@mui/material/Button';
 import {useFormik} from "formik";
 import {Navigate} from "react-router-dom";
 import {authActionsGroup, authSelectors} from "./";
-import {useBoundDispatch,useCustomSelector} from "../../customHooks";
+import {useActions,useCustomSelector} from "../../customHooks";
 
 
 
 export const Login = () => {
 
-const {login} = useBoundDispatch(authActionsGroup)
+const {login} = useActions(authActionsGroup)
 
 
     const formik = useFormik({

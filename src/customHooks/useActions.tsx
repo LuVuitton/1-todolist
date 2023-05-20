@@ -14,7 +14,7 @@ import {useCustomThunkDispatch} from "../redux/store";
 // а диспатч происходит под капотом
 
 
-export function useBoundDispatch<T extends ActionCreatorsMapObject<any>>(actions: T) {
+export function useActions<T extends ActionCreatorsMapObject<any>>(actions: T) {
     const dispatch = useCustomThunkDispatch()
 
     const boundActions = useMemo(() => {

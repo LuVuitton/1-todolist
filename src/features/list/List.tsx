@@ -3,15 +3,15 @@ import {InputAdd} from "../../components/reusedComponents/inputAdd/InputAdd";
 import {EditableSpan} from "../../components/reusedComponents/EditableSpan/EditableSpan";
 import {CheckStatus, FilterButtonDataType, FilterType, OneTaskType, ToDoListPropsType} from "../../Types";
 import {FilterButton} from "../../components/FilterButton";
-import {Task,taskActionsGroup, taskSelectors} from "../task";
+import {Task, taskActionsGroup, taskSelectors} from "../task";
 import {v1} from "uuid";
-import {useCustomSelector,useBoundDispatch} from "../../customHooks";
+import {useCustomSelector, useActions} from "../../customHooks";
 import {listActionsGroup} from "./";
 
 
 export const List = React.memo((props: ToDoListPropsType) => {
-    const {addTask, switchTaskCheck,removeTask,updateTask} = useBoundDispatch(taskActionsGroup)
-    const {updateListTitle} = useBoundDispatch(listActionsGroup)
+    const {addTask, switchTaskCheck, removeTask, updateTask} = useActions(taskActionsGroup)
+    const {updateListTitle} = useActions(listActionsGroup)
     // const tasks = useCustomSelector<OneTaskType[]>(state => state.tasks[props.toDoListID])
     const tasks = useCustomSelector(taskSelectors.selectAllTasks(props.toDoListID))
 
@@ -22,6 +22,7 @@ export const List = React.memo((props: ToDoListPropsType) => {
         {id: v1(), title: 'active'},
         {id: v1(), title: 'completed'},
     ]
+    const filterBtn = (filter:FilterType)=> setFilter(filter)
 
 
     let filteredTasks: OneTaskType[] = tasks;
@@ -33,20 +34,15 @@ export const List = React.memo((props: ToDoListPropsType) => {
         filteredTasks = tasks.filter(e => e.status === CheckStatus.Completed)
     }
 
-    const filterAll = useCallback(() => setFilter('all'), [])
-    const filterActive = useCallback(() => setFilter('active'), [])
-    const filterCompleted = useCallback(() => setFilter('completed'), [])
-
 
     const clickToRemoveList = useCallback(() => props.removeList(props.toDoListID), [])
 
     const addTaskHandler = useCallback((title: string) => {
-      addTask({listID: props.toDoListID, title})
+        addTask({listID: props.toDoListID, title})
     }, [])
 
     const addEditedListTitle = useCallback((title: string) => {
-        // dispatch(listsThunk.updateListTitle(props.toDoListID, value))
-       updateListTitle({listID: props.toDoListID, title: title})
+        updateListTitle({listID: props.toDoListID, title: title})
     }, [])
 
 
@@ -78,6 +74,8 @@ export const List = React.memo((props: ToDoListPropsType) => {
                 taskID: e.id
             })
 
+
+
             return (
                 <Task
                     key={e.id}
@@ -99,11 +97,11 @@ export const List = React.memo((props: ToDoListPropsType) => {
     // а следующий раз\ы только при изменении значения в зависимости(втором аргументе хука([props.filter]))
     // если значение в зависимости не будет изменяться, то юзМемо вернут то что запомнил в первый раз
     const filterButtons = useMemo(() => {
-        return filterButtonsData.map((e, i) => {
+        return filterButtonsData.map(e => {
             return <FilterButton
-                key={i}
+                key={e.id}
                 title={e.title}
-                callback={e.title === 'all' ? filterAll : e.title === 'active' ? filterActive : filterCompleted}
+                callback={()=>filterBtn(e.title)}
                 cssClass={filter === e.title ? 'filterButton' : ''}
             />
         })
@@ -119,7 +117,7 @@ export const List = React.memo((props: ToDoListPropsType) => {
                     <button disabled={!props.listIsLoading} onClick={clickToRemoveList}>x</button>
                 </h3>
 
-                <InputAdd clickToAddTask={addTaskHandler} disabled={!props.listIsLoading}/>
+                <InputAdd clickToAddTask={addTaskHandler} disabled={!props.listIsLoading} />
 
                 <ul>{tasksList}</ul>
 

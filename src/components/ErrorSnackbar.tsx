@@ -1,7 +1,7 @@
 import React from 'react'
 import Snackbar from '@mui/material/Snackbar/Snackbar'
 import MuiAlert, {AlertProps} from '@mui/material/Alert/Alert'
-import {useCustomSelector, useBoundDispatch} from "../customHooks";
+import {useCustomSelector, useActions} from "../customHooks";
 import {appActionsGroup, appSelectors} from "../features/app";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -12,7 +12,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 export function ErrorSnackbar() {
     const globalEntityStatus = useCustomSelector(appSelectors.selectGlobalEntityStatus)
     const errorMessage = useCustomSelector(appSelectors.selectErrorMessage)
-    const {setAppStatus,setErrorMessage} = useBoundDispatch(appActionsGroup)
+    const {setAppStatus,setErrorMessage} = useActions(appActionsGroup)
 
 
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {

@@ -6,7 +6,7 @@ import {Navigate, Route, Routes} from "react-router-dom";
 import {MainContainer} from "../../components/MainContainer";
 import {appSelectors} from './'
 import {authActionsGroup} from "../auth";
-import {useCustomSelector, useBoundDispatch} from "../../customHooks";
+import {useCustomSelector, useActions} from "../../customHooks";
 
 
 //убрать юз колбэки / реакт мемо / юз мемо там где они не нужны
@@ -15,7 +15,7 @@ export const App = () => {
 
     const globalStatus = useCustomSelector(appSelectors.selectGlobalEntityStatus)
     const isInitialized = useCustomSelector(appSelectors.selectIsInitialized)
-    const {checkMe} = useBoundDispatch(authActionsGroup)
+    const {checkMe} = useActions(authActionsGroup)
 
     useEffect(() => {
         //преверяем залогиген или нет, если да меняем стейт

@@ -1,6 +1,6 @@
 import {InputAdd} from "./reusedComponents/inputAdd/InputAdd";
 import React, {useCallback, useEffect} from "react";
-import {useBoundDispatch, useCustomSelector} from "../customHooks";
+import {useActions, useCustomSelector} from "../customHooks";
 import {List} from "../features/list";
 import {Navigate} from "react-router-dom";
 import {listActionsGroup, listSelectors} from "../features/list";
@@ -11,8 +11,8 @@ export const MainContainer = () => {
 
     // описание кастомного диспатча в сторе
     // const dispatch = useCustomThunkDispatch()
-    const {getListTC, addListAndEmptyTasks, deleteAPIListTC} = useBoundDispatch(listActionsGroup)
-    const {logout} = useBoundDispatch(authActionsGroup)
+    const {getListTC, addListAndEmptyTasks, deleteAPIListTC} = useActions(listActionsGroup)
+    const {logout} = useActions(authActionsGroup)
 
 
     // описание кастомного селектора в кастомных хуках
