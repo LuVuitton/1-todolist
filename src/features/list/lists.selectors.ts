@@ -10,3 +10,18 @@ import {RootStateType} from "../../redux/store";
 // Логика получения данных из структуры стора находится внутри компонента.
 // Но зачем компоненту знать об этом?
 export const selectLists = (state:RootStateType) => state.lists
+
+
+export const selectListFilter = (listID:string)=> {
+   return (state: RootStateType) => {
+      const listIndex = state.lists.findIndex(e=> e.id === listID)
+      return state.lists[listIndex].filter
+   }
+}
+
+export const selectListTitle = (listID:string)=> {
+   return (state: RootStateType) => {
+      const listIndex = state.lists.findIndex(e=> e.id === listID)
+      return state.lists[listIndex].title
+   }
+}

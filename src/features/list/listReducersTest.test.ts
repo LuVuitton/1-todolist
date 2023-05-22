@@ -33,7 +33,7 @@ test('should add new list to array of toDoLists', () => {
 
 test('should remove specific list by id', () => {
 
-    const action = listsThunk.deleteAPIListTC.fulfilled({listID: 'listID1'},'requestID', 'listID1' )
+    const action = listsThunk.removeList.fulfilled({listID: 'listID1'},'requestID', 'listID1' )
 
     const endState = listReducer(startState, action)
 

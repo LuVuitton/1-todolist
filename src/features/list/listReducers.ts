@@ -1,4 +1,4 @@
-import {IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
+import {FilterType, IncompleteListAPIType, OneToDoListAPIType, ResulAPICode} from "../../Types";
 import {runDefaultCatch, setServerError} from "../../utilities/error-utilities";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {toDoListsAPI} from "../../DAL/ToDoListsAPI";
@@ -42,7 +42,8 @@ const getListTC = createAsyncThunkWithTypes<void>('list/getList', async (arg, th
     }
 })
 
-const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteListAPIType }, string>('list/addLis', async (listTitle, thunkAPI) => {
+const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteListAPIType }, string>
+('list/addLis', async (listTitle, thunkAPI) => {
     const {dispatch, rejectWithValue} = thunkAPI
     dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
     try {
@@ -51,8 +52,8 @@ const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteList
             dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
             return ({newList: r.data.item})
         } else {
-            setServerError(dispatch, r)
-            return rejectWithValue(null)
+            setServerError(dispatch, r, false)
+            return rejectWithValue(r.messages[0])
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
@@ -122,6 +123,11 @@ const slice = createSlice({
         },
         clearAllStateAC() {
             return []
+        },
+        changeListFilter (state, action: PayloadAction<{listID:string, filter:FilterType}>){
+            const list = state.find(e => e.id === action.payload.listID)
+            if (list)
+                list.filter = action.payload.filter
         }
     },
     extraReducers: builder => {
@@ -143,7 +149,7 @@ const slice = createSlice({
 
 export const listActions = slice.actions
 export const listReducer = slice.reducer
-export const listsThunk = { addListAndEmptyTasks, getListTC, deleteAPIListTC: removeList, updateListTitle: updateList}
+export const listsThunk = { addListAndEmptyTasks, getListTC, removeList, updateListTitle: updateList}
 
 
 

@@ -2,33 +2,38 @@ import React, {ChangeEvent, FC, KeyboardEvent, memo, useState} from 'react';
 
 
 type PropsType = {
-    clickToAddTask: (inputValue: string) => void
-    disabled?:boolean
+    clickToAdd: (inputValue: string) => Promise<any>
+    disabled?: boolean
 }
 
 
-export const InputAdd: FC<PropsType> = memo( ({clickToAddTask,disabled}) => {
+export const InputAdd: FC<PropsType> = memo(({clickToAdd, disabled}) => {
     const [inputValue, setInputValue] = useState('')
-    const [error, setError] = useState<boolean>(false)
+    const [error, setError] = useState<boolean|string>(false)
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.currentTarget.value)
         setError(false)
     }
 
-    const clickOnButton=() =>{
+    const clickOnButton = () => {
         if (inputValue.trim() === '') {  //обрезаем пробелы и проверяем на наличие символов
-            setInputValue('')
             setError(true)
             return
         }
-        clickToAddTask(inputValue)
-        setInputValue('')
+        clickToAdd(inputValue).then(() => {
+            setInputValue('')
+        })
+            .catch((err:string)=>{
+                setError(err)
+            })
+
     }
 
-    const pressEnterToAddTask = (e: KeyboardEvent<HTMLInputElement>)=> {
+
+    const pressEnterToAddTask = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.charCode === 13 && inputValue.trim() !== '') {
-            clickToAddTask(inputValue)
+            clickToAdd(inputValue)
             setInputValue('')
         } else if (e.charCode === 13 && inputValue.trim() === '') {
             setInputValue('')
@@ -39,9 +44,7 @@ export const InputAdd: FC<PropsType> = memo( ({clickToAddTask,disabled}) => {
 
     return (
         <div>
-            {error &&
-                <div>ERROR</div>
-            }
+
             <input
                 value={inputValue}
                 onChange={onChangeHandler}
@@ -50,10 +53,13 @@ export const InputAdd: FC<PropsType> = memo( ({clickToAddTask,disabled}) => {
             />
             <button
                 onClick={clickOnButton}
-            disabled={disabled}
+                disabled={disabled}
             >
                 +
             </button>
+            {error &&
+                <div>{typeof error === "boolean"? 'error': error}</div>
+            }
         </div>
     );
 })

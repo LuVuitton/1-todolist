@@ -11,5 +11,5 @@ import {DispatchThunkType, RootStateType} from "../redux/store";
 export const createAsyncThunkWithTypes = createAsyncThunk.withTypes<{
     state: RootStateType,
     dispatch: DispatchThunkType,
-    rejectValue: null, //написал нулл потому что в заглушке ошибки передаем null
+    rejectValue: null | string, //написал нулл потому что в заглушке ошибки передаем null
 }>()

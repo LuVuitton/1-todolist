@@ -66,10 +66,7 @@ export const ResulAPICode = {
 
 
 
-export type FilterButtonDataType = {
-    id: string
-    title: FilterType
-}
+
 
 
 

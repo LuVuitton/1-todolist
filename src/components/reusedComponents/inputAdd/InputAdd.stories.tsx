@@ -11,6 +11,11 @@ export default {
     component: InputAdd,
 } as ComponentMeta<typeof InputAdd>;
 
-const callback =  action('add was pressed')
+const callback = ()=> {
+   return  new Promise((resolve) => {
+        resolve(action('add was pressed'))
+    })
+}
 
-export const ClickAddOnInput: ComponentStory<typeof InputAdd> = () => <InputAdd   clickToAddTask={callback} ></InputAdd>;
+
+export const ClickAddOnInput: ComponentStory<typeof InputAdd> = () => <InputAdd   clickToAdd={callback} ></InputAdd>;

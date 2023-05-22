@@ -1,50 +1,33 @@
-import React, {FC, memo, useCallback, useMemo, useState} from 'react';
+import React, {FC, memo, useCallback, useMemo} from 'react';
 import {InputAdd} from "../../components/reusedComponents/inputAdd/InputAdd";
-import {EditableSpan} from "../../components/reusedComponents/EditableSpan/EditableSpan";
-import {CheckStatus, FilterButtonDataType, FilterType, OneTaskType} from "../../Types";
-import {FilterButton} from "../../components/FilterButton";
+import {CheckStatus, FilterType, OneTaskType} from "../../Types";
+import {FilterBtns} from "../filterBtns/FilterBtn";
 import {Task, taskActionsGroup, taskSelectors} from "../task";
-import {v1} from "uuid";
-import {useCustomSelector, useActions} from "../../customHooks";
+import {useActions, useCustomSelector} from "../../customHooks";
 import {listActionsGroup} from "./";
-import s from './style.module.css'
+import {ListTitle} from "../listTitle/ListTitle";
 
 
-
-export const List: FC<PropsType> = memo(({listID, listTitle, listIsLoading, }) => {
+export const List: FC<PropsType> = memo(({listID, listIsLoading, listFilter}) => {
     const {addTask} = useActions(taskActionsGroup)
-    const {updateListTitle, deleteAPIListTC} = useActions(listActionsGroup)
+    const {removeList} = useActions(listActionsGroup)
     // const tasks = useCustomSelector<OneTaskType[]>(state => state.tasks[props.toDoListID])
     const tasks = useCustomSelector(taskSelectors.selectAllTasks(listID))
-
-    const [filter, setFilter] = useState<FilterType>('all')
-
-    const filterButtonsData: FilterButtonDataType[] = [
-        {id: v1(), title: 'all'},
-        {id: v1(), title: 'active'},
-        {id: v1(), title: 'completed'},
-    ]
-    const filterBtn = (filter: FilterType) => setFilter(filter)
 
 
     let filteredTasks: OneTaskType[] = tasks;
 
-    if (filter === 'active') {
-        filteredTasks = tasks.filter(e => e.status === CheckStatus.New)
-    }
-    if (filter === 'completed') {
-        filteredTasks = tasks.filter(e => e.status === CheckStatus.Completed)
+    if (listFilter === 'active' || listFilter === 'completed') {
+        filteredTasks = tasks.filter(e => listFilter === 'active'
+            ? e.status === CheckStatus.New
+            : e.status === CheckStatus.Completed)
     }
 
 
-    const removeListHandler = useCallback(() => deleteAPIListTC(listID), [])
+    const removeListHandler = () => removeList(listID)
 
     const addTaskHandler = useCallback((title: string) => {
-        addTask({listID: listID, title})
-    }, [])
-
-    const addEditedListTitle = useCallback((title: string) => {
-        updateListTitle({listID: listID, title: title})
+        return addTask({listID: listID, title}).unwrap()
     }, [])
 
 
@@ -56,7 +39,7 @@ export const List: FC<PropsType> = memo(({listID, listTitle, listIsLoading, }) =
     // т.к. в редьюсере мы возвращаем поверхностную копию всех тасок,
     // вложеные массивы не копируются и при сравнении юзМемо видит тот же массив(массив который не меняли), а на место старого мы вернули копию через метод
 
-    const tasksList = useMemo(() => {
+    const mappedTasks = useMemo(() => {
         return filteredTasks.map((e) => {
 
             return (
@@ -73,45 +56,35 @@ export const List: FC<PropsType> = memo(({listID, listTitle, listIsLoading, }) =
     }, [filteredTasks])
 /////////////tasksMAP done
 
-/////////////tasksButtonsMAP
-    //обернул в юзМемо, теперь этот МАР выполнится первый раз при первом ререндере ToDoList
-    // а следующий раз\ы только при изменении значения в зависимости(втором аргументе хука([props.filter]))
-    // если значение в зависимости не будет изменяться, то юзМемо вернут то что запомнил в первый раз
-    const filterButtons = useMemo(() => {
-        return filterButtonsData.map(e => {
-            return <FilterButton
-                key={e.id}
-                title={e.title}
-                callback={() => filterBtn(e.title)}
-                cssClass={filter === e.title ? s.btnFilter : ''}
-            />
-        })
-    }, [filter])
-/////////////tasksButtonsMAP done
 
     return (
         <div className="App">
             <div>
-                <h3>
-                    <EditableSpan value={listTitle} callback={addEditedListTitle}
-                                  itemID={listID}/> {/*//передаем туда list айди что бы он мог его вернуть назад*/}
+                <div>
+                    <ListTitle listID={listID}/>
                     <button disabled={listIsLoading} onClick={removeListHandler}>x</button>
-                </h3>
+                </div>
 
-                <InputAdd clickToAddTask={addTaskHandler} disabled={listIsLoading}/>
+                <InputAdd clickToAdd={addTaskHandler} disabled={listIsLoading}/>
 
-                <ul>{tasksList}</ul>
+                <ul>{mappedTasks}</ul>
 
-                <div>{filterButtons}</div>
+                <div><FilterBtns listID={listID}/></div>
+
             </div>
         </div>
     );
 })
 
 
-
 type PropsType = {
-    listTitle: string,
     listID: string
     listIsLoading: boolean
+    listFilter: FilterType
+}
+
+
+export type FilterBtnDataType = {
+    id: string
+    title: FilterType
 }

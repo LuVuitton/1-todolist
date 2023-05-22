@@ -19,7 +19,7 @@ export const App = () => {
 
     useEffect(() => {
         //преверяем залогиген или нет, если да меняем стейт
-        checkMe()
+        checkMe({})
     }, [])
 
 

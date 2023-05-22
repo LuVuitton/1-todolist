@@ -9,35 +9,30 @@ import s from './style.module.css'
 
 export const MainContainer = () => {
 
-    // описание кастомного диспатча в сторе
-    // const dispatch = useCustomThunkDispatch()
     const {getListTC, addListAndEmptyTasks} = useActions(listActionsGroup)
     const {logout} = useActions(authActionsGroup)
 
-
-    // описание кастомного селектора в кастомных хуках
     const toDoLists = useCustomSelector(listSelectors.selectLists)
     const isLoggedIn = useCustomSelector(authSelectors.selectIsLoading)
 
     useEffect(() => {
-        if (isLoggedIn) {
-            getListTC()
-        }
+        isLoggedIn && getListTC({})
     }, [])
 
 
-    const addList = (inputValue: string) => addListAndEmptyTasks(inputValue)
-    // можно еще добавить delete
-    // const removeList = useCallback((toDoListId: string) => deleteAPIListTC(toDoListId), [])
-    const exitHandler = () => logout()
+    const addList = (inputValue: string) => {
+        return addListAndEmptyTasks(inputValue).unwrap()
+    }
+
+    const exitHandler = () => logout({})
 
 
     const mappedLists = toDoLists.map((tl) => { //мапим массив со всеми тудулистами
         return (
             <List
                 key={tl.id}
-                listTitle={tl.title}
                 listID={tl.id}
+                listFilter={tl.filter}
                 listIsLoading={tl.listIsLoading}
             />
         )
@@ -53,8 +48,8 @@ export const MainContainer = () => {
                 <button onClick={exitHandler}>EXIT</button>
             </div>
             <span> New List </span>
-            <InputAdd disabled={!isLoggedIn} clickToAddTask={addList}/>
-            <div className={s.mainWrapper}>
+            <InputAdd disabled={!isLoggedIn} clickToAdd={addList}/>
+            <div className={s.listWrapper}>
                 {mappedLists}
             </div>
         </>

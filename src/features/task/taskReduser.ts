@@ -41,8 +41,8 @@ const addTask = createAsyncThunkWithTypes<{ newTask: IncompleteOneTaskAPIType },
             dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
             return {newTask: r.data.item}
         } else {
-            setServerError(dispatch, r)
-            return rejectWithValue(null)
+            setServerError(dispatch, r,false)
+            return rejectWithValue(r.messages[0])
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
@@ -132,7 +132,7 @@ const slice = createSlice({
             .addCase(listActionsGroup.addListAndEmptyTasks.fulfilled, (state, action) => {
                 state[action.payload.newList.id] = []
             })
-            .addCase(listActionsGroup.deleteAPIListTC.fulfilled, (state, action) => {
+            .addCase(listActionsGroup.removeList.fulfilled, (state, action) => {
                 delete state[action.payload.listID] //удаляем такски удаленного массива
             })
             .addCase(listActionsGroup.clearAllStateAC, () => {
