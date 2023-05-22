@@ -31,7 +31,7 @@ const getListTC = createAsyncThunkWithTypes<void>
     listsID.forEach(async e => {
         const tasks = await tasksAPI.getTasks(e)
         dispatch(taskActionsGroup.setAPITasksAC({listID: e, tasksArr: tasks.data.items}))
-    })//следующая итерация цикла не будет ждать пока вернется промис,
+    })//следующая итерация цикла не будет ждать пока выполнится промис,
     // в этом случает нам этом подходит поэтому оставляю так
 
     dispatch(listActions.setAPIListsAndArrToTasksAC({lists: r.data, newListIDArr: listsID}))
@@ -42,7 +42,6 @@ const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteList
 ('list/addLis', async (listTitle, {dispatch, rejectWithValue}) => {
     const r = await toDoListsAPI.postList(listTitle)
     if (r.resultCode === ResulAPICode.Ok) {
-        dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
         return ({newList: r.data.item})
     } else {
         setServerError(dispatch, r, false)
@@ -76,7 +75,6 @@ const updateList = createAsyncThunkWithTypes<updateListArgType, updateListArgTyp
     try {
         const r = await toDoListsAPI.updateList(arg.listID, arg.title)
         if (r.resultCode === ResulAPICode.Ok) {
-            dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
             return arg
         } else {
             setServerError(dispatch, r)

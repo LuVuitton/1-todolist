@@ -53,11 +53,19 @@ const slice = createSlice({
                 (state, action) => {
                     if (action.payload) {
                         state.errorMessage = action.payload.message.length ? action.payload.message[0] : 'some error occurred'
+                        
                     } else {
-                        state.errorMessage = action.error.message ? action.error.message : 'some error occurred'
+                        state.errorMessage = action.error.message ? action.error.message : 'some error occurred'               
                     }
-
+                    state.appStatus = 'idle'
                 })
+                .addMatcher((action)=>{
+                    return action.type.endsWith('/fulfilled')
+                }, 
+                (state, action)=> {
+                    state.appStatus = 'idle'
+                })
+
     }
 })
 export const appReducer = slice.reducer

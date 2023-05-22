@@ -8,6 +8,7 @@ type PropsType = {
 
 
 export const InputAdd: FC<PropsType> = memo(({clickToAdd, disabled}) => {
+    
     const [inputValue, setInputValue] = useState('')
     const [error, setError] = useState<boolean|string>(false)
 
@@ -58,7 +59,8 @@ export const InputAdd: FC<PropsType> = memo(({clickToAdd, disabled}) => {
                 +
             </button>
             {error &&
-                <div>{typeof error === "boolean"? 'error': error}</div>
+                // <div>{typeof error === "boolean"? 'error': error}</div>
+                <div>error</div>
             }
         </div>
     );

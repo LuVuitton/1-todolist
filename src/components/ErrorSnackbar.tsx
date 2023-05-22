@@ -10,6 +10,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 })
 
 export function ErrorSnackbar() {
+
     const globalEntityStatus = useCustomSelector(appSelectors.selectGlobalEntityStatus)
     const errorMessage = useCustomSelector(appSelectors.selectErrorMessage)
     const {setAppStatus,setErrorMessage} = useActions(appActionsGroup)
