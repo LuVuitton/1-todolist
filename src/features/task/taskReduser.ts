@@ -42,7 +42,7 @@ const addTask = createAsyncThunkWithTypes<{ newTask: IncompleteOneTaskAPIType },
             return {newTask: r.data.item}
         } else {
             setServerError(dispatch, r,false)
-            return rejectWithValue(r.messages[0])
+            return rejectWithValue(r)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)

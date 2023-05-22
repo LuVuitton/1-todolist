@@ -1,5 +1,6 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {DispatchThunkType, RootStateType} from "../redux/store";
+import {GeneralResponseType} from "../Types";
 
 // как выглядит типизация обычной createAsyncThunk
 // <то что санка возвращает, то что приходит как пейлоад, то что сидит в параметре санки как thunkAPI(то где берем диспачт и ошибку и т.д)>
@@ -11,5 +12,5 @@ import {DispatchThunkType, RootStateType} from "../redux/store";
 export const createAsyncThunkWithTypes = createAsyncThunk.withTypes<{
     state: RootStateType,
     dispatch: DispatchThunkType,
-    rejectValue: null | string, //написал нулл потому что в заглушке ошибки передаем null
+    rejectValue: null | GeneralResponseType, //написал нулл потому что в заглушке ошибки передаем null
 }>()
