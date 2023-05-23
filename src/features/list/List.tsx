@@ -1,21 +1,24 @@
-import React, {FC, memo, useCallback, useMemo} from 'react';
-import {InputAdd} from "../../components/reusedComponents/inputAdd/InputAdd";
-import {CheckStatus, FilterType, OneTaskType} from "../../Types";
-import {FilterBtns} from "../filterBtns/FilterBtn";
-import {Task, taskActionsGroup, taskSelectors} from "../task";
-import {useActions, useCustomSelector} from "../../customHooks";
-import {listActionsGroup} from "./";
-import {ListTitle} from "../listTitle/ListTitle";
+import React, { FC, memo, useCallback, useMemo } from 'react';
+import { InputAdd } from "../../components/reusedComponents/inputAdd/InputAdd";
+import { CheckStatus, FilterType, OneTaskType } from "../../Types";
+import { FilterBtns } from "../filterBtns/FilterBtn";
+import { Task, taskActionsGroup, taskSelectors } from "../task";
+import { useActions, useCustomSelector } from "../../customHooks";
+import { listActionsGroup } from "./";
+import { ListTitle } from "../listTitle/ListTitle";
+import { Divider, List as AntList, Typography } from 'antd';
 
 
-export const List: FC<PropsType> = memo(({listID, listIsLoading, listFilter}) => {
-    const {addTask} = useActions(taskActionsGroup)
-    const {removeList} = useActions(listActionsGroup)
+
+export const List: FC<PropsType> = memo(({ listID, listIsLoading, listFilter }) => {
+    const { addTask } = useActions(taskActionsGroup)
+    const { removeList } = useActions(listActionsGroup)
     // const tasks = useCustomSelector<OneTaskType[]>(state => state.tasks[props.toDoListID])
     const tasks = useCustomSelector(taskSelectors.selectAllTasks(listID))
 
 
     let filteredTasks: OneTaskType[] = tasks;
+
 
     if (listFilter === 'active' || listFilter === 'completed') {
         filteredTasks = tasks.filter(e => listFilter === 'active'
@@ -27,11 +30,11 @@ export const List: FC<PropsType> = memo(({listID, listIsLoading, listFilter}) =>
     const removeListHandler = () => removeList(listID)
 
     const addTaskHandler = useCallback((title: string) => {
-        return addTask({listID: listID, title}).unwrap()
+        return addTask({ listID: listID, title }).unwrap()
     }, [])
 
 
-////////////tasksMAP
+    ////////////tasksMAP
     // юзМемо, т.к. у нас 2 компоненты с тудулистом, каждый отрисовывает свои таски(2 разных мапа в двух разных тудулистах)
     // пропсы в каждый тудулист приходят со своими тасками
     // мы меняем стейт только для одного списка тасок из двух, например чек бокс
@@ -54,24 +57,41 @@ export const List: FC<PropsType> = memo(({listID, listIsLoading, listFilter}) =>
                 />)
         })
     }, [filteredTasks])
-/////////////tasksMAP done
+    /////////////tasksMAP done
 
 
     return (
         <div className="App">
-            <div>
+
+            <Divider
+                orientation="left">
                 <div>
-                    <ListTitle listID={listID}/>
                     <button disabled={listIsLoading} onClick={removeListHandler}>x</button>
+                    <ListTitle listID={listID} />
                 </div>
+            </Divider>
+            <AntList
+                size="small"
+                header={<InputAdd clickToAdd={addTaskHandler} disabled={listIsLoading} />}
+                footer={<div> <FilterBtns listID={listID} /> </div>}
+                bordered
+                dataSource={filteredTasks}
+                renderItem={(e: OneTaskType) => {
+                    return <AntList.Item>
+                        <Task
+                            key={e.id}
+                            type={'checkbox'}
+                            checked={e.status} // передаьб статус
+                            taskValue={e.title}
+                            taskID={e.id}
+                            taskIsLoading={e.taskIsLoading}
+                            listID={e.todoListId}
+                        />
+                    </AntList.Item>
+                }}
+            />
 
-                <InputAdd clickToAdd={addTaskHandler} disabled={listIsLoading}/>
 
-                <ul>{mappedTasks}</ul>
-
-                <div><FilterBtns listID={listID}/></div>
-
-            </div>
         </div>
     );
 })

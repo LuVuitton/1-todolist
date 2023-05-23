@@ -22,7 +22,8 @@ export const Task: FC<PropsType> = memo(({taskID, type, taskIsLoading, taskValue
     const addEditedTask = (title: string) => updateTask({...IDs, title,})
 
 
-    return <div className={checked === CheckStatus.Completed ? s.isDone : ''} key={taskID}>
+    return (
+    <span className={checked === CheckStatus.Completed ? s.isDone : ''} key={taskID}>
         <input
             type={type}
             //костыли пока чекбокс заточен под булево значение
@@ -36,7 +37,8 @@ export const Task: FC<PropsType> = memo(({taskID, type, taskIsLoading, taskValue
             disabled={taskIsLoading}
             onClick={removeTaskHandler}> x
         </button>
-    </div>
+    </span>
+    )
 })
 
 type PropsType = {
