@@ -5,9 +5,31 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+
+  background-image: url('./common/styles/images/Wallpaper.webp');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+
+
+  padding: 0 150px;
+}
+
+@media screen and (max-width:1024px){
+  body {
+    padding: 0 50px;
+  }
+}
+@media screen and (max-width:500px){
+  body {
+    padding: 0 25px;
+  }
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+

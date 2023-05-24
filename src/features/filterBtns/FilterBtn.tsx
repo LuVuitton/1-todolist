@@ -1,18 +1,14 @@
 import React, {FC, memo} from 'react';
-import {FilterBtnDataType} from "../list/List";
-import {v1} from "uuid";
-import s from "../list/style.module.css";
+import s from "./style.module.css";
 import {useActions, useCustomSelector} from "../../customHooks";
 import {selectListFilter} from "../list/lists.selectors";
 import {listActionsGroup} from "../list";
 import {FilterType} from "../../Types";
 
+import { Segmented } from 'antd';
 
-const filterButtonsData: FilterBtnDataType[] = [
-    {id: v1(), title: 'all'},
-    {id: v1(), title: 'active'},
-    {id: v1(), title: 'completed'},
-]
+
+const filterButtonsData: FilterType[] = ['all','active','completed',]
 
 
 export const FilterBtns: FC<PropsType> = memo(({listID}) => {
@@ -21,25 +17,20 @@ export const FilterBtns: FC<PropsType> = memo(({listID}) => {
     const {changeListFilter} = useActions(listActionsGroup)
 
 
-    const changeListFilterHandler = (filter: FilterType) => changeListFilter({listID: listID, filter: filter})
+    // const changeListFilterHandler = (filter: FilterType) => 
+
+    const onChangeHandler = (value: string | number)=> {
+
+        changeListFilter({listID: listID, filter: value as FilterType})
+    }
 
 
-    const mappedFilterBtn = filterButtonsData.map(e => {
-        return (
-            <button
-                key={e.id}
-                onClick={() => changeListFilterHandler(e.title)}
-                className={listFilter === e.title ? s.btnFilter : ''}
-            >
-                {e.title}
-            </button>
-        );
-    });
 
     return (
-        <>
-            {mappedFilterBtn}
-        </>
+        <div className={s.mainWrapper}>
+        <Segmented onChange={onChangeHandler} options={filterButtonsData} />
+
+        </div>
     );
 });
 

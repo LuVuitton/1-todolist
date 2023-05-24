@@ -1,9 +1,9 @@
 import React from 'react';
 
-import {ComponentMeta} from '@storybook/react';
+import { ComponentMeta } from '@storybook/react';
 
-import {FilterBtnDataType, List} from './List';
-import {FilterType} from "../../Types";
+import { List } from './List';
+import { FilterType } from "../../Types";
 
 export default {
     title: 'ToDoList',
@@ -15,7 +15,7 @@ export type dataForListType = {
     tasks: [],
     filter: FilterType,
     toDoListID: string,
-    filterButtonData: FilterBtnDataType[]
+    filterButtonData: FilterType[]
     listIsLoading: boolean
 }
 
@@ -25,10 +25,7 @@ const dataForList: dataForListType = {
     tasks: [],
     filter: 'all',
     toDoListID: 'listID',
-    filterButtonData:[ {
-        id: 'buttonID',
-        title: 'all'
-    }]
+    filterButtonData: ['all']
 }
 
 //

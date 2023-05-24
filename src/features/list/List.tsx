@@ -6,7 +6,11 @@ import { Task, taskActionsGroup, taskSelectors } from "../task";
 import { useActions, useCustomSelector } from "../../customHooks";
 import { listActionsGroup } from "./";
 import { ListTitle } from "../listTitle/ListTitle";
-import { Divider, List as AntList, Typography } from 'antd';
+import { List as AntList, Button,  } from 'antd';
+import s from './style.module.css'
+import { DeleteFilled } from '@ant-design/icons';
+
+
 
 
 
@@ -61,18 +65,25 @@ export const List: FC<PropsType> = memo(({ listID, listIsLoading, listFilter }) 
 
 
     return (
-        <div className="App">
+        <div className={s.mainWrapper}>
 
-            <Divider
-                orientation="left">
-                <div>
-                    <button disabled={listIsLoading} onClick={removeListHandler}>x</button>
-                    <ListTitle listID={listID} />
-                </div>
-            </Divider>
+
+            <div className={s.titleWrapper}>
+                <ListTitle listID={listID} />
+
+                <Button
+                    disabled={listIsLoading}
+                    onClick={removeListHandler}
+                    shape="circle"
+                    icon={<DeleteFilled rev={'max'} />}
+                />
+
+            </div>
+
             <AntList
+                className={s.list}
                 size="small"
-                header={<InputAdd clickToAdd={addTaskHandler} disabled={listIsLoading} />}
+                header={<InputAdd placeholder={'create a new task'} clickToAdd={addTaskHandler} disabled={listIsLoading} />}
                 footer={<div> <FilterBtns listID={listID} /> </div>}
                 bordered
                 dataSource={filteredTasks}
@@ -103,8 +114,3 @@ type PropsType = {
     listFilter: FilterType
 }
 
-
-export type FilterBtnDataType = {
-    id: string
-    title: FilterType
-}

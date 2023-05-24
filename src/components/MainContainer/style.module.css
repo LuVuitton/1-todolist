@@ -1,7 +1,14 @@
-.listWrapper {
-    padding: 30px;
+.mainWrapper {
+    /* background-color: rgba(255, 255, 255, 0.637); */
+}
+
+.listsWrapper {
+    padding: 10px 30px;
     display: flex;
+    justify-content: space-around;
     flex-wrap: wrap;
+    gap: 20px;
+   
 }
 
 .btnExitWrapper {
@@ -10,6 +17,11 @@
     justify-content: end;
 }
 
-.btnFilter{
-    background-color: green;
+
+
+@media screen and (max-width: 500px){
+    .listsWrapper {
+        padding: 10px 10px;
+    
+    }
 }

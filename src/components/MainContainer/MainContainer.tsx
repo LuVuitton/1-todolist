@@ -43,15 +43,15 @@ export const MainContainer = () => {
     }
 
     return (
-        <>
+        <div className={s.mainWrapper}>
             <div className={s.btnExitWrapper}>
                 <button onClick={exitHandler}>EXIT</button>
             </div>
             <span> New List </span>
-            <InputAdd disabled={!isLoggedIn} clickToAdd={addList}/>
-            <div className={s.listWrapper}>
+            <InputAdd placeholder={'create a new list'} disabled={!isLoggedIn} clickToAdd={addList}/>
+            <div className={s.listsWrapper}>
                 {mappedLists}
             </div>
-        </>
+        </div>
     )
 }

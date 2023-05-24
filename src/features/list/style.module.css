@@ -1,3 +1,21 @@
-.btnFilter{
-    background-color: green;
+.mainWrapper { 
+    max-width: 100%;
+}
+.titleWrapper{
+display: flex;
+justify-content: space-between;
+align-items: baseline;
+padding: 0 10px;
+gap: 20px;
+}
+
+.list {
+    background-color: #fff;
+}
+
+
+@media screen and (max-width: 500px){
+    .mainWrapper { 
+       width: 100%;
+    }
 }

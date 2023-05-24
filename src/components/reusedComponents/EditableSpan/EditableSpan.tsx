@@ -1,25 +1,35 @@
-import React, {ChangeEvent, FC, useState} from "react";
+import React, { ChangeEvent, FC, useState } from "react";
+import { Typography, Button, Input } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import s from './style.module.css'
 
- type PropsType = {
+
+const { Title, Text } = Typography;
+const { TextArea } = Input
+
+
+type PropsType = {
     value: string
-    callback:(value:string)=>void
+    callback: (value: string) => void
     itemID: string
+    textSize: 1 | 2 | 3 | 4 | 5
+    textOption: 'title' | 'text'
 }
 
 
-export const EditableSpan: FC<PropsType> = React.memo(({value,callback}) =>{
-    const [spanState, setSpanState] = useState(true)
+export const EditableSpan: FC<PropsType> = React.memo(({ value, callback, textSize, textOption }) => {
+    const [editMode, setSpanState] = useState(false)
     const [newValue, setNewValue] = useState(value)
 
     const switchDoubleClick = () => {
-        setSpanState(!spanState)
+        setSpanState(!editMode)
     }
-    const onChangeHandler =(e:ChangeEvent<HTMLInputElement>)=>{
+    const onChangeHandler = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setNewValue(e.currentTarget.value)
     }
-    const onBlurHandler = ()=>{
+    const onBlurHandler = () => {
         callback(newValue)
-        setSpanState(!spanState)
+        setSpanState(!editMode)
     }
 
 
@@ -27,14 +37,45 @@ export const EditableSpan: FC<PropsType> = React.memo(({value,callback}) =>{
 
     return (
         <>
-        {spanState                                                                      //условие в жсх
-            ? <span onDoubleClick={switchDoubleClick}>{value}</span>
-            : <input value={newValue} onChange={onChangeHandler} onBlur={onBlurHandler} autoFocus/>
-        }
-        </>
-            )
-})
+            {!editMode                                                                      //условие в жсх
+                ? <div className={s.textWrapper}>
+                    {
+                        textOption === 'title'
+                            ? <Title onDoubleClick={switchDoubleClick} level={textSize}>
+                                {value}
+                            </Title>
+                            : <Text type="secondary"> {value}</Text>
+                    }
 
+                    <Button type="text" onClick={switchDoubleClick} icon={<EditOutlined rev={'max'} />} />
+                </div>
+                : <TextArea
+                    value={newValue}
+                    onChange={(e) => onChangeHandler(e)}
+                    onBlur={onBlurHandler}
+                    autoSize={{ minRows: 1, maxRows: 5 }}
+                    onPressEnter={onBlurHandler}
+                    allowClear
+                    showCount
+                    autoFocus
+                />
+
+
+
+
+
+                // <input value={newValue} onChange={onChangeHandler} onBlur={onBlurHandler} autoFocus />
+
+
+            }
+
+
+
+
+
+        </>
+    )
+})
 
 
 
