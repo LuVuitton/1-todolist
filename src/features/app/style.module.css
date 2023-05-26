@@ -8,7 +8,9 @@
 
 
 .mainWrapper {
-  background-color: rgba(255, 255, 255, 0.472)
+  /* background-color: rgba(255, 255, 255, 0.472) */
+  /* for dark theme */
+   background-color: 	rgba(240,242,245)
 
   /* margin: 0 20px; */
 }

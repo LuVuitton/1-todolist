@@ -11,6 +11,7 @@ import {useFormik} from "formik";
 import {Navigate} from "react-router-dom";
 import {authActionsGroup, authSelectors} from "./";
 import {useActions,useCustomSelector} from "../../customHooks";
+import s from './style.module.css'
 
 
 
@@ -54,6 +55,7 @@ const {login} = useActions(authActionsGroup)
 
 
     return (
+        <div className={s.loginWrapper}> 
         <Grid container justifyContent={'center'}>
             <Grid item justifyContent={'center'}>
                 <form onSubmit={formik.handleSubmit}>
@@ -97,6 +99,7 @@ const {login} = useActions(authActionsGroup)
                 </form>
             </Grid>
         </Grid>
+        </div>
     )
 }
 

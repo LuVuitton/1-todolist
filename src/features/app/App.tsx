@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import s from './style.module.css';
 import { ErrorSnackbar } from "../../components/ErrorSnackbar";
 import { Login } from "../auth/Login";
@@ -9,11 +9,13 @@ import { authActionsGroup } from "../auth";
 import { useCustomSelector, useActions } from "../../customHooks";
 
 
+import { SpinLoader } from '../../components/reusedComponents/Loaders/SpinLoader';
+
+
 //убрать юз колбэки / реакт мемо / юз мемо там где они не нужны
 
 export const App = () => {
 
-    const globalStatus = useCustomSelector(appSelectors.selectGlobalEntityStatus)
     const isInitialized = useCustomSelector(appSelectors.selectIsInitialized)
     const { checkMe } = useActions(authActionsGroup)
 
@@ -24,17 +26,14 @@ export const App = () => {
 
 
     if (!isInitialized) {
-        return <div className={s.firstLoading}><span>LOADING...</span></div>
+        return <div className={s.firstLoading}><SpinLoader /></div>
     }
 
     return (
+        <>
+       
         <div className={s.mainWrapper}>
-            <div style={{ height: '20px' }}>
-                {
-                    globalStatus === 'loading' &&
-                    <span style={{ color: 'red' }}> LOADING...</span>
-                }
-            </div>
+          
             <Routes>
                 <Route path='/login' element={<Login />} />
                 <Route path='/' element={<MainContainer />} />
@@ -44,6 +43,7 @@ export const App = () => {
             </Routes>
             <ErrorSnackbar />
         </div>
+        </>
     );
 }
 

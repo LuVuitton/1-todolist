@@ -1,0 +1,46 @@
+
+.headerMainWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.96); /* Пример цвета фона с прозрачностью */
+    z-index: 9999; /* Установите значение z-index по вашему усмотрению */
+  
+
+}
+
+.headerLoaderWrapper {
+    position: fixed;
+    top: 5px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.headerWrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding:  35px 10px 15px 10px;
+    /* border: 1px solid; */
+    gap: 20px;
+    width: 100%;
+}
+
+
+.btnExitWrapper {
+    padding: 0 10px 0 0;
+    display: flex;
+    justify-content: end;
+}
+.inputAddWrapper{
+    /* max-width: 700px; */
+}
+

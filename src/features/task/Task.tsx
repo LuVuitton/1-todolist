@@ -4,9 +4,18 @@ import { CheckStatus } from "../../Types";
 import { useActions } from "../../customHooks";
 import { taskActionsGroup } from "./index";
 import s from './style.module.css'
+import { Button,Typography } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Checkbox } from 'antd';
+import {getDate} from '../../utilities'
 
 
-export const Task: FC<PropsType> = memo(({ taskID, type, taskIsLoading, taskValue, listID, checked }) => {
+
+const { Text } = Typography;
+
+
+
+export const Task: FC<PropsType> = memo(({ taskID, taskIsLoading, taskValue, listID, checked,addedDate }) => {
 
     const { removeTask, switchTaskCheck, updateTask } = useActions(taskActionsGroup)
 
@@ -21,36 +30,49 @@ export const Task: FC<PropsType> = memo(({ taskID, type, taskIsLoading, taskValu
 
     const addEditedTask = (title: string) => updateTask({ ...IDs, title, })
 
+    const ParsedDateTime = getDate(addedDate)
+
 
     return (
-        <div className={checked === CheckStatus.Completed ? s.isDone : ''} key={taskID}>
-            <input
-                type={type}
-                //костыли пока чекбокс заточен под булево значение
-                checked={checked === CheckStatus.Completed}
-                onChange={() => onChangeHandler(checked === CheckStatus.Completed ? CheckStatus.New : CheckStatus.Completed)}
-                key={taskID}
-            />
-            <EditableSpan
-                textOption='text'
-                textSize={5}
-                value={taskValue}
-                callback={addEditedTask}
-                itemID={taskID}
-            /> 
-            <button
-                disabled={taskIsLoading}
-                onClick={removeTaskHandler}> x
-            </button>
+        <div className={s.mainWrapper}>
+
+            <div>
+                <Text className={s.dataText} type="secondary">{ParsedDateTime.date} {ParsedDateTime.time}</Text>
+                <EditableSpan
+                    textOption='text'
+                    textSize={5}
+                    value={taskValue}
+                    callback={addEditedTask}
+                    itemID={taskID}
+                />
+
+            </div>
+            <div className={s.checkButtonWrapper}>
+                <div>
+                    <Checkbox
+                        onChange={() => onChangeHandler(checked === CheckStatus.Completed ? CheckStatus.New : CheckStatus.Completed)}
+                        checked={checked === CheckStatus.Completed}
+                    />
+                </div>
+                <div>
+                    <Button
+                        disabled={taskIsLoading}
+                        onClick={removeTaskHandler}
+                        type='text'
+                        icon={<DeleteOutlined rev={'max'} />}
+                    />
+                </div>
+            </div>
+
         </div>
     )
 })
 
 type PropsType = {
-    type: string
     checked: CheckStatus
     taskValue: string
     taskID: string
     taskIsLoading: boolean
     listID: string
+    addedDate:string
 }

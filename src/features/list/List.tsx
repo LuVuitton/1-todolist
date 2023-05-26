@@ -6,8 +6,8 @@ import { Task, taskActionsGroup, taskSelectors } from "../task";
 import { useActions, useCustomSelector } from "../../customHooks";
 import { listActionsGroup } from "./";
 import { ListTitle } from "../listTitle/ListTitle";
-import { List as AntList, Button,  } from 'antd';
 import s from './style.module.css'
+import { List as AntList, Button, } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
 
 
@@ -46,22 +46,21 @@ export const List: FC<PropsType> = memo(({ listID, listIsLoading, listFilter }) 
     // т.к. в редьюсере мы возвращаем поверхностную копию всех тасок,
     // вложеные массивы не копируются и при сравнении юзМемо видит тот же массив(массив который не меняли), а на место старого мы вернули копию через метод
 
-    const mappedTasks = useMemo(() => {
-        return filteredTasks.map((e) => {
+    // const mappedTasks = useMemo(() => {
+    //     return filteredTasks.map((e) => {
 
-            return (
-                <Task
-                    key={e.id}
-                    type={'checkbox'}
-                    checked={e.status} // передаьб статус
-                    taskValue={e.title}
-                    taskID={e.id}
-                    taskIsLoading={e.taskIsLoading}
-                    listID={e.todoListId}
-                />)
-        })
-    }, [filteredTasks])
-    /////////////tasksMAP done
+    //         return (
+    //             <Task
+    //                 key={e.id}
+    //                 checked={e.status} // передаьб статус
+    //                 taskValue={e.title}
+    //                 taskID={e.id}
+    //                 taskIsLoading={e.taskIsLoading}
+    //                 listID={e.todoListId}
+    //             />)
+    //     })
+    // }, [filteredTasks])
+    // /////////////tasksMAP done
 
 
     return (
@@ -83,7 +82,13 @@ export const List: FC<PropsType> = memo(({ listID, listIsLoading, listFilter }) 
             <AntList
                 className={s.list}
                 size="small"
-                header={<InputAdd placeholder={'create a new task'} clickToAdd={addTaskHandler} disabled={listIsLoading} />}
+                header={
+                    <InputAdd
+                        placeholder={'create a new task'}
+                        clickToAdd={addTaskHandler}
+                        disabled={listIsLoading}
+                    />
+                }
                 footer={<div> <FilterBtns listID={listID} /> </div>}
                 bordered
                 dataSource={filteredTasks}
@@ -91,12 +96,12 @@ export const List: FC<PropsType> = memo(({ listID, listIsLoading, listFilter }) 
                     return <AntList.Item>
                         <Task
                             key={e.id}
-                            type={'checkbox'}
                             checked={e.status} // передаьб статус
                             taskValue={e.title}
                             taskID={e.id}
                             taskIsLoading={e.taskIsLoading}
                             listID={e.todoListId}
+                            addedDate={e.addedDate}
                         />
                     </AntList.Item>
                 }}

@@ -21,6 +21,7 @@ export const InputAdd: FC<PropsType> = memo(({ clickToAdd, disabled, placeholder
     }
 
     const clickOnButton = () => {
+        // debugger
         if (inputValue.trim() === '') {  //обрезаем пробелы и проверяем на наличие символов
             setError(true)
             return
@@ -36,13 +37,13 @@ export const InputAdd: FC<PropsType> = memo(({ clickToAdd, disabled, placeholder
 
 
     const pressEnterToAddTask = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.charCode === 13 && inputValue.trim() !== '') {
-            clickToAdd(inputValue)
-            setInputValue('')
-        } else if (e.charCode === 13 && inputValue.trim() === '') {
-            setInputValue('')
+        if (e.currentTarget.value.trim() === '') {              
             setError(true)
+            e.currentTarget.blur()
+            return
         }
+        clickOnButton()
+
     }
 
 
@@ -56,9 +57,10 @@ export const InputAdd: FC<PropsType> = memo(({ clickToAdd, disabled, placeholder
                     placeholder={placeholder}
                     autoSize={{ minRows: 1, maxRows: 5 }}
                     disabled={disabled}
-                    onKeyPress={pressEnterToAddTask}
+                    onPressEnter={pressEnterToAddTask}
                     allowClear
                     showCount
+                    className={s.antTextArea}
                 />
 
                 <Button

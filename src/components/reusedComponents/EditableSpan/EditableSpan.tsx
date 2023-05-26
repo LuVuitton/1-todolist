@@ -41,14 +41,22 @@ export const EditableSpan: FC<PropsType> = React.memo(({ value, callback, textSi
                 ? <div className={s.textWrapper}>
                     {
                         textOption === 'title'
-                            ? <Title onDoubleClick={switchDoubleClick} level={textSize}>
+                            ? <Title
+                                onDoubleClick={switchDoubleClick}
+                                level={textSize}
+
+                            >
                                 {value}
                             </Title>
-                            : <Text type="secondary"> {value}</Text>
+                            : <Text
+                                onDoubleClick={switchDoubleClick}
+                                type="secondary"
+                            >
+                                {value}
+                            </Text>
                     }
+                    <Button type="text" onClick={switchDoubleClick} icon={<EditOutlined rev={'max'} />} />                    </div>
 
-                    <Button type="text" onClick={switchDoubleClick} icon={<EditOutlined rev={'max'} />} />
-                </div>
                 : <TextArea
                     value={newValue}
                     onChange={(e) => onChangeHandler(e)}
@@ -58,15 +66,8 @@ export const EditableSpan: FC<PropsType> = React.memo(({ value, callback, textSi
                     allowClear
                     showCount
                     autoFocus
+
                 />
-
-
-
-
-
-                // <input value={newValue} onChange={onChangeHandler} onBlur={onBlurHandler} autoFocus />
-
-
             }
 
 

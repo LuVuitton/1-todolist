@@ -52,10 +52,11 @@ const slice = createSlice({
                 },
                 (state, action) => {
                     if (action.payload) {
-                        state.errorMessage = action.payload.message.length ? action.payload.message[0] : 'some error occurred'
+                        // debugger
+                        state.errorMessage = action.payload.messages.length ? action.payload.messages[0] : 'some error occurred'
                         
                     } else {
-                        state.errorMessage = action.error.message ? action.error.message : 'some error occurred'               
+                        state.errorMessage = action.error.messages ? action.error.messages : 'some error occurred'               
                     }
                     state.appStatus = 'idle'
                 })

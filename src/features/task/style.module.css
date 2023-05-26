@@ -1,3 +1,17 @@
-.isDone {
-    opacity: 0.5;
+.mainWrapper{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.checkButtonWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center ;
+    align-items: center;
+}
+
+.dataText{
+    font-size: 11px;
 }

@@ -1,8 +1,11 @@
 .mainWrapper {
-    max-width: 260px;
+    /* max-width: 260px; */
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
     padding:0 0 15px 0;
+}
+.antTextArea{
+    max-width: 350px;
 }

@@ -1,16 +1,17 @@
-import React, {useEffect} from "react";
-import {List, listActionsGroup, listSelectors} from "../../features/list";
-import {authActionsGroup, authSelectors} from "../../features/auth";
-import {InputAdd} from "../reusedComponents/inputAdd/InputAdd";
-import {useActions, useCustomSelector} from "../../customHooks";
-import {Navigate} from "react-router-dom";
+import { useEffect } from "react";
+import { List, listActionsGroup, listSelectors } from "../../features/list";
+import {  authSelectors } from "../../features/auth";
+import { useActions, useCustomSelector } from "../../customHooks";
+import { Navigate } from "react-router-dom";
 import s from './style.module.css'
+import { Header } from "../../features/header/header";
+
+
 
 
 export const MainContainer = () => {
 
-    const {getListTC, addListAndEmptyTasks} = useActions(listActionsGroup)
-    const {logout} = useActions(authActionsGroup)
+    const { getListTC } = useActions(listActionsGroup)
 
     const toDoLists = useCustomSelector(listSelectors.selectLists)
     const isLoggedIn = useCustomSelector(authSelectors.selectIsLoading)
@@ -20,11 +21,8 @@ export const MainContainer = () => {
     }, [])
 
 
-    const addList = (inputValue: string) => {
-        return addListAndEmptyTasks(inputValue).unwrap()
-    }
+  
 
-    const exitHandler = () => logout({})
 
 
     const mappedLists = toDoLists.map((tl) => { //мапим массив со всеми тудулистами
@@ -39,19 +37,16 @@ export const MainContainer = () => {
     })
 
     if (!isLoggedIn) {
-        return <Navigate to={'/login'}/>   //если isLogin фолс, редиректи на логин
+        return <Navigate to={'/login'} />   //если isLogin фолс, редиректи на логин
     }
 
     return (
-        <div className={s.mainWrapper}>
-            <div className={s.btnExitWrapper}>
-                <button onClick={exitHandler}>EXIT</button>
-            </div>
-            <span> New List </span>
-            <InputAdd placeholder={'create a new list'} disabled={!isLoggedIn} clickToAdd={addList}/>
+        <>
+           <Header/>
+
             <div className={s.listsWrapper}>
                 {mappedLists}
             </div>
-        </div>
+        </>
     )
 }

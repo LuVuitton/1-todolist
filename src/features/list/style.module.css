@@ -1,11 +1,11 @@
 .mainWrapper { 
-    max-width: 100%;
+    max-width: 330px;
 }
 .titleWrapper{
 display: flex;
 justify-content: space-between;
 align-items: baseline;
-padding: 0 10px;
+padding:0 10px 20px 10px;
 gap: 20px;
 }
 
@@ -14,8 +14,15 @@ gap: 20px;
 }
 
 
-@media screen and (max-width: 500px){
+@media screen and (max-width: 800px){
     .mainWrapper { 
+        max-width: 100%;
        width: 100%;
     }
 }
+/* @media screen and (max-width: 800px){
+    .mainWrapper { 
+        max-width: 100%;
+       /* width: 100%; */
+    /* }
+} */ 

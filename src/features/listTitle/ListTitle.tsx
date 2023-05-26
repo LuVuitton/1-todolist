@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 import { EditableSpan } from "../../components/reusedComponents/EditableSpan/EditableSpan";
 import { useActions, useCustomSelector } from "../../customHooks";
 import { listActionsGroup } from "../list";

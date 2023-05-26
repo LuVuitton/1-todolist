@@ -1,9 +1,7 @@
-.mainWrapper {
-    /* background-color: rgba(255, 255, 255, 0.637); */
-}
+
 
 .listsWrapper {
-    padding: 10px 30px;
+    padding: 97px  30px 10px 30px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -11,17 +9,12 @@
    
 }
 
-.btnExitWrapper {
-    padding: 0 10px 0 0;
-    display: flex;
-    justify-content: end;
-}
 
 
 
 @media screen and (max-width: 500px){
     .listsWrapper {
-        padding: 10px 10px;
-    
+        padding: 97px  10px 10px 30px;
+
     }
 }
