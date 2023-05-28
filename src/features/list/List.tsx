@@ -84,6 +84,7 @@ export const List: FC<PropsType> = memo(({ listID, listIsLoading, listFilter }) 
                 size="small"
                 header={
                     <InputAdd
+                        instance='Task'
                         placeholder={'create a new task'}
                         clickToAdd={addTaskHandler}
                         disabled={listIsLoading}

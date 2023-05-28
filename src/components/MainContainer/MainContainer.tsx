@@ -5,6 +5,8 @@ import { useActions, useCustomSelector } from "../../customHooks";
 import { Navigate } from "react-router-dom";
 import s from './style.module.css'
 import { Header } from "../../features/header/header";
+import { FloatButton } from 'antd';
+
 
 
 
@@ -47,6 +49,9 @@ export const MainContainer = () => {
             <div className={s.listsWrapper}>
                 {mappedLists}
             </div>
+            
+            <FloatButton.BackTop />
+
         </>
     )
 }

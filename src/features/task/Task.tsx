@@ -19,6 +19,7 @@ export const Task: FC<PropsType> = memo(({ taskID, taskIsLoading, taskValue, lis
 
     const { removeTask, switchTaskCheck, updateTask } = useActions(taskActionsGroup)
 
+
     const IDs = {
         listID: listID,
         taskID: taskID,
@@ -52,6 +53,7 @@ export const Task: FC<PropsType> = memo(({ taskID, taskIsLoading, taskValue, lis
                     <Checkbox
                         onChange={() => onChangeHandler(checked === CheckStatus.Completed ? CheckStatus.New : CheckStatus.Completed)}
                         checked={checked === CheckStatus.Completed}
+                        disabled={taskIsLoading}
                     />
                 </div>
                 <div>

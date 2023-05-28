@@ -18,4 +18,4 @@ const callback = ()=> {
 }
 
 
-export const ClickAddOnInput: ComponentStory<typeof InputAdd> = () => <InputAdd  placeholder='stories' clickToAdd={callback} ></InputAdd>;
+export const ClickAddOnInput: ComponentStory<typeof InputAdd> = () => <InputAdd instance='List' placeholder='stories' clickToAdd={callback} ></InputAdd>;

@@ -39,12 +39,12 @@ const getListTC = createAsyncThunkWithTypes<void>
 })
 
 const addListAndEmptyTasks = createAsyncThunkWithTypes<{ newList: IncompleteListAPIType }, string>
-('list/addLis', async (listTitle, {dispatch, rejectWithValue}) => {
+('list/addLis', async (listTitle, {rejectWithValue}) => {
     const r = await toDoListsAPI.postList(listTitle)
     if (r.resultCode === ResulAPICode.Ok) {
         return ({newList: r.data.item})
     } else {
-        setServerError(dispatch, r, false)
+        // setServerError(dispatch, r)
         return rejectWithValue(r)
     }
 })
@@ -60,8 +60,8 @@ const removeList = createAsyncThunkWithTypes<{ listID: string }, string>
             // dispatch(removeListAC({listID}))
             return {listID}
         } else {
-            setServerError(dispatch, r)
-            return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
+            // setServerError(dispatch, r)
+            return rejectWithValue(r) 
         }
     } finally {
         dispatch(listActions.setListStatusAC({listID, listIsLoading: false}))
@@ -77,12 +77,12 @@ const updateList = createAsyncThunkWithTypes<updateListArgType, updateListArgTyp
         if (r.resultCode === ResulAPICode.Ok) {
             return arg
         } else {
-            setServerError(dispatch, r)
-            return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
+            // setServerError(dispatch, r)
+            return rejectWithValue(r) 
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
-        return rejectWithValue(null) //пока оставлю как заглушку что бы не проверять на андефайнд дальше
+        return rejectWithValue(null) 
     } finally {
         dispatch(listActions.setListStatusAC({listID: arg.listID, listIsLoading: false}))
     }

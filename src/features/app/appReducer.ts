@@ -1,6 +1,6 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {RootStateType} from "../../redux/store";
-import {action} from "@storybook/addon-actions";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootStateType } from "../../redux/store";
+import { action } from "@storybook/addon-actions";
 
 export type AppStateType = typeof initialAppState
 export type StatusType = 'idle' | 'loading' | 'succeeded' | 'failed' // бездействующий|загружается|успешно|неуспешно
@@ -47,23 +47,26 @@ const slice = createSlice({
                     state.appStatus = 'loading'
                 }
             )
-            .addMatcher((action) => {
+            .addMatcher(
+
+                (action) => {
                     return action.type.endsWith('/rejected')
                 },
                 (state, action) => {
+                    state.appStatus = 'failed'
                     if (action.payload) {
-                        // debugger
                         state.errorMessage = action.payload.messages.length ? action.payload.messages[0] : 'some error occurred'
-                        
+
                     } else {
-                        state.errorMessage = action.error.messages ? action.error.messages : 'some error occurred'               
+                        state.errorMessage = action.error.message ? action.error.message : 'some error occurred'
                     }
-                    state.appStatus = 'idle'
+                    
                 })
-                .addMatcher((action)=>{
+            .addMatcher(
+                (action) => {
                     return action.type.endsWith('/fulfilled')
-                }, 
-                (state, action)=> {
+                },
+                (state, action) => {
                     state.appStatus = 'idle'
                 })
 

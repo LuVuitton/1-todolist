@@ -21,7 +21,7 @@ export const Header = () => {
     const { logout } = useActions(authActionsGroup)
     const { addListAndEmptyTasks } = useActions(listActionsGroup)
     const isLoggedIn = useCustomSelector(authSelectors.selectIsLoading)
-    const globalStatus = useCustomSelector(appSelectors.selectGlobalEntityStatus)
+    const appStatus = useCustomSelector(appSelectors.selectAppStatus)
 
 
 
@@ -37,14 +37,14 @@ export const Header = () => {
         <div className={s.headerMainWrapper}>
             <div className={s.headerLoaderWrapper}>
                 {
-                    globalStatus === 'loading' && <LineLoader />
+                    appStatus === 'loading' && <LineLoader />
                 }
             </div>
             <div className={s.headerWrapper}>
 
                 <div className={s.inputAddWrapper}>
 
-                    <InputAdd placeholder={'create new list here'} disabled={!isLoggedIn} clickToAdd={addList} />
+                    <InputAdd instance='List' placeholder={'create new list here'} disabled={!isLoggedIn} clickToAdd={addList} />
                 </div>
 
 

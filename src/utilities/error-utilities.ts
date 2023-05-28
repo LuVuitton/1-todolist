@@ -20,6 +20,7 @@ import {appActionsGroup} from "../features/app";
  */
 export const setServerError = <D>(dispatch: Dispatch, r: GeneralResponseType<D>, showError: boolean = true): void => {
     if (showError) {
+        //эту же логику реализовал в эдМатчере
         dispatch(appActionsGroup.setErrorMessage(r.messages.length
             ? {errorMessage: r.messages[0]}
             : {errorMessage: 'some error has occurred'}))

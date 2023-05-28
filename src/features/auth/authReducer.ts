@@ -8,30 +8,33 @@ import {appActionsGroup} from "../app";
 
 const login = createAsyncThunkWithTypes<void, { data: AuthDataType }>('auth/logInTC', async (arg, thunkAPI) => {
     const {dispatch} = thunkAPI
-    dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
-    try {
+    // dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
+    // try {
         const r = await authAPI.login(arg.data)
         if (r.resultCode === ResulAPICode.Ok) {
-            dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
+            // dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
             dispatch(authActions.setIsLoggedInAC({logValue: true}))
         } else {
-            setServerError(dispatch, r)
+            // setServerError(dispatch, r)
+            return thunkAPI.rejectWithValue(r)
         }
-    } catch (err) {
-        runDefaultCatch(dispatch, err)
-    }
+    // } catch (err) {
+    //     // runDefaultCatch(dispatch, err)
+    //     thunkAPI.rejectWithValue(err)
+    // }
 })
 
 const checkMe = createAsyncThunkWithTypes<void>('auth/checkMe', async (arg, thunkAPI) => {
     const {dispatch} = thunkAPI
-    dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
+    // dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
     try {
         const r = await authAPI.checkMe()
         if (r.resultCode === ResulAPICode.Ok) {
             dispatch(authActions.setIsLoggedInAC({logValue: true}))
-            dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
+            // dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
         } else {
-            setServerError(dispatch, r, false)
+            // setServerError(dispatch, r, false)
+            thunkAPI.rejectWithValue(r)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
@@ -42,15 +45,16 @@ const checkMe = createAsyncThunkWithTypes<void>('auth/checkMe', async (arg, thun
 
 const logout = createAsyncThunkWithTypes<void>('auth/logout', async (arg, thunkAPI) => {
     const {dispatch} = thunkAPI
-    dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
+    // dispatch(appActionsGroup.setAppStatus({appStatus: 'loading'}))
     try {
         const r = await authAPI.logout()
         if (r.resultCode === ResulAPICode.Ok) {
             dispatch(authActions.setIsLoggedInAC({logValue: false}))
-            dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
+            // dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
             dispatch(listActions.clearAllStateAC())
         } else {
-            setServerError(dispatch, r)
+            // setServerError(dispatch, r)
+            thunkAPI.rejectWithValue(r)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)

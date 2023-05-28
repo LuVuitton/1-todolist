@@ -18,8 +18,8 @@ const removeTask = createAsyncThunkWithTypes<removeTaskArgType, removeTaskArgTyp
         if (r.resultCode === ResulAPICode.Ok) {
             return {listID: arg.listID, taskID: arg.taskID}
         } else {
-            setServerError(thunkAPI.dispatch, r)
-            return thunkAPI.rejectWithValue(null) //заглушка
+            // setServerError(thunkAPI.dispatch, r)
+            return thunkAPI.rejectWithValue(r) 
         }
     }).finally(() => {
         thunkAPI.dispatch(taskActions.setTaskStatusAC({taskID: arg.taskID, listID: arg.listID, taskIsLoading: false}))
@@ -37,7 +37,7 @@ const addTask = createAsyncThunkWithTypes<{ newTask: IncompleteOneTaskAPIType },
         if (r.resultCode === ResulAPICode.Ok) { //0 только приуспешном выполнении, ошибки всё кроме 0
             return {newTask: r.data.item}
         } else {
-            setServerError(dispatch, r,false)
+            // setServerError(dispatch, r,false)
             return rejectWithValue(r)
         }
     } catch (err) {
@@ -63,8 +63,8 @@ const updateTask = createAsyncThunkWithTypes<updateTaskArgType, updateTaskArgTyp
             dispatch(appActionsGroup.setAppStatus({appStatus: 'succeeded'}))
             return arg
         } else {
-            setServerError(dispatch, r)
-            return rejectWithValue(null)
+            // setServerError(dispatch, r)
+            return rejectWithValue(r)
         }
     } catch (err) {
         runDefaultCatch(dispatch, err)
